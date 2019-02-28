@@ -1,0 +1,109 @@
+commands = {}
+dependencies = {
+   lsqlite3complete = {
+      ["0.9.5-1"] = {
+         {
+            constraints = {
+               {
+                  op = ">=",
+                  version = {
+                     5, 1, string = "5.1"
+                  }
+               },
+               {
+                  op = "<",
+                  version = {
+                     5, 5, string = "5.5"
+                  }
+               }
+            },
+            name = "lua"
+         }
+      }
+   },
+   ["lua-vips"] = {
+      ["1.1-9"] = {
+         {
+            constraints = {
+               {
+                  op = ">=",
+                  version = {
+                     5, 1, string = "5.1"
+                  }
+               }
+            },
+            name = "lua"
+         }
+      }
+   }
+}
+modules = {
+   lsqlite3complete = {
+      "lsqlite3complete/0.9.5-1"
+   },
+   vips = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.Image"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.Image_methods"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.cdefs"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.gvalue"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.log"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.verror"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.version"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.vobject"] = {
+      "lua-vips/1.1-9"
+   },
+   ["vips.voperation"] = {
+      "lua-vips/1.1-9"
+   }
+}
+repository = {
+   lsqlite3complete = {
+      ["0.9.5-1"] = {
+         {
+            arch = "installed",
+            commands = {},
+            dependencies = {},
+            modules = {
+               lsqlite3complete = "lsqlite3complete.so"
+            }
+         }
+      }
+   },
+   ["lua-vips"] = {
+      ["1.1-9"] = {
+         {
+            arch = "installed",
+            commands = {},
+            dependencies = {},
+            modules = {
+               vips = "vips.lua",
+               ["vips.Image"] = "vips/Image.lua",
+               ["vips.Image_methods"] = "vips/Image_methods.lua",
+               ["vips.cdefs"] = "vips/cdefs.lua",
+               ["vips.gvalue"] = "vips/gvalue.lua",
+               ["vips.log"] = "vips/log.lua",
+               ["vips.verror"] = "vips/verror.lua",
+               ["vips.version"] = "vips/version.lua",
+               ["vips.vobject"] = "vips/vobject.lua",
+               ["vips.voperation"] = "vips/voperation.lua"
+            }
+         }
+      }
+   }
+}
