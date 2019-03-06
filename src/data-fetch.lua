@@ -1,15 +1,13 @@
---[[ @require LuaFileSystem library ]]
+--LuaFileSystem library
 local fs = require('lfs')
---[[ @require LuaSQLite3 library]]
+--LuaSQLite3 library
 local sqlite = require('lsqlite3complete')
 
---[[ @module Reads input image folder and card database file ]]
+--- Reads input image folder and card database file
 local DataFetch = {}
 
---[[
-    Iterator to find all images in a folder
-    @param imgs Path for the folder containing the card images
-]]
+--- Iterator to find all images in a folder
+--  @param imgs Path for the folder containing the card images
 function DataFetch.imgIterator(imgs)
     assert(imgs and imgs ~= "", "Please provide an image folder parameter")
     if imgs:sub(-1) == "/" then imgs = imgs:sub(1, -2) end
@@ -26,12 +24,10 @@ function DataFetch.imgIterator(imgs)
     return coroutine.wrap(function() yielddir(imgs) end)
 end
 
---[[
-    Reads a row from a card database by its ID, and returns its relevant data
-    @param cdb Card database file
-    @param id Card ID
-    @return A table containing relevant data about the card (ID, name, desc, type, atk, def, level, race, attribute), or nil if the row does not exist
-]]
+--- Reads a row from a card database by its ID, and returns its relevant data
+--  @param cdb Card database file
+--  @param id Card ID
+--  @return A table containing relevant data about the card (ID, name, desc, type, atk, def, level, race, attribute), or nil if the row does not exist
 function DataFetch.rowRead(cdb, id)
     assert(cdb and cdb.isopen and cdb:isopen(), "Nil or closed card database")
     local row
@@ -51,10 +47,6 @@ function DataFetch.rowRead(cdb, id)
         return 0
     end)
     return row
-end
-
-function DataFetch.cdbRead(cdbPath)
-
 end
 
 return DataFetch
