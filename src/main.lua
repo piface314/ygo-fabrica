@@ -9,13 +9,4 @@ function Main.imgs(_, imgFolder)
     end
 end
 
-function Main.row(_, cdbPath, id)
-    local sqlite = require('lsqlite3complete')
-    local cdb = sqlite.open(cdbPath)
-    for k, v in pairs(DataFetch.rowRead(cdb, id)) do
-        print(k, v)
-    end
-    cdb:close()
-end
-
 if Main[testMode] then Main[testMode](...) end
