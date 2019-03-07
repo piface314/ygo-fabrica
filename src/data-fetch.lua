@@ -1,7 +1,7 @@
 --LuaFileSystem library
-local fs = require('lfs')
+local fs = require "lfs"
 --LuaSQLite3 library
-local sqlite = require('lsqlite3complete')
+local sqlite = require "lsqlite3complete"
 
 --- Reads input image folder and card database file.
 local DataFetch = {}
