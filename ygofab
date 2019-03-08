@@ -1,6 +1,5 @@
 #!/bin/bash
 echo "Starting YGOFabrica..."
-echo "Testing \""$1"\"..."
-echo "-------------------------------------"
+echo "====================================="
 luajit -l lua-modules.set-paths src/main.lua $@
-echo "-------------------------------------"
+echo "====================================="

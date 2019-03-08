@@ -32,21 +32,28 @@ function DataFetch.rowRead(cdb, id)
     assert(id, "ID expected")
     local row
     cdb:exec(('SELECT * FROM texts WHERE id = %s;'):format(id), function (_, _, vals)
-        row = { id = vals[1], name = vals[2], desc = vals[3] }
+        row = { id = tonumber(vals[1]), name = vals[2], desc = vals[3] }
         return 0
     end)
     cdb:exec(('SELECT * FROM datas WHERE id = %s;'):format(id), function (_, _, vals)
         if row then
-            row.type = vals[5]
-            row.atk = vals[6]
-            row.def = vals[7]
-            row.level = vals[8]
-            row.race = vals[9]
-            row.attribute = vals[10]
+            row.type = tonumber(vals[5])
+            row.atk = tonumber(vals[6])
+            row.def = tonumber(vals[7])
+            row.level = tonumber(vals[8])
+            row.race = tonumber(vals[9])
+            row.attribute = tonumber(vals[10])
         end
         return 0
     end)
     return row
+end
+
+--- Opens a card database
+--  @param cdbPath Path to the card database
+--  @return Card database handler
+function DataFetch.openCDB(cdbPath)
+    return sqlite.open(cdbPath)
 end
 
 return DataFetch
