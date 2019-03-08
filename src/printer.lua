@@ -1,7 +1,5 @@
 --- LuaFileSystem library
 local fs = require "lfs"
---- LuaVips image manipulation library
-local vips = require "vips"
 
 --- Keeps settings about the output folders and prints results of cardpics
 local Printer = {}
@@ -19,6 +17,12 @@ function Printer.setOutputFolder(path, noSub)
     if not attr or attr.mode ~= 'directory' then
         fs.mkdir(out)
     end
+end
+
+--- Gets the value of the output folder
+--  @return Output folder path
+function Printer.getOutputFolder()
+    return out
 end
 
 --- Prints a card pic to the hard disk

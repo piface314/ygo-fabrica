@@ -110,7 +110,7 @@ local Decoder = {}
 
 --- Decodes card data according to the anime format
 --  @param data Card data
---  @return An array of layers, that are either labels or paths to resources, in the order they should be placed
+--  @return An array of layers, that are either tags or paths to resources, in the order they should be placed
 function Decoder.anime(data)
     local mode = 'anime'
     local att = getAttribute(data)
@@ -122,7 +122,7 @@ function Decoder.anime(data)
     if bcheck(data.type, Const.types.Monster) then
         if p then
             table.insert(decoded, getLayerPath(mode, layers.anime.frame(p)))
-            table.insert(decoded, ("@scales %d/%d"):format(lsc, rsc))
+            table.insert(decoded, ("@scales %d %d"):format(lsc, rsc))
         end
         table.insert(decoded, getLayerPath(mode, layers.anime.attributes(att)))
         table.insert(decoded, "@atk")
