@@ -29,7 +29,7 @@ end
 --  @param id Card ID, used as the file name
 --  @param cardpic Card pic processed by Vips library
 function Printer.print(id, cardpic)
-    cardpic:write_to_file(out .. "/" .. id .. ".png")
+    cardpic:write_to_file(out .. "/" .. id .. ".jpg")
 end
 
 return Printer

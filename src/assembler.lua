@@ -1,16 +1,24 @@
 --- LuaVips image manipulation library
 local vips = require "vips"
+--- Text Renderer module
+local TextRender = require "src.text-renderer"
 
+--- Assembles a card pic in many different ways, making it ready to be printed
 local Assembler = {}
 Assembler.define = {
     anime = {
         pic = { wd = 570, ht = 831 },
         img = { x = 13, y = 14, wd = 544, ht = 582, blur = 4 },
-        atk = {},
-        def = {},
-        lkr = {},
-        lsc = {},
-        rsc = {}
+        atk = { x = 234, y = 725, w = 157, h = 48,
+            f = "MatrixBoldSmallCaps 18.7", ff = "res/fonts/matrix-bold-small-caps.ttf", a = 'right' },
+        def = { x = 493, y = 725, w = 157, h = 48,
+            f = "MatrixBoldSmallCaps 18.7", ff = "res/fonts/matrix-bold-small-caps.ttf", a = 'right' },
+        lsc = { x = 180, y = 543, w = 75, h = 52,
+            f = "MatrixBoldSmallCaps 20", ff = "res/fonts/matrix-bold-small-caps.ttf", a = 'center' },
+        rsc = { x = 390, y = 543, w = 75, h = 52,
+            f = "MatrixBoldSmallCaps 20", ff = "res/fonts/matrix-bold-small-caps.ttf", a = 'center' },
+        lkr = { x = 441, y = 732, w = 52, h = 37, s = 1.4,
+            f = "IDroid 13", ff = "res/fonts/idroid.otf", a = 'left' }
     }
 }
 
@@ -78,13 +86,14 @@ function Assembler.overlay(mode, data, imgPath, layers)
             if tag == 'img' then
                 pic = pic:composite(img, 'over')
             elseif tag == 'atk' then
-
+                pic = TextRender.print(pic, tostring(data.atk), def.atk)
             elseif tag == 'def' then
-
+                pic = TextRender.print(pic, tostring(data.def), def.def)
             elseif tag == 'link' then
-
+                pic = TextRender.print(pic, v1, def.lkr)
             elseif tag == 'scales' then
-
+                pic = TextRender.print(pic, v1, def.lsc)
+                pic = TextRender.print(pic, v2, def.rsc)
             end
         else
             pic = pic:composite(vips.Image.new_from_file(layer), 'over')
@@ -93,4 +102,6 @@ function Assembler.overlay(mode, data, imgPath, layers)
     return pic
 end
 
-return Assembler
+return function (mode, data, imgPath, layers)
+    return Assembler.overlay(mode, data, imgPath, layers)
+end
