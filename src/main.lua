@@ -12,8 +12,13 @@ for imgPath, id in DataFetch.imgIterator(imgFolder) do
     print("---")
     io.write(("Reading card %q...\n"):format(id))
     local data = DataFetch.rowRead(cdb, id)
-    io.write(("Decoding card %q...\n"):format(id))
-    Decoder(mode, imgPath, data)
+    if data then
+        io.write(("Decoding card %q...\n"):format(id))
+        local layers = Decoder(mode, data)
+        for i, l in ipairs(layers) do print("Layer " .. i, l) end
+    else
+        print("No data! Skipping...")
+    end
 end
 
 print("---")
