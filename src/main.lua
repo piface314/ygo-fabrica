@@ -1,5 +1,7 @@
 local DataFetch = require "src.data-fetch"
 local Decoder = require "src.decoder"
+local Printer = require "src.printer"
+
 local args = { ... }
 local mode = args[1]
 local imgFolder = args[2]
@@ -20,6 +22,8 @@ for imgPath, id in DataFetch.imgIterator(imgFolder) do
         print("No data! Skipping...")
     end
 end
+
+-- Printer.setOutputFolder(imgFolder)
 
 print("---")
 cdb:close()

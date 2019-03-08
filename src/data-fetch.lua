@@ -1,6 +1,6 @@
---LuaFileSystem library
+--- LuaFileSystem library
 local fs = require "lfs"
---LuaSQLite3 library
+--- LuaSQLite3 library
 local sqlite = require "lsqlite3complete"
 
 --- Reads input image folder and card database file.
@@ -10,7 +10,7 @@ local DataFetch = {}
 --  @param imgs Path for the folder containing the card images.
 function DataFetch.imgIterator(imgs)
     assert(imgs and imgs ~= "", "Please provide an image folder parameter")
-    if imgs:sub(-1) == "/" then imgs = imgs:sub(1, -2) end
+    if imgs:match("[\\/]$") then imgs = imgs:sub(1, -2) end
     return coroutine.wrap(function ()
         local imgFmt = { png = true, jpg = true, jpeg = true }
         for entry in fs.dir(imgs) do
