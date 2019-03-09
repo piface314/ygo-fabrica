@@ -15,7 +15,8 @@ function Printer.setOutputFolder(path, noSub)
     out = noSub and path or path .. "/out"
     local attr = fs.attributes(out)
     if not attr or attr.mode ~= 'directory' then
-        fs.mkdir(out)
+        fs.mkdir(path)
+        if not noSub then fs.mkdir(out) end
     end
 end
 

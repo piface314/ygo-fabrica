@@ -115,11 +115,14 @@ function Decoder.anime(data)
     local mode = 'anime'
     local att = getAttribute(data)
     local f, p = getFrame(data)
+    if not f then return nil, ("invalid type value %q"):format(data.type) end
     local lvl, lsc, rsc = getLevel(data)
+    if not lvl then return nil, ("invalid level value %q"):format(data.level) end
 
     local decoded = { "@img" }
     table.insert(decoded, getLayerPath(mode, layers.anime.frame(f)))
     if bcheck(data.type, Const.types.Monster) then
+        if not att then return nil, ("invalid attribute value %q"):format(data.attribute) end
         if p then
             table.insert(decoded, getLayerPath(mode, layers.anime.frame(p)))
             table.insert(decoded, ("@scales %d %d"):format(lsc, rsc))

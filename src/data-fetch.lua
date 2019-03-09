@@ -46,7 +46,10 @@ function DataFetch.rowRead(cdb, id)
         end
         return 0
     end)
-    return row
+    for c, v in pairs(row) do
+        if not v then return nil, ("missing column %q"):format(c) end
+    end
+    return row, not row and ("card %q not found"):format(id) or nil
 end
 
 --- Opens a card database

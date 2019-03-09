@@ -1,7 +1,7 @@
 --- LuaVips image manipulation library
 local vips = require "vips"
 
-local dpi = 1500
+local dpi = 300
 local gblur = 0.5
 
 --- Defines utility functions to render text on a vips Image
