@@ -37,17 +37,17 @@ end
 --  @param img Image on which feather will be applied
 --  @param sigma Feather factor
 --  @return Feathered edge image
-local function featherEdges(img, sigma)
-    local copy = img:copy()
-        :resize(1, { vscale = (img:height() - sigma * 2) / img:height() })
-        :embed(0, sigma, img:width(), img:height())
-    alpha = copy
-        :extract_band(copy:bands() - 1)
-        :gaussblur(sigma)
-    return img
-        :extract_band(0, {n = img:bands() - 1})
-        :bandjoin(alpha)
-end
+    local function featherEdges(img, sigma)
+        local copy = img:copy()
+            :resize(1, { vscale = (img:height() - sigma * 2) / img:height() })
+            :embed(0, sigma, img:width(), img:height())
+        local alpha = copy
+            :extract_band(copy:bands() - 1)
+            :gaussblur(sigma)
+        return img
+            :extract_band(0, { n = img:bands() - 1 })
+            :bandjoin(alpha)
+    end
 
 --- Resizes a card image to best fit it into its canvas
 --  @param mode Generator mode (`anime` or `proxy`)
