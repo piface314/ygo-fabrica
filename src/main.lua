@@ -47,6 +47,5 @@ for imgPath, id in DataFetch.imgIterator(imgFolder) do
     until true
     if verbose then print() end
 end
-
 if verbose then print("---") end
 cdb:close()

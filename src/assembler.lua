@@ -33,21 +33,41 @@ function Assembler.loadBase(mode)
     return base[mode]
 end
 
+--- Applies a feather effecton the top and bottom edges of the image
+--  @param img Image on which feather will be applied
+--  @param sigma Feather factor
+--  @return Feathered edge image
+local function featherEdges(img, sigma)
+    local copy = img:copy()
+        :resize(1, { vscale = (img:height() - sigma * 2) / img:height() })
+        :embed(0, sigma, img:width(), img:height())
+    alpha = copy
+        :extract_band(copy:bands() - 1)
+        :gaussblur(sigma)
+    return img
+        :extract_band(0, {n = img:bands() - 1})
+        :bandjoin(alpha)
+end
+
 --- Resizes a card image to best fit it into its canvas
 --  @param mode Generator mode (`anime` or `proxy`)
 --  @param img Image for the card
 --  @return Resized (and sometimes adapted) image, in the correct size of the canvas
 function Assembler.resizeCardImg(mode, img)
+    if img:bands() == 3 then img = img:bandjoin{ 255 } end
     local def = Assembler.define[mode]
     local wd, ht = def.img.wd, def.img.ht
     local iw, ih = img:width(), img:height()
     if mode == 'anime' then
         if ih / iw < 0.9 then
-            local blur = img:resize(ht / ih):gaussblur(def.img.blur)
-            local img = img:resize(wd / iw)
-            return blur
-                :crop(blur:width() / 2 - wd / 2, 0, def.img.wd, def.img.ht)
-                :insert(img, 0, ht / 2 - img:height() / 2)
+            local bg = img:resize(ht / ih):gaussblur(def.img.blur)
+            bg = bg:crop(bg:width() / 2 - wd / 2, 0, def.img.wd, def.img.ht)
+            local fg = featherEdges(img:resize(wd / iw), def.img.blur * 2)
+            fg = bg
+                :crop(0, ht / 2 - fg:height() / 2, def.img.wd, fg:height())
+                :composite(fg, 'over')
+            return bg
+                :insert(fg, 0, ht / 2 - fg:height() / 2)
         else
             return img:resize(wd / iw, { vscale = ht / ih })
         end

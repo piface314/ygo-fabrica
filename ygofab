@@ -32,3 +32,4 @@ done
 
 echo "Starting YGOFabrica..."
 luajit -l lua-modules.set-paths src/main.lua ${args[0]} ${args[1]} ${args[2]} ${booleans["s"]} ${booleans["v"]} ${booleans["c"]} ${flags["o"]}
+echo "Done!"
