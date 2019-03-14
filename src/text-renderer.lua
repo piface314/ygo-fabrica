@@ -2,7 +2,6 @@
 local vips = require "vips"
 
 local dpi = 300
-local gblur = 0.5
 
 --- Defines utility functions to render text on a vips Image
 local TextRender = {}
@@ -28,12 +27,13 @@ function TextRender.print(base, t, args)
         center = function (x) return x - text:width() / 2 end,
         right = function (x) return x - text:width() end
     })[a](x)
-    text = text:less(128):bandand():ifthenelse({ 0, 0, 0, 0 }, {0, 0, 0, 255})
-    if not c then c = { 0, 0, 0, 255 } end
-    text = text:more(128)
-        :bandor():ifthenelse(c, {0, 0, 0, 0})
+    if not c then c = { 0, 0, 0 } end
+    text = text:bandjoin(c)
+    local alpha = text:extract_band(0)
+    text = text
+        :extract_band(1, { n = 3 })
+        :bandjoin(alpha)
         :colourspace("yxy")
-        :gaussblur(gblur)
     local ov = base:crop(x, y, text:width(), text:height()):composite(text, 'over')
     return base:insert(ov, x, y)
 end
