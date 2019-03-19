@@ -15,10 +15,10 @@ function TextRender.print(base, t, args)
     local f, ff, a, x, y, w, h, s, c
         = args.f, args.ff, args.a, args.x, args.y, args.w, args.h, args.s, args.c
     local text = vips.Image.text(t, { font = f, fontfile = ff, dpi = dpi })
-    if h then text = text:resize(h / text:height(), { kernel = 'cubic' }) end
-    if s then text = text:resize(s, { vscale = 1, kernel = 'cubic' }) end
+    if h then text = text:resize(h / text:height()) end
+    if s then text = text:resize(s, { vscale = 1 }) end
     if w and text:width() > w then
-        text = text:resize(w / text:width(), { vscale = 1, kernel = 'cubic' })
+        text = text:resize(w / text:width(), { vscale = 1 })
     end
     if a ~= 'left' and a ~= 'center' and a ~= 'right' then a = 'left' end
     x, y = x or 0, y or 0

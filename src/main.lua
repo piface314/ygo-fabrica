@@ -41,7 +41,7 @@ for imgPath, id in DataFetch.imgIterator(imgFolder) do
         local pic = Assembler(mode, data, imgPath, layers)
         if verbose then
             io.write(("Printing card %q to %q...\n"):format(data.name,
-                out .. "/" .. id .. ".png"))
+                out .. "/" .. id .. ".jpg"))
         end
         Printer.print(id, pic)
     until true

@@ -38,14 +38,12 @@ end
 --  @param sigma Feather factor
 --  @return Feathered edge image
     local function featherEdges(img, sigma)
-        local copy = img:copy()
-            :resize(1, { vscale = (img:height() - sigma * 2) / img:height() })
-            :embed(0, sigma, img:width(), img:height())
-        local alpha = copy
-            :extract_band(copy:bands() - 1)
+        local margin = sigma * 2
+        local alpha = img:extract_band(img:bands() - 1)
+            :crop(0, margin, img:width(), img:height() - 2 * margin)
+            :embed(0, margin, img:width(), img:height())
             :gaussblur(sigma)
-        return img
-            :extract_band(0, { n = img:bands() - 1 })
+        return img:extract_band(0, { n = img:bands() - 1 })
             :bandjoin(alpha)
     end
 
