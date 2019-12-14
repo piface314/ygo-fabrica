@@ -1,1 +1,3 @@
 .bup/
+**/fonts/*.ttf
+**/fonts/*.otf
