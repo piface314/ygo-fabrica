@@ -13,7 +13,8 @@ pronounced just like that, "FAH-bri-ka". From Brazil, with love :green_heart:.
 
 ## Features
 
-Currently available
+Currently available features are checked. Features planned for release in the near
+future are left unchecked.
 
 - [ ] Creation of YGOPro extension pack folder structure;
 - [ ] Global and local configurations, e.g. game folders;
