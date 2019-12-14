@@ -1,4 +1,4 @@
-# YGOFabrica
+![YGOFabrica](docs/logo.png "YGOFabrica logo")
 
 A project manager for YGOPro extension packs.
 
