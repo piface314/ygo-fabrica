@@ -1,7 +1,7 @@
 local lfs = require 'lfs'
 local path = require 'path'
 local sqlite = require 'lsqlite3complete'
-local Logs = require 'logs'
+local Logs = require 'scripts.logs'
 
 
 local function check_name(pack_name)

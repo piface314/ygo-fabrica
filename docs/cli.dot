@@ -1,0 +1,62 @@
+digraph {
+  dpi = 200
+  fontname = "Ubuntu Mono"
+  node [
+    shape = ellipse,
+    fontname = "Ubuntu Mono",
+    penwidth = 1.2
+  ]
+  subgraph commands {
+    node [shape = rect]
+    create
+    edit
+    delete
+    search
+    compose
+    config
+    export
+    new
+    sync
+  }
+  subgraph flags {
+    node [shape = cds]
+    comp_p [label="-p: 1"]
+    comp_Pall [label="-Pall: 0"]
+    exp_p [label="-p: 1"]
+    exp_Pall [label="-Pall: 0"]
+    exp_o [label="-o: 1"]
+    sync_g [label="-g: 1"]
+    sync_Gall [label="-Gall: 0"]
+    sync_p [label="-p: 1"]
+    delete__clean [label="--clean: 0"]
+  }
+  ygofab -> {
+    card
+    compose
+    config
+    export
+    new
+    sync
+  }
+  card -> {
+    create
+    edit
+    delete
+    search
+  }
+  delete -> delete__clean
+  compose -> {
+    comp_p
+    comp_Pall
+  }
+  export -> {
+    exp_p
+    exp_Pall
+    exp_o
+  }
+  sync -> {
+    sync_p
+    sync_g
+    sync_Gall
+  }
+}
