@@ -1,0 +1,5 @@
+#!/bin/bash
+BACK=$PWD
+cd $YGOFAB_HOME
+luajit -l lua_modules/set-paths scripts/ygofab.lua $BACK $@
+cd $BACK

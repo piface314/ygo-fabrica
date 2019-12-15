@@ -1,0 +1,23 @@
+rock_manifest = {
+   lua = {
+      ["toml.lua"] = "56170864b5cfb4f4620ea14eeac6bf03"
+   },
+   ["lua-toml-2.0-1.rockspec"] = "1c0cdfd4088254f5a7b9803fd1efa4cb",
+   spec = {
+      ["array_spec.lua"] = "4ae66a278880d09b4aa9ff0888377a3a",
+      ["bool_spec.lua"] = "2bbf79bb653d23af7e5a34b16a80912a",
+      ["comments_spec.lua"] = "e018b88fd2cbc6cc8600e11b0a9ed80f",
+      ["datetime_spec.lua"] = "15516c2e8e3ab830132c0078b10ba243",
+      ["empty_spec.lua"] = "126424641e72fa14e1372de7f766b3a1",
+      ["encode_spec.lua"] = "41dd4816682099442484de1475aba49d",
+      ["example_spec.lua"] = "35a04bdcd6d121cf5c74f4542c4d58ad",
+      ["float_spec.lua"] = "5e98c04ebd2b3d0cce5b3d4f78ac8ce2",
+      ["implicit-and-explicit_spec.lua"] = "b39ccae75543594183e0349b185433dd",
+      ["integer_spec.lua"] = "f83d6e300b6e67b5c629343b4b84f744",
+      ["key_spec.lua"] = "643dcc93bfd13954ba88d629bf7e1051",
+      ["strictness_spec.lua"] = "b5fcbbcfc1947ca7b212b0e19bff3f08",
+      ["string_spec.lua"] = "57fdb1085a369834fde6454afd7b03a7",
+      ["table-array_spec.lua"] = "c7a4cdf99d2da097a9b01a042ff81206",
+      ["table_spec.lua"] = "9720dea583c0c104f4c642287e975c3e"
+   }
+}

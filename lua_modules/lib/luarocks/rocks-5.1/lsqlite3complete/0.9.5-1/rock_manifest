@@ -1,0 +1,20 @@
+rock_manifest = {
+   doc = {
+      ["lsqlite3.wiki"] = "b29afdae9770ff7e7b3b90ef330fe5b1"
+   },
+   examples = {
+      ["aggregate.lua"] = "d0913ba1f603d2fbfcdda196b484b58c",
+      ["function.lua"] = "e4604d4e50f036306b6f6d7b8807749e",
+      ["hooks_advanced.lua"] = "cd36a19049462c8f984a073613cfa14d",
+      ["order.lua"] = "39f64ebfe387a84529330e6bcda80911",
+      ["simple.lua"] = "96a33bce1e9301c77cfbbe6b3d1ba45c",
+      ["smart.lua"] = "bd557643d7678198556d5079c6d61ecc",
+      ["statement.lua"] = "82a5b9222049a7d1569b2c849ee0bc5e",
+      ["tracing.lua"] = "dce8bb5af54bcb6ff61a077d0c18779a",
+      ["update_hook.lua"] = "a31784da0a0b6e5344c140530c87559c"
+   },
+   lib = {
+      ["lsqlite3complete.so"] = "c1cf330209ccc089458f77233cd3eeb1"
+   },
+   ["lsqlite3complete-0.9.5-1.rockspec"] = "5659efc70ec5274fdda4e31ca6b466f6"
+}
