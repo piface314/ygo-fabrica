@@ -1,0 +1,26 @@
+digraph {
+  dpi = 200
+  splines = ortho
+  fontname = "mono"
+  edge [fontname = "Ubuntu Mono"]
+  node [
+    shape = record,
+    fontname = "Ubuntu Mono",
+    style = filled,
+    fillcolor = "#ffffcc",
+    penwidth = 1.2
+  ]
+  new [label="{ new | |
++ _(pack_name: string)\l
+- check_name(pack_name: string)\l
+- create_folder(folder: string)\l
+- create_cdb(pack_name: string)\l
+- copy_file(src: string, dst: string)\l
+  }"]
+  logs [label="{ Logs | |
++ assert(v: any, code: number, ...: string)\l
++ ok(...: string)\l
++ info(...: string)\l
+  }"]
+  new -> logs [style = "dashed", arrowhead = "empty"];
+}
