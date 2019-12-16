@@ -18,9 +18,9 @@ local function is_inside_project()
   return false
 end
 
-local function display_help(msg)
-  print(require 'scripts.header')
+local function display_help(header, msg)
   if is_inside_project() then
+    if header then print(require 'scripts.header') end
     Logs.assert(false, 1, msg or "This is not a valid command.\n",
       "Usage:\n\n",
       "  $ ygofab [command] [options]\n\n",
@@ -32,15 +32,16 @@ local function display_help(msg)
       "  sync   \tCopies your project files to YGOPro game"
     )
   else
+    print(require 'scripts.header')
     Logs.assert(false, 1, "You are not in a project folder!\n",
       "You can create a new project using\n\n",
       "  $ ygofab new <pack-name>\n")
   end
 end
 
-local function display_card_help()
-  print(require 'scripts.header')
+local function display_card_help(header)
   if is_inside_project() then
+    if header then print(require 'scripts.header') end
     Logs.assert(false, 1, msg or "This is not a valid command.\n",
       "Usage:\n\n",
       "  $ ygofab card [command] [options]\n\n",
@@ -51,6 +52,7 @@ local function display_card_help()
       "  search <query> ...  \tSearches for cards matching the query"
     )
   else
+    print(require 'scripts.header')
     Logs.assert(false, 1, "You are not in a project folder!\n",
       "You can create a new project using\n\n",
       "  $ ygofab new <pack-name>\n")
@@ -79,14 +81,14 @@ local function init_interpreter()
   interpreter:add_command("card edit", cmd_card_edit)
   interpreter:add_command("card delete", cmd_card_delete, "--clean", 0)
   interpreter:add_command("card search", cmd_card_search)
-  interpreter:add_fallback("", function() return display_help() end)
-  interpreter:add_fallback("card", function() return display_card_help() end)
+  interpreter:add_fallback("", function() return display_help(true) end)
+  interpreter:add_fallback("card", function() return display_card_help(true) end)
 end
 
 get_pwd()
 init_interpreter()
 local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
 if errmsg then
-  display_help(errmsg .. "\n")
+  display_help(false, errmsg .. "\n")
 end
 interpreter:exec(cmd, args, flags)
