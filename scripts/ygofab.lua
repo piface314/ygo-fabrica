@@ -1,23 +1,92 @@
-local ArgParser = require 'scripts.argparser'
+local Interpreter = require 'scripts.interpreter'
+local Logs = require 'scripts.logs'
+local lfs = require 'lfs'
+local path = require 'path'
 
 
 local function get_pwd()
   PWD = arg[1]
 end
 
-local argparser
-local function init_argparser()
-  argparser = ArgParser()
-  argparser:add_command("compose", "-p", 1, "-Pall", 0)
-  argparser:add_command("config")
-  argparser:add_command("export", "-p", 1, "-Pall", 0, "-o", 1)
-  argparser:add_command("new")
-  argparser:add_command("sync", "-g", 1, "-Gall", 0, "-p", 1)
-  argparser:add_command("card create")
-  argparser:add_command("card edit")
-  argparser:add_command("card delete", "--clean", 0)
-  argparser:add_command("card search")
+local function is_inside_project()
+  for entry in lfs.dir(PWD) do
+    local att = lfs.attributes(path.join(PWD, entry))
+    if att and att.mode == 'file' and entry:match(".+%.cdb$") then
+      return true
+    end
+  end
+  return false
+end
+
+local function display_help(msg)
+  print(require 'scripts.header')
+  if is_inside_project() then
+    Logs.assert(false, 1, msg or "This is not a valid command.\n",
+      "Usage:\n\n",
+      "  $ ygofab [command] [options]\n\n",
+      "Available commands:\n\n",
+      "  card   \tManages card editing and searching\n",
+      "  compose\tGenerates card pics\n",
+      "  config \tShows project configurations\n",
+      "  export \tExports your project to a .zip file\n",
+      "  sync   \tCopies your project files to YGOPro game"
+    )
+  else
+    Logs.assert(false, 1, "You are not in a project folder!\n",
+      "You can create a new project using\n\n",
+      "  $ ygofab new <pack-name>\n")
+  end
+end
+
+local function display_card_help()
+  print(require 'scripts.header')
+  if is_inside_project() then
+    Logs.assert(false, 1, msg or "This is not a valid command.\n",
+      "Usage:\n\n",
+      "  $ ygofab card [command] [options]\n\n",
+      "Available commands:\n\n",
+      "  create <card-id>    \tCreates a new card\n",
+      "  delete <card-id> ...\tDeletes the specified card(s)\n",
+      "  edit <card-id>      \tEdits the specified card\n",
+      "  search <query> ...  \tSearches for cards matching the query"
+    )
+  else
+    Logs.assert(false, 1, "You are not in a project folder!\n",
+      "You can create a new project using\n\n",
+      "  $ ygofab new <pack-name>\n")
+  end
+end
+
+local function cmd_compose(flags) end
+local function cmd_config(flags) end
+local function cmd_export(flags) end
+local function cmd_new(flags) end
+local function cmd_sync(flags) end
+local function cmd_card_create(flags, ...) end
+local function cmd_card_edit(flags, ...) end
+local function cmd_card_delete(flags, ...) end
+local function cmd_card_search(flags, ...) end
+
+local interpreter
+local function init_interpreter()
+  interpreter = Interpreter()
+  interpreter:add_command("compose", cmd_compose, "-p", 1, "-Pall", 0)
+  interpreter:add_command("config", cmd_config)
+  interpreter:add_command("export", cmd_export, "-p", 1, "-Pall", 0, "-o", 1)
+  interpreter:add_command("new", cmd_new)
+  interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1)
+  interpreter:add_command("card create", cmd_card_create)
+  interpreter:add_command("card edit", cmd_card_edit)
+  interpreter:add_command("card delete", cmd_card_delete, "--clean", 0)
+  interpreter:add_command("card search", cmd_card_search)
+  interpreter:add_fallback("", function() return display_help() end)
+  interpreter:add_fallback("card", function() return display_card_help() end)
 end
 
 get_pwd()
-init_argparser()
+init_interpreter()
+local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
+if errmsg then
+  display_help(errmsg .. "\n")
+end
+interpreter:exec(cmd, args, flags)
