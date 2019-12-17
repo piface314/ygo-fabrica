@@ -8,6 +8,6 @@ default = true
 # Define one or more picsets
 [picset.regular]
 mode = 'proxy'
-width = 256
+size = 256
 field = true
 default = true

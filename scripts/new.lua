@@ -4,6 +4,8 @@ local sqlite = require 'lsqlite3complete'
 local Logs = require 'scripts.logs'
 
 
+local PWD
+
 local function check_name(pack_name)
   Logs.assert(pack_name, 1, "No name was provided for the new extension pack")
 end
@@ -35,7 +37,8 @@ local function copy_file(src, dst)
   srcfile:close()
 end
 
-return function (pack_name)
+return function (pwd, pack_name)
+  PWD = pwd
   check_name(pack_name)
   create_folder(pack_name)
   create_folder(path.join(pack_name, "artwork"))

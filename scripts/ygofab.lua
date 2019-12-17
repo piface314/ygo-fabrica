@@ -4,7 +4,7 @@ local lfs = require 'lfs'
 local path = require 'path'
 
 
-local VERSION = "0.0.1"
+local VERSION, PWD = "0.0.1"
 local interpreter
 
 local function get_pwd()
@@ -68,12 +68,14 @@ end
 
 local function cmd_compose(flags) end
 
-local function cmd_config(flags) end
+local function cmd_config()
+  require 'scripts.config'(PWD, is_inside_project())
+end
 
 local function cmd_export(flags) end
 
 local function cmd_new(flags, pack_name)
-  require 'scripts.new'(pack_name)
+  require 'scripts.new'(PWD, pack_name)
 end
 
 local function cmd_sync(flags) end
