@@ -11,6 +11,10 @@ local function get_pwd()
   PWD = arg[1]
 end
 
+local function print_header()
+  print(require 'scripts.header'(VERSION))
+end
+
 local function is_inside_project()
   for entry in lfs.dir(PWD) do
     local mode = lfs.attributes(path.join(PWD, entry), 'mode')
@@ -23,7 +27,7 @@ end
 
 local function display_help(header, msg)
   if is_inside_project() then
-    if header then print(require 'scripts.header') end
+    if header then print_header() end
     Logs.assert(false, 1, msg or "This is not a valid command.\n",
       "Usage:\n\n",
       "  $ ygofab [command] [options]\n\n",
@@ -35,7 +39,7 @@ local function display_help(header, msg)
       "  sync   \tCopies your project files to YGOPro game"
     )
   else
-    print(require 'scripts.header')
+    print_header()
     Logs.assert(false, 1, "You are not in a project folder!\n",
       "You can create a new project using\n\n",
       "  $ ygofab new <pack-name>\n")
@@ -44,7 +48,7 @@ end
 
 local function display_card_help(header)
   if is_inside_project() then
-    if header then print(require 'scripts.header') end
+    if header then print_header() end
     Logs.assert(false, 1, msg or "This is not a valid command.\n",
       "Usage:\n\n",
       "  $ ygofab card [command] [options]\n\n",
@@ -55,7 +59,7 @@ local function display_card_help(header)
       "  search <query> ...  \tSearches for cards matching the query"
     )
   else
-    print(require 'scripts.header')
+    print_header()
     Logs.assert(false, 1, "You are not in a project folder!\n",
       "You can create a new project using\n\n",
       "  $ ygofab new <pack-name>\n")

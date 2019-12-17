@@ -1,6 +1,7 @@
 local colors = require 'scripts.colors'
 local HIGHLIGHT = colors.FG_MAGENTA .. colors.BOLD
-return ([[
+return function(version)
+  return ([[
 
                     %s---_____
                    /  _____ -----__
@@ -15,7 +16,7 @@ __     __  ____     %s_ / \ _%s    ____
    |_|    \____/      %s\_/%s     |_| /_/  \_\|___/|_|\_\|_| \___//_/  \_\
             %s/ /            / /
            /  -----____   / /
-            --_____    --- /
+            --_____    --- /          %sversion %s%s
                    -----___%s
 ]]):format(
   HIGHLIGHT, colors.RESET,
@@ -26,5 +27,8 @@ __     __  ____     %s_ / \ _%s    ____
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  version,
   HIGHLIGHT, colors.RESET
 )
+end
