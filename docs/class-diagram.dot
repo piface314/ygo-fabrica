@@ -1,8 +1,10 @@
 digraph {
-  dpi = 200
+  dpi = 150
   splines = ortho
   fontname = "mono"
-  edge [fontname = "Ubuntu Mono"]
+  rankdir = "LR"
+  ranksep = 1
+  edge [fontname = "Ubuntu Mono", dir="both"]
   node [
     shape = record,
     fontname = "Ubuntu Mono",
@@ -10,8 +12,28 @@ digraph {
     fillcolor = "#ffffcc",
     penwidth = 1.2
   ]
-  new [label="{ new | |
-+ _(pack_name: string)\l
+  ygofab [label=" YgoFab |
+- PWD: string\l
+- VERSION: string\l
+  |
+- get_pwd()\l
+- print_header()\l
+- is_inside_project(): boolean\l
+- display_help(header: boolean, msg: string)\l
+- display_card_help(header: boolean)\l
+- cmd_card_create()\l
+- cmd_card_delete()\l
+- cmd_card_edit()\l
+- cmd_card_search()\l
+- cmd_compose()\l
+- cmd_config()\l
+- cmd_export()\l
+- cmd_new(_, pack_name: string)\l
+- cmd_sync()\l
+- init_interpreter()\l
+  "]
+  new [label=" New | |
++ _(pwd: string, pack_name: string)\l
 - check_name(pack_name: string)\l
 - create_folder(folder: string)\l
 - create_cdb(pack_name: string)\l
@@ -21,6 +43,62 @@ digraph {
 + assert(v: any, code: number, ...: string)\l
 + ok(...: string)\l
 + info(...: string)\l
-  }"]
-  new -> logs [style = "dashed", arrowhead = "empty"];
+  "]
+  interpreter [label=" Interpreter |
+- argtree: table\l
+- commands: table\l
+  |
+- create_command(command: string, fn: function): table\l
++ add_command(command: string, fn: function, ...: any)\l
++ add_fallback(subcommand: string, fn: function)\l
++ parse(...: string): string?, table?, table?, table?\l
++ exec(command: table, args: table, flags: table): function\l
+  "]
+  logs [label=" Logs | |
++ assert(v: any, code: number, ...: string)\l
++ ok(...: string)\l
++ info(...: string)\l
+  "]
+  config [label=" Config |
+- FIELDS: table\l
+  |
++ _(pwd: string, is_inside_project: boolean)\l
++ get(pwd: string, is_inside_project: boolean): table\l
+- validate(cfg: table, fields?: table): table\l
+- load_file(path: string): table\l
+- merge(dst: table, src: table)\l
+- format_list(cfg: table, key: string, title: string, fmt: function): string\l
+- format(cfg: table): string\l
+  "]
+  ygofab -> interpreter [
+    taillabel="1"
+    headlabel="- interpreter\r1\r"
+    arrowtail="odiamond"
+    arrowhead="none"
+  ]
+  ygofab -> logs [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  new -> logs [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  config -> logs [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  ygofab -> new [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  ygofab -> config [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
 }

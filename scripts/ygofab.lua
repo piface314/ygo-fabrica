@@ -66,6 +66,14 @@ local function display_card_help(header)
   end
 end
 
+local function cmd_card_create(flags, ...) end
+
+local function cmd_card_delete(flags, ...) end
+
+local function cmd_card_edit(flags, ...) end
+
+local function cmd_card_search(flags, ...) end
+
 local function cmd_compose(flags) end
 
 local function cmd_config()
@@ -74,19 +82,11 @@ end
 
 local function cmd_export(flags) end
 
-local function cmd_new(flags, pack_name)
+local function cmd_new(_, pack_name)
   require 'scripts.new'(PWD, pack_name)
 end
 
 local function cmd_sync(flags) end
-
-local function cmd_card_create(flags, ...) end
-
-local function cmd_card_edit(flags, ...) end
-
-local function cmd_card_delete(flags, ...) end
-
-local function cmd_card_search(flags, ...) end
 
 local function init_interpreter()
   interpreter = Interpreter()
