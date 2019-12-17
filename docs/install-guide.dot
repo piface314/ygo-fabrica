@@ -1,0 +1,41 @@
+digraph {
+  dpi = 120
+  init [shape = none, label = ""]
+  node [fontname = "Ubuntu"]
+  edge [fontname = "Ubuntu"]
+  /* splines = ortho */
+  subgraph branch {
+    node [shape = diamond]
+    exists [label = "Is it\ninstalled?"]
+    change [label = "Do you want\nto change\nthe install path?"]
+    config [label = "Do you want\nto keep\nconfig.toml?"]
+  }
+  subgraph action {
+    node [shape = rect]
+    ahome [label = "Ask for YGOFAB_HOME"]
+    ahome2 [label = "Ask for YGOFAB_HOME"]
+    aconfig [label = "Ask for default configs"]
+    azinstall [label = "Install from scratch"]
+    akcinstall [label = "Install, keeping config.toml"]
+  }
+  subgraph end {
+    node [
+      shape = doublecircle, style = filled,
+      fillcolor = black, label = "",
+      fixedsize = true, height = 0.2
+    ]
+    einstall
+  }
+  init -> exists
+  exists -> ahome [label = "no"]
+  ahome -> aconfig
+  aconfig -> azinstall
+  azinstall -> einstall
+  exists -> change [label = "yes"]
+  change -> ahome2 [label = "yes"]
+  ahome2 -> config
+  change -> config [label = "no"]
+  config -> aconfig [label = "no"]
+  config -> akcinstall [label = "yes"]
+  akcinstall -> einstall
+}

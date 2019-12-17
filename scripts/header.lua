@@ -1,4 +1,5 @@
 local colors = require 'scripts.colors'
+local HIGHLIGHT = colors.FG_MAGENTA .. colors.BOLD
 return ([[
 
                     %s---_____
@@ -17,22 +18,13 @@ __     __  ____     %s_ / \ _%s    ____
             --_____    --- /
                    -----___%s
 ]]):format(
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET,
-  colors.FG_MAGENTA,
-  colors.RESET
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET,
+  HIGHLIGHT, colors.RESET
 )

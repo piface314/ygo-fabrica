@@ -1,0 +1,13 @@
+# Global configurations for YGOFabrica
+
+# Define one or more game directories
+[gamedir.$GAMEDIR_NAME]
+path = '$GAMEDIR_PATH'
+default = true
+
+# Define one or more picsets
+[picset.regular]
+mode = 'proxy'
+width = 256
+field = true
+default = true
