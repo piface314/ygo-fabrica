@@ -1,4 +1,4 @@
-![YGOFabrica](docs/logo.png "YGOFabrica logo")
+<img src="docs/logo.png" width="500" alt="YGOFabrica logo">
 
 A project manager for YGOPro extension packs.
 
