@@ -9,5 +9,6 @@ default = true
 [picset.regular]
 mode = 'proxy'
 size = 256
+ext = 'jpg'
 field = true
 default = true

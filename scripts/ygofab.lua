@@ -25,6 +25,13 @@ local function is_inside_project()
   return false
 end
 
+local function not_in_project_dialogue()
+  print_header()
+  Logs.assert(false, 1, "You are not in a project folder!\n",
+    "You can create a new project using\n\n",
+    "  $ ygofab new <pack-name>\n")
+end
+
 local function display_help(header, msg)
   if is_inside_project() then
     if header then print_header() end
@@ -39,10 +46,7 @@ local function display_help(header, msg)
       "  sync   \tCopies your project files to YGOPro game"
     )
   else
-    print_header()
-    Logs.assert(false, 1, "You are not in a project folder!\n",
-      "You can create a new project using\n\n",
-      "  $ ygofab new <pack-name>\n")
+    not_in_project_dialogue()
   end
 end
 
@@ -59,10 +63,7 @@ local function display_card_help(header)
       "  search <query> ...  \tSearches for cards matching the query"
     )
   else
-    print_header()
-    Logs.assert(false, 1, "You are not in a project folder!\n",
-      "You can create a new project using\n\n",
-      "  $ ygofab new <pack-name>\n")
+    not_in_project_dialogue()
   end
 end
 
@@ -77,7 +78,7 @@ local function cmd_card_search(flags, ...) end
 local function cmd_compose(flags) end
 
 local function cmd_config()
-  require 'scripts.config'(PWD, is_inside_project())
+  require 'scripts.config'(is_inside_project() and PWD)
 end
 
 local function cmd_export(flags) end
@@ -86,7 +87,13 @@ local function cmd_new(_, pack_name)
   require 'scripts.new'(PWD, pack_name)
 end
 
-local function cmd_sync(flags) end
+local function cmd_sync(flags)
+  if is_inside_project() then
+    require 'scripts.sync'(PWD, flags)
+  else
+    not_in_project_dialogue()
+  end
+end
 
 local function init_interpreter()
   interpreter = Interpreter()
@@ -94,7 +101,8 @@ local function init_interpreter()
   interpreter:add_command("config", cmd_config)
   interpreter:add_command("export", cmd_export, "-p", 1, "-Pall", 0, "-o", 1)
   interpreter:add_command("new", cmd_new)
-  interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1)
+  interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1,
+    "--clean", 0, "--no-script", 0, "--no-pics", 0, "--no-exp", 0)
   interpreter:add_command("card create", cmd_card_create)
   interpreter:add_command("card edit", cmd_card_edit)
   interpreter:add_command("card delete", cmd_card_delete, "--clean", 0)

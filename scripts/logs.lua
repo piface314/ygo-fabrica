@@ -20,4 +20,9 @@ function Logs.info(...)
   io.write("\n")
 end
 
+function Logs.warning(...)
+  io.write(colors.FG_YELLOW, colors.BOLD, "[!] ", colors.RESET, ...)
+  io.write("\n")
+end
+
 return Logs
