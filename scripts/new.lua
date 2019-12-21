@@ -5,6 +5,7 @@ local Logs = require 'scripts.logs'
 
 
 local PWD
+local genfp = path.join("scripts", "generators")
 
 local function check_name(pack_name)
   Logs.assert(pack_name, 1, "No name was provided for the new extension pack")
@@ -20,7 +21,7 @@ local function create_cdb(pack_name)
   Logs.info("Creating card database...")
   local db, err, msg = sqlite.open(path.join(PWD, pack_name, pack_name .. ".cdb"))
   Logs.assert(db, err, msg)
-  local sqlf = io.open("scripts/starter/create-cdb.sql", "r")
+  local sqlf = io.open(path.join(genfp, "create-cdb.sql"), "r")
   local create_sql = sqlf:read("*a")
   sqlf:close()
   db:exec(create_sql)
@@ -45,7 +46,7 @@ return function (pwd, pack_name)
   create_folder(path.join(pack_name, "pics"))
   create_folder(path.join(pack_name, "script"))
   create_cdb(pack_name)
-  copy_file("scripts/starter/default-config.toml", path.join(pack_name, "config.toml"))
-  copy_file("scripts/starter/default.gitignore", path.join(pack_name, ".gitignore"))
+  copy_file(path.join(genfp, "default-config.toml"), path.join(pack_name, "config.toml"))
+  copy_file(path.join(genfp, "default.gitignore"), path.join(pack_name, ".gitignore"))
   Logs.ok("\"", pack_name, "\" pack successfully created!")
 end

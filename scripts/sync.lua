@@ -137,7 +137,10 @@ return function(pwd, flags)
   local no_pics = flags['--no-pics']
   local no_exp = flags['--no-exp']
   local gamedirs = get_gamedirs(local_cfg, global_cfg, fg)
-  local picset, pscfg = get_picset(local_cfg, global_cfg, fp)
+  local picset, pscfg
+  if not no_pics then
+    picset, pscfg = get_picset(local_cfg, global_cfg, fp)
+  end
   for _, gamedir in ipairs(gamedirs) do
     if not no_script then copy_scripts(gamedir, fclean) end
     if not no_pics then copy_pics(gamedir, picset, pscfg, fclean) end

@@ -9,7 +9,7 @@ for the YGOPro game. It helps the process of managing extension packs: copying f
 the game folder, adding cards to the extension database, generating card pics, etc.
 
 The name of the project is based on the Portuguese word for factory, _fábrica_, and is
-pronounced just like that, "FAH-bri-ka". From Brazil, with love :green_heart:.
+pronounced just like that, "FAH-bree-kah". From Brazil, with love :green_heart:.
 
 ## Features
 
