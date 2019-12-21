@@ -63,11 +63,11 @@ local function format_list(cfg, title, fmt)
   if list and #list > 0 then
     table.sort(list)
     list = table.concat(list)
-    list = ("  %s%s%s:%s\n%s")
-      :format(colors.FG_MAGENTA, colors.BOLD, title, colors.RESET, list)
+    list = ("  %s%s:%s\n%s")
+      :format(colors.FG_MAGENTA, title, colors.RESET, list)
   else
-    list = ("  %s%s[!]%s You have no %s configured.\n")
-      :format(colors.FG_YELLOW, colors.BOLD, colors.RESET, title:lower())
+    list = ("  %s[!]%s You have no %s configured.\n")
+      :format(colors.FG_YELLOW, colors.RESET, title:lower())
   end
   return list
 end
@@ -95,10 +95,12 @@ return setmetatable(Config, { __call = function(_, pwd)
   local local_cfg, global_cfg = Config.get(pwd)
   local fglobal_cfg, errmsg = format(global_cfg)
   Logs.assert(fglobal_cfg, 1, errmsg)
-  Logs.info("Global configurations:\n\n", fglobal_cfg)
+  Logs.info(colors.FG_MAGENTA, colors.BOLD, "Global configurations:\n\n",
+    colors.RESET, fglobal_cfg)
   if pwd then
     local flocal_cfg, errmsg = format(local_cfg)
     Logs.assert(flocal_cfg, 1, errmsg)
-    Logs.info("Local configurations:\n\n", flocal_cfg)
+    Logs.info(colors.FG_MAGENTA, colors.BOLD, "Local configurations:\n\n",
+      colors.RESET, flocal_cfg)
   end
 end })

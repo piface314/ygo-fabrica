@@ -4,6 +4,6 @@ if [ -z "$YGOFAB_HOME" ]; then
 else
   BACK=$PWD
   cd $YGOFAB_HOME
-  luajit -l lua_modules/set-paths scripts/ygofab.lua $BACK $@
+  luajit scripts/ygofab.lua $BACK $@
   cd $BACK
 fi

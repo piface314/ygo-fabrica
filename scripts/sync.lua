@@ -6,7 +6,6 @@ local Config = require 'scripts.config'
 local insert = table.insert
 
 local PWD
-local WIN32 = package.config:sub(1, 1) ~= "/"
 
 local function get_gamedirs(local_cfg, global_cfg, flag_g)
   local gamedirs = {}
@@ -41,7 +40,8 @@ local function get_picset(local_cfg, global_cfg, flag_p)
       return picset, pscfg
     else
       picset, pscfg = search(global_cfg.picset)
-      Logs.assert(picset, 1, "Please specify a picset or define a default picset.")
+      Logs.assert(picset, 1,
+        "Please specify a picset using `-p <picset>` or define a default picset.")
       return picset, pscfg
     end
   end
@@ -57,12 +57,18 @@ local function clean(dir, names)
 end
 
 local function cp(src, dst)
-  if WIN32 then
-    -- TODO check if it works for Windows
-    return os.execute(("copy %s %s"):format(src, dst)) == 0 and 1 or 0
-  else
-    return os.execute(("cp %s %s"):format(src, dst)) == 0 and 1 or 0
+  local fsrc = io.open(src, "rb")
+  if not fsrc then
+    return 0
   end
+  local fdst = io.open(dst, "wb")
+  if not fdst then
+    return 0
+  end
+  fdst:write(fsrc:read("*a"))
+  fsrc:close()
+  fdst:close()
+  return 1
 end
 
 local function copy_dir(pattern, src, dst, fclean, tags)
