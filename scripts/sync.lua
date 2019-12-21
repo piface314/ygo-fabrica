@@ -87,7 +87,6 @@ local function copy_dir(pattern, src, dst, fclean, tags)
     if fclean then
       clean(dst, to_clean)
     end
-    local copied = 0
     for _, file in ipairs(to_copy) do
       copied = copied + cp(path.join(src, file), path.join(dst, file))
     end
@@ -100,7 +99,7 @@ local function copy_dir(pattern, src, dst, fclean, tags)
       Logs.warning("No ", tags[1]," copied for this gamedir. Something seems wrong...")
     end
   else
-    Logs.warning(("Failed while copying scripts for %q:\n"):format(tags[2]), copied)
+    Logs.warning(("Failed while copying %s for %q:\n"):format(tags[1], tags[2]), copied)
   end
 end
 
@@ -132,7 +131,7 @@ end
 
 return function(pwd, flags)
   PWD = pwd
-  local local_cfg, global_cfg = Config.get(pwd, true)
+  local local_cfg, global_cfg = Config.get(pwd)
   local fg, fp, fclean = flags['-Gall'] or flags['-g'], flags['-p'], flags['--clean']
   local no_script = flags['--no-script']
   local no_pics = flags['--no-pics']

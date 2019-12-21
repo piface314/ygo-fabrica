@@ -22,7 +22,7 @@ future are left unchecked.
 - [ ] Friendly interface for creating, editing and deleting cards;
 - [ ] Support for different sets of card pics;
 - [ ] Generation of card pics from `.cdb` and raw artwork;
-- [ ] Export pack to `.zip`, ready for sharing.
+- [x] Export pack to `.zip`, ready for sharing.
 
 ## Installation
 

@@ -81,7 +81,13 @@ local function cmd_config()
   require 'scripts.config'(is_inside_project() and PWD)
 end
 
-local function cmd_export(flags) end
+local function cmd_export(flags)
+  if is_inside_project() then
+    require 'scripts.export'(PWD, flags)
+  else
+    not_in_project_dialogue()
+  end
+end
 
 local function cmd_new(_, pack_name)
   require 'scripts.new'(PWD, pack_name)
