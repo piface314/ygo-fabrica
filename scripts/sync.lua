@@ -7,43 +7,31 @@ local insert = table.insert
 
 local PWD
 
-local function get_gamedirs(local_cfg, global_cfg, flag_g)
-  local gamedirs = {}
+local function get_gamedirs(flag_g)
   local all = flag_g and not flag_g[1]
-  local g = flag_g and flag_g[1]
-  local cfg = {}
-  Config.merge(cfg, global_cfg)
-  Config.merge(cfg, local_cfg)
-  for id, gd in pairs(cfg.gamedir) do
-    if all or ((g and id == g) or (not g and gd.default)) then
-      insert(gamedirs, { id, gd.path })
-    end
+  local gamedir = flag_g and flag_g[1]
+  if all then
+    return Config.get_all(PWD, 'gamedir')
+  elseif gamedir then
+    local gd = Config.get_one(PWD, 'gamedir', gamedir)
+    Logs.assert(gd, 1, "Gamedir \"", gamedir, "\" is not configured.")
+    return { [gamedir] = gd }
+  else
+    return Config.get_defaults(PWD, 'gamedir')
   end
-  return gamedirs
 end
 
-local function get_picset(local_cfg, global_cfg, flag_p)
+local function get_picset(flag_p)
   local picset = flag_p and flag_p[1]
   if picset then
-    local lps, gps = local_cfg[picset], global_cfg[picset]
-    Logs.assert(lps or gps, 1, 'Pic set "', picset, '"', "is not configured.")
-    return picset, lps or gps
+    local ps = Config.get_one(PWD, 'picset', picset)
+    Logs.assert(ps, 1, "Pic set \"", picset, "\" is not configured.")
+    return picset, ps
   else
-    local function search(t)
-      for id, ps in pairs(t) do
-        if ps.default then return id, ps end
-      end
-      return nil
-    end
-    local picset, pscfg = search(local_cfg.picset)
-    if picset then
-      return picset, pscfg
-    else
-      picset, pscfg = search(global_cfg.picset)
-      Logs.assert(picset, 1,
-        "Please specify a picset using `-p <picset>` or define a default picset.")
-      return picset, pscfg
-    end
+    local id, ps = Config.get_default(PWD, 'picset')
+    Logs.assert(id, 1,
+      "Please specify a picset using `-p <picset>` or define a default picset.")
+    return id, ps
   end
 end
 
@@ -103,27 +91,27 @@ local function copy_dir(pattern, src, dst, fclean, tags)
   end
 end
 
-local function copy_scripts(gamedir, fclean)
+local function copy_scripts(gamedir, gpath, fclean)
   copy_dir("c%d+%.lua", path.join(PWD, "script"),
-    path.join(gamedir[2], "script"), fclean, { "scripts", gamedir[1] })
+    path.join(gpath, "script"), fclean, { "scripts", gamedir })
 end
 
-local function copy_pics(gamedir, picset, pscfg, fclean)
+local function copy_pics(gamedir, gpath, picset, pscfg, fclean)
   copy_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset),
-    path.join(gamedir[2], "pics"), fclean, { "pics", gamedir[1] })
+    path.join(gpath, "pics"), fclean, { "pics", gamedir })
   if pscfg.field then
     copy_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset, "field"),
-      path.join(gamedir[2], "pics", "field"), fclean, { "field pics", gamedir[1] })
+      path.join(gpath, "pics", "field"), fclean, { "field pics", gamedir })
   end
 end
 
-local function copy_expansion(gamedir)
+local function copy_expansion(gamedir, gpath)
   local _, pack_name = path.split(PWD)
   local expansion = pack_name .. ".cdb"
   local src = path.join(PWD, expansion)
-  local dst = path.join(gamedir[2], "expansions", expansion)
+  local dst = path.join(gpath, "expansions", expansion)
   if cp(src, dst) == 1 then
-    Logs.info("Copied expansion for \"", gamedir[1], '"')
+    Logs.info("Copied expansion for \"", gamedir, '"')
   else
     Logs.warning("Failed to copy expansion")
   end
@@ -131,20 +119,19 @@ end
 
 return function(pwd, flags)
   PWD = pwd
-  local local_cfg, global_cfg = Config.get(pwd)
   local fg, fp, fclean = flags['-Gall'] or flags['-g'], flags['-p'], flags['--clean']
   local no_script = flags['--no-script']
   local no_pics = flags['--no-pics']
   local no_exp = flags['--no-exp']
-  local gamedirs = get_gamedirs(local_cfg, global_cfg, fg)
+  local gamedirs = get_gamedirs(fg)
   local picset, pscfg
   if not no_pics then
-    picset, pscfg = get_picset(local_cfg, global_cfg, fp)
+    picset, pscfg = get_picset(fp)
   end
-  for _, gamedir in ipairs(gamedirs) do
-    if not no_script then copy_scripts(gamedir, fclean) end
-    if not no_pics then copy_pics(gamedir, picset, pscfg, fclean) end
-    if not no_exp then copy_expansion(gamedir) end
+  for gd, gdcfg in pairs(gamedirs) do
+    if not no_script then copy_scripts(gd, gdcfg.path, fclean) end
+    if not no_pics then copy_pics(gd, gdcfg.path, picset, pscfg, fclean) end
+    if not no_exp then copy_expansion(gd, gdcfg.path) end
   end
   Logs.ok("Sync complete!")
 end

@@ -57,17 +57,16 @@ digraph {
 + parse(...: string): string?, table?, table?, table?\l
 + exec(command: table, args: table, flags: table): function\l
   "]
-  logs [label=" Logs | |
-+ assert(v: any, code: number, ...: string)\l
-+ ok(...: string)\l
-+ info(...: string)\l
-  "]
   config [label=" Config |
 - FIELDS: table\l
   |
 + _(pwd: string)\l
 + get(pwd: string): table\l
-+ merge(dst: table, src: table)\l
++ get_one(pwd: string, key: string, id: string): table\l
++ get_default(pwd: string, key: string): string, table\l
++ get_defaults(pwd: string, key: string): table\l
++ get_all(pwd: string, key: string): table\l
+- merge(dst: table, src: table)\l
 - validate(cfg: table, fields?: table): table\l
 - load_file(path: string): table\l
 - format_list(cfg: table, title: string, fmt: function): string\l
@@ -75,25 +74,25 @@ digraph {
   "]
   sync [label=" Sync | |
 + _(pwd: string, flags: table)\l
-- get_gamedir(local_cfg: table, global_cfg: table, flag_g: table): string[][]\l
-- get_picset(local_cfg: table, global_cfg: table, flag_p: table): string, table\l
+- get_gamedirs(flag_g: table): table\l
+- get_picset(flag_p: table): string, table\l
 - clean(dir: string, names: string[])\l
 - cp(src: string, dst: string): number\l
 - copy_dir(pattern: string, src: string, dst: string, fclean: boolean, tags: string[])\l
-- copy_scripts(gamedir: string[], fclean: boolean)\l
-- copy_pics(gamedir: string[], picset: string, pscfg: table, fclean: boolean)\l
-- copy_expansion(gamedir: string[])\l
+- copy_scripts(gamedir: string, gpath: string, fclean: boolean)\l
+- copy_pics(gamedir: string, gpath: string, picset: string, pscfg: table, fclean: boolean)\l
+- copy_expansion(gamedir: string, gpath: string)\l
   "]
   export [label=" Export | |
 + _(pwd: string, flags: table)\l
-- get_picsets(local_cfg: table, global_cfg: table, flag_p: table): table\l
+- get_picsets(flag_p: table): table\l
 - get_outdir(flag_o: table): string\l
-- get_output(outdir: string, pack_name: string, picset: table): string, string\l
+- get_output(outdir: string, pack_name: string, picset: string): string, string\l
 - create_zip(fp: string): ZipStream\l
 - reader(fp: string, istext: boolean): table, function\l
 - add_dir(pattern: string, zipfile: ZipStream, zipdir: string, tag: string)\l
 - add_scripts(zipname: string, zipfile: ZipStream)\l
-- add_pics(zipname: string, zipfile: ZipStream, picset: table)\l
+- add_pics(zipname: string, zipfile: ZipStream, picset: string, pscfg: table)\l
 - add_expansion(zipname: string, zipfile: ZipStream, pack_name: string)\l
   "]
   ygofab -> interpreter [

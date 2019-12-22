@@ -1,4 +1,4 @@
-local lfs = require 'lfs'
+local fs = require 'lfs'
 local path = require 'path'
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'scripts.logs'
@@ -13,7 +13,7 @@ end
 
 local function create_folder(folder)
   Logs.info("Creating \"", folder, "\" folder...")
-  local success, msg, errcode = lfs.mkdir(path.join(PWD, folder))
+  local success, msg, errcode = fs.mkdir(path.join(PWD, folder))
   Logs.assert(success, errcode, ("%q - %s"):format(folder, msg))
 end
 
@@ -25,6 +25,7 @@ local function create_cdb(pack_name)
   local create_sql = sqlf:read("*a")
   sqlf:close()
   db:exec(create_sql)
+  db:close()
 end
 
 local function copy_file(src, dst)

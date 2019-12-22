@@ -1,6 +1,6 @@
 local path = require 'path'
 local zip = require 'ZipWriter'
-local lfs = require 'lfs'
+local fs = require 'lfs'
 local Config = require 'scripts.config'
 local Logs = require 'scripts.logs'
 
@@ -9,19 +9,18 @@ local insert = table.insert
 
 local PWD
 
-local function get_picsets(local_cfg, global_cfg, flag_p)
-  local picsets = {}
+local function get_picsets(flag_p)
   local all = flag_p and not flag_p[1]
-  local p = flag_p and flag_p[1]
-  local cfg = {}
-  Config.merge(cfg, global_cfg)
-  Config.merge(cfg, local_cfg)
-  for id, ps in pairs(cfg.picset) do
-    if all or ((p and id == p) or (not p and ps.default)) then
-      insert(picsets, { id, ps })
-    end
+  local picset = flag_p and flag_p[1]
+  if all then
+    return Config.get_all(PWD, 'picset')
+  elseif picset then
+    local ps = Config.get_one(PWD, 'picset', picset)
+    Logs.assert(ps, 1, "Pic set \"", picset, "\" is not configured.")
+    return { [picset] = ps }
+  else
+    return Config.get_defaults(PWD, 'picset')
   end
-  return picsets
 end
 
 local function get_outdir(flag_o)
@@ -29,7 +28,7 @@ local function get_outdir(flag_o)
 end
 
 local function get_output(outdir, pack_name, picset)
-  local zipname = ("%s-%s"):format(pack_name, picset[1])
+  local zipname = ("%s-%s"):format(pack_name, picset)
   return path.join(outdir, zipname .. ".zip"), zipname
 end
 
@@ -62,7 +61,7 @@ end
 local function add_dir(pattern, dir, zipfile, zipdir, tag)
   local function add()
     local added, total = 0, 0
-    for entry in lfs.dir(dir) do
+    for entry in fs.dir(dir) do
       if entry:match(pattern) then
         local desc, r = reader(path.join(dir, entry), true)
         if r then
@@ -90,11 +89,11 @@ local function add_scripts(zipname, zipfile)
     path.join(zipname, "script"), "scripts")
 end
 
-local function add_pics(zipname, zipfile, picset)
-  add_dir("%d+%." .. picset[2].ext, path.join(PWD, "pics", picset[1]), zipfile,
+local function add_pics(zipname, zipfile, picset, pscfg)
+  add_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset), zipfile,
     path.join(zipname, "pics"), "pics")
-  if picset[2].field then
-    add_dir("%d+%." .. picset[2].ext, path.join(PWD, "pics", picset[1], "field"),
+  if pscfg.field then
+    add_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset, "field"),
       zipfile, path.join(zipname, "pics", "field"), "field pics")
   end
 end
@@ -112,21 +111,20 @@ end
 
 return function(pwd, flags)
   PWD = pwd
-  local local_cfg, global_cfg = Config.get(pwd)
   local _, pack_name = path.split(pwd)
   local fp, fo = flags['-Pall'] or flags['-p'], flags['-o']
   local outdir = get_outdir(fo)
-  local picsets = get_picsets(local_cfg, global_cfg, fp)
-  for _, picset in ipairs(picsets) do
-    Logs.info("Exporting for ", picset[1])
-    local out, zipname = get_output(outdir, pack_name, picset)
+  local picsets = get_picsets(fp)
+  for id, pscfg in pairs(picsets) do
+    Logs.info("Exporting for ", id)
+    local out, zipname = get_output(outdir, pack_name, id)
     local zipfile = create_zip(out)
     add_scripts(zipname, zipfile)
-    add_pics(zipname, zipfile, picset)
+    add_pics(zipname, zipfile, id, pscfg)
     add_expansion(zipname, zipfile, pack_name)
     zipfile:close()
   end
-  if #picsets == 0 then
+  if not next(picsets) then
     Logs.warning("No picset was found")
   else
     Logs.ok("Export complete!")

@@ -1,6 +1,6 @@
 local Interpreter = require 'scripts.interpreter'
 local Logs = require 'scripts.logs'
-local lfs = require 'lfs'
+local fs = require 'lfs'
 local path = require 'path'
 
 
@@ -16,8 +16,8 @@ local function print_header()
 end
 
 local function is_inside_project()
-  for entry in lfs.dir(PWD) do
-    local mode = lfs.attributes(path.join(PWD, entry), 'mode')
+  for entry in fs.dir(PWD) do
+    local mode = fs.attributes(path.join(PWD, entry), 'mode')
     if mode == 'file' and entry:match(".+%.cdb$") then
       return true
     end
@@ -75,7 +75,13 @@ local function cmd_card_edit(flags, ...) end
 
 local function cmd_card_search(flags, ...) end
 
-local function cmd_compose(flags) end
+local function cmd_compose(flags)
+  if is_inside_project() then
+    require 'scripts.compose'(PWD, flags)
+  else
+    not_in_project_dialogue()
+  end
+end
 
 local function cmd_config()
   require 'scripts.config'(is_inside_project() and PWD)

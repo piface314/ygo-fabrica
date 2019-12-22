@@ -42,13 +42,13 @@ local function load_file(path)
   return config
 end
 
-function Config.merge(dst, src)
+local function merge(dst, src)
   for k, v in pairs(src) do
     if type(v) == 'table' then
       if type(dst[k]) ~= 'table' then
         dst[k] = {}
       end
-      Config.merge(dst[k], v)
+      merge(dst[k], v)
     else
       dst[k] = v
     end
@@ -91,7 +91,52 @@ function Config.get(pwd)
   return local_cfg, global_cfg
 end
 
-return setmetatable(Config, { __call = function(_, pwd)
+function Config.get_one(pwd, key, id)
+  local local_cfg, global_cfg = Config.get(pwd)
+  local lc = local_cfg[key][id]
+  local gc = global_cfg[key][id]
+  return lc or gc
+end
+
+function Config.get_default(pwd, key)
+  local local_cfg, global_cfg = Config.get(pwd)
+  local function search(t)
+    for id, c in pairs(t) do
+      if c.default then return id, c end
+    end
+    return nil
+  end
+  local id, c = search(local_cfg[key])
+  if id then
+    return id, c
+  else
+    return search(global_cfg[key])
+  end
+end
+
+function Config.get_defaults(pwd, key)
+  local local_cfg, global_cfg = Config.get(pwd)
+  local cfg = {}
+  merge(cfg, global_cfg)
+  merge(cfg, local_cfg)
+  local cs = {}
+  for id, c in pairs(cfg[key]) do
+    if c.default then
+      cs[id] = c
+    end
+  end
+  return cs
+end
+
+function Config.get_all(pwd, key)
+  local local_cfg, global_cfg = Config.get(pwd)
+  local cfg = {}
+  merge(cfg, global_cfg)
+  merge(cfg, local_cfg)
+  return cfg[key]
+end
+
+setmetatable(Config, { __call = function(_, pwd)
   local local_cfg, global_cfg = Config.get(pwd)
   local fglobal_cfg, errmsg = format(global_cfg)
   Logs.assert(fglobal_cfg, 1, errmsg)
@@ -104,3 +149,5 @@ return setmetatable(Config, { __call = function(_, pwd)
       colors.RESET, flocal_cfg)
   end
 end })
+
+return Config
