@@ -1,6 +1,6 @@
 digraph {
   dpi = 150
-  splines = ortho
+  /* splines = ortho */
   fontname = "mono"
   rankdir = "LR"
   ranksep = 1
@@ -34,7 +34,7 @@ digraph {
 - init_interpreter()\l
   "]
   new [label=" New |
-- GENFP: string
+- GENFP: string\l
 |
 + _(pwd: string, pack_name: string)\l
 - check_name(pack_name: string)\l
@@ -42,7 +42,7 @@ digraph {
 - create_cdb(pack_name: string)\l
 - copy_file(src: string, dst: string)\l
   }"]
-  logs [label="{ Logs | |
+  logs [label=" Logs | |
 + assert(v: any, code: number, ...: string)\l
 + ok(...: string)\l
 + info(...: string)\l
@@ -95,65 +95,43 @@ digraph {
 - add_pics(zipname: string, zipfile: ZipStream, picset: string, pscfg: table)\l
 - add_expansion(zipname: string, zipfile: ZipStream, pack_name: string)\l
   "]
+  compose [label=" Compose | |
++ _(pwd: string, flags: table)\l"]
+  composer [label=" Composer | |
++ main(imgfolder: string, cdbfp: string)\l
+"]
+  datafetcher [label=" DataFetcher | |
++ get(imgfolder: string, cdbfp: string): table\l
+- is_valid_ext(ext: string): boolean\l
+- get_images(imgfolder: string): table\l
+- open_cdb(cdbfp: string): Database\l
+- keylist(t: table): string[]\l
+- read_cdb(cdb: Database, imgs: table): table\l
+"]
+
+  subgraph dep {
+    edge [ style = "dashed", arrowhead = "empty", arrowtail = "none" ]
+    new -> logs
+    config -> logs
+    ygofab -> new
+    ygofab -> config
+    ygofab -> sync
+    ygofab -> export
+    ygofab -> compose
+    sync -> config
+    sync -> logs
+    ygofab -> logs
+    export -> config
+    export -> logs
+    compose -> config
+    compose -> logs
+    compose -> composer
+    composer -> datafetcher
+  }
   ygofab -> interpreter [
     taillabel="1"
     headlabel="- interpreter\r1\r"
     arrowtail="odiamond"
     arrowhead="none"
-  ]
-  ygofab -> logs [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  new -> logs [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  config -> logs [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  ygofab -> new [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  ygofab -> config [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  ygofab -> sync [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  ygofab -> export [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  sync -> config [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  sync -> logs [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  export -> config [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
-  ]
-  export -> logs [
-    style = "dashed"
-    arrowhead = "empty"
-    arrowtail = "none"
   ]
 }
