@@ -16,9 +16,10 @@ digraph {
 - PWD: string\l
 - VERSION: string\l
   |
-- get_pwd()\l
+- get_pwd(): string\l
 - print_header()\l
 - is_inside_project(): boolean\l
+- not_in_project_dialogue()\l
 - display_help(header: boolean, msg: string)\l
 - display_card_help(header: boolean)\l
 - cmd_card_create()\l
@@ -27,12 +28,14 @@ digraph {
 - cmd_card_search()\l
 - cmd_compose()\l
 - cmd_config()\l
-- cmd_export()\l
+- cmd_export(flags: table)\l
 - cmd_new(_, pack_name: string)\l
-- cmd_sync()\l
+- cmd_sync(flags: table)\l
 - init_interpreter()\l
   "]
-  new [label=" New | |
+  new [label=" New |
+- GENFP: string
+|
 + _(pwd: string, pack_name: string)\l
 - check_name(pack_name: string)\l
 - create_folder(folder: string)\l
@@ -62,13 +65,36 @@ digraph {
   config [label=" Config |
 - FIELDS: table\l
   |
-+ _(pwd: string, is_inside_project: boolean)\l
-+ get(pwd: string, is_inside_project: boolean): table\l
++ _(pwd: string)\l
++ get(pwd: string): table\l
++ merge(dst: table, src: table)\l
 - validate(cfg: table, fields?: table): table\l
 - load_file(path: string): table\l
-- merge(dst: table, src: table)\l
-- format_list(cfg: table, key: string, title: string, fmt: function): string\l
+- format_list(cfg: table, title: string, fmt: function): string\l
 - format(cfg: table): string\l
+  "]
+  sync [label=" Sync | |
++ _(pwd: string, flags: table)\l
+- get_gamedir(local_cfg: table, global_cfg: table, flag_g: table): string[][]\l
+- get_picset(local_cfg: table, global_cfg: table, flag_p: table): string, table\l
+- clean(dir: string, names: string[])\l
+- cp(src: string, dst: string): number\l
+- copy_dir(pattern: string, src: string, dst: string, fclean: boolean, tags: string[])\l
+- copy_scripts(gamedir: string[], fclean: boolean)\l
+- copy_pics(gamedir: string[], picset: string, pscfg: table, fclean: boolean)\l
+- copy_expansion(gamedir: string[])\l
+  "]
+  export [label=" Export | |
++ _(pwd: string, flags: table)\l
+- get_picsets(local_cfg: table, global_cfg: table, flag_p: table): table\l
+- get_outdir(flag_o: table): string\l
+- get_output(outdir: string, pack_name: string, picset: table): string, string\l
+- create_zip(fp: string): ZipStream\l
+- reader(fp: string, istext: boolean): table, function\l
+- add_dir(pattern: string, zipfile: ZipStream, zipdir: string, tag: string)\l
+- add_scripts(zipname: string, zipfile: ZipStream)\l
+- add_pics(zipname: string, zipfile: ZipStream, picset: table)\l
+- add_expansion(zipname: string, zipfile: ZipStream, pack_name: string)\l
   "]
   ygofab -> interpreter [
     taillabel="1"
@@ -97,6 +123,36 @@ digraph {
     arrowtail = "none"
   ]
   ygofab -> config [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  ygofab -> sync [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  ygofab -> export [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  sync -> config [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  sync -> logs [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  export -> config [
+    style = "dashed"
+    arrowhead = "empty"
+    arrowtail = "none"
+  ]
+  export -> logs [
     style = "dashed"
     arrowhead = "empty"
     arrowtail = "none"

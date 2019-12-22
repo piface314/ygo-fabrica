@@ -41,18 +41,18 @@ local function create_zip(fp)
   return zipfile
 end
 
-local function reader(fp, istext, isfile, isdir)
+local function reader(fp, istext)
   local f, errmsg = io.open(fp, 'rb')
   if not f then
     return nil, nil, errmsg
   end
   local chunk_size = 1024
   local desc = {
-    istext = istext, isfile = isfile, isdir = isdir,
+    istext = istext, isfile = true, isdir = false,
     exattrib = { zip.NIX_FILE_ATTR.IFREG, zip.NIX_FILE_ATTR.IRUSR,
       zip.NIX_FILE_ATTR.IWUSR, zip.NIX_FILE_ATTR.IRGRP, zip.DOS_FILE_ATTR.ARCH }
   }
-  return desc, desc.isfile and function()
+  return desc, function()
     local chunk = f:read(chunk_size)
     if chunk then return chunk end
     f:close()
@@ -64,7 +64,7 @@ local function add_dir(pattern, dir, zipfile, zipdir, tag)
     local added, total = 0, 0
     for entry in lfs.dir(dir) do
       if entry:match(pattern) then
-        local desc, r = reader(path.join(dir, entry), true, true, false)
+        local desc, r = reader(path.join(dir, entry), true)
         if r then
           zipfile:write(path.join(zipdir, entry), desc, r)
           added = added + 1
@@ -101,7 +101,7 @@ end
 
 local function add_expansion(zipname, zipfile, pack_name)
   local exp = pack_name .. ".cdb"
-  local desc, r, errmsg = reader(path.join(PWD, exp), false, true, false)
+  local desc, r, errmsg = reader(path.join(PWD, exp), false)
   if r then
     zipfile:write(path.join(zipname, "expansions", exp), desc, r)
     Logs.info("Added expansion")

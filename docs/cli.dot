@@ -28,6 +28,10 @@ digraph {
     sync_g [label="-g: 1"]
     sync_Gall [label="-Gall: 0"]
     sync_p [label="-p: 1"]
+    sync__clean [label="--clean: 0"]
+    sync__noscript [label="--no-script: 0"]
+    sync__nopics [label="--no-pics: 0"]
+    sync__noexp [label="--no-exp: 0"]
     delete__clean [label="--clean: 0"]
   }
   ygofab -> {
@@ -58,5 +62,9 @@ digraph {
     sync_p
     sync_g
     sync_Gall
+    sync__clean
+    sync__noscript
+    sync__nopics
+    sync__noexp
   }
 }

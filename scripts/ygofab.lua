@@ -8,7 +8,7 @@ local VERSION, PWD = "0.0.1"
 local interpreter
 
 local function get_pwd()
-  PWD = arg[1]
+  return arg[1]
 end
 
 local function print_header()
@@ -117,7 +117,7 @@ local function init_interpreter()
   interpreter:add_fallback("card", function() return display_card_help(true) end)
 end
 
-get_pwd()
+PWD = get_pwd()
 init_interpreter()
 local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
 if errmsg then
