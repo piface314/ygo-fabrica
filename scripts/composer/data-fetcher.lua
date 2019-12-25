@@ -47,7 +47,7 @@ local function read_cdb(cdb, imgs)
   local data = {}
   local code = cdb:exec(sql, function(_, _, vals)
     insert(data, {
-      path = imgs[vals[1]],
+      img = imgs[vals[1]],
       id = vals[1],
       name = vals[2],
       desc = vals[3],
