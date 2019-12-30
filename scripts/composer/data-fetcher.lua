@@ -49,8 +49,8 @@ local function read_cdb(cdb, imgs)
     insert(data, {
       img = imgs[vals[1]],
       id = vals[1],
-      name = vals[2],
-      desc = vals[3],
+      name = vals[2] or "",
+      desc = vals[3] or "",
       type = tonumber(vals[4]),
       atk = tonumber(vals[5]),
       def = tonumber(vals[6]),

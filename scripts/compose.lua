@@ -29,6 +29,6 @@ return function(pwd, flags)
   local fp = flags['-Pall'] or flags['-p']
   local picsets = get_picsets(fp)
   for picset, pscfg in pairs(picsets) do
-    Composer.main(imgfolder, cdbfp, pscfg.mode)
+    Composer.main(imgfolder, cdbfp, pscfg.mode, pscfg.year, pscfg.author)
   end
 end

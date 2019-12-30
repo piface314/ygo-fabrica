@@ -5,7 +5,7 @@ local GameConst = {}
 GameConst.code = {
   att = {
     EARTH = 0x1, WATER = 0x2, FIRE = 0x4, WIND = 0x8,
-    LIGHT = 0x10, DARK = 0x20, DIVINE = 0x40
+    LIGHT = 0x10, DARK = 0x20, DIVINE = 0x40, ALL = 0x7F
   },
   race = {
     WARRIOR = 0x1, SPELLCASTER = 0x2, FAIRY = 0x4, FIEND = 0x8, ZOMBIE = 0x10,
@@ -13,7 +13,8 @@ GameConst.code = {
     PLANT = 0x400, INSECT = 0x800, THUNDER = 0x1000, DRAGON = 0x2000, BEAST = 0x4000,
     BEAST_WARRIOR = 0x8000, DINOSAUR = 0x10000, FISH = 0x20000, SEA_SERPENT = 0x40000,
     REPTILE = 0x80000, PSYCHIC = 0x100000, DIVINE_BEAST = 0x200000,
-    CREATOR_GOD = 0x400000, WYRM = 0x800000, CYBERSE = 0x1000000
+    CREATOR_GOD = 0x400000, WYRM = 0x800000, CYBERSE = 0x1000000,
+    ALL = 0x1FFFFFF
   },
   type = {
     MONSTER = 0x1, SPELL = 0x2, TRAP = 0x4, NORMAL = 0x10, EFFECT = 0x20, FUSION = 0x40,
@@ -31,23 +32,29 @@ GameConst.code = {
   }
 }
 
+local races = GameConst.code.race
+local types = GameConst.code.type
 GameConst.name = {
   race = {
-    WARRIOR = "Warrior", SPELLCASTER = "Spellcaster", FAIRY = "Fairy", FIEND = "Fiend",
-    ZOMBIE = "Zombie", MACHINE = "Machine", AQUA = "Aqua", PYRO = "Pyro", ROCK = "Rock",
-    WINGED_BEAST = "Winged Beast", PLANT = "Plant", INSECT = "Insect",
-    THUNDER = "Thunder", DRAGON = "Dragon", BEAST = "Beast",
-    BEAST_WARRIOR = "Beast-Warrior", DINOSAUR = "Dinosaur", FISH = "Fish",
-    SEA_SERPENT = "Sea Serpent", REPTILE = "Reptile", PSYCHIC = "Psychic",
-    DIVINE_BEAST = "Divine-Beast", CREATOR_GOD = "Creator God", WYRM = "Wyrm",
-    CYBERSE = "Cyberse"
+    [races.WARRIOR] = "Warrior", [races.SPELLCASTER] = "Spellcaster",
+    [races.FAIRY] = "Fairy", [races.FIEND] = "Fiend", [races.ZOMBIE] = "Zombie",
+    [races.MACHINE] = "Machine", [races.AQUA] = "Aqua", [races.PYRO] = "Pyro",
+    [races.ROCK] = "Rock", [races.WINGED_BEAST] = "Winged Beast",
+    [races.PLANT] = "Plant", [races.INSECT] = "Insect", [races.THUNDER] = "Thunder",
+    [races.DRAGON] = "Dragon", [races.BEAST] = "Beast",
+    [races.BEAST_WARRIOR] = "Beast-Warrior", [races.DINOSAUR] = "Dinosaur",
+    [races.FISH] = "Fish", [races.SEA_SERPENT] = "Sea Serpent",
+    [races.REPTILE] = "Reptile", [races.PSYCHIC] = "Psychic",
+    [races.DIVINE_BEAST] = "Divine-Beast", [races.CREATOR_GOD] = "Creator God",
+    [races.WYRM] = "Wyrm", [races.CYBERSE] = "Cyberse"
   },
   type = {
-    MONSTER = "Monster", SPELL = "Spell", TRAP = "Trap", NORMAL = "Normal",
-    EFFECT = "Effect", FUSION = "Fusion", RITUAL = "Ritual", SPIRIT = "Spirit",
-    UNION = "Union", GEMINI = "Gemini", TUNER = "Tuner", SYNCHRO = "Synchro",
-    TOKEN = "Token", FLIP = "Flip", TOON = "Toon", XYZ = "Xyz", PENDULUM = "Pendulum",
-    LINK = "Link"
+    [types.MONSTER] = "Monster", [types.SPELL] = "Spell", [types.TRAP] = "Trap",
+    [types.NORMAL] = "Normal", [types.EFFECT] = "Effect", [types.FUSION] = "Fusion",
+    [types.RITUAL] = "Ritual", [types.SPIRIT] = "Spirit", [types.UNION] = "Union",
+    [types.GEMINI] = "Gemini", [types.TUNER] = "Tuner", [types.SYNCHRO] = "Synchro",
+    [types.TOKEN] = "Token", [types.FLIP] = "Flip", [types.TOON] = "Toon",
+    [types.XYZ] = "Xyz", [types.PENDULUM] = "Pendulum", [types.LINK] = "Link"
   }
 }
 
