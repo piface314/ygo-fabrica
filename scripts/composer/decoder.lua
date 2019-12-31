@@ -8,6 +8,7 @@ local Parser = require 'scripts.composer.parser'
 local Decoder = {}
 
 local insert = table.insert
+local mode = 'proxy'
 
 local types = GameConst.code.type
 local monster_types = types.NORMAL + types.EFFECT + types.FUSION + types.RITUAL
@@ -298,7 +299,11 @@ function automatons.proxy(data)
   return states[inital]()
 end
 
-function Decoder.decode(mode, data)
+function Decoder.set_mode(m)
+  mode = m
+end
+
+function Decoder.decode(data)
   local automaton = automatons[mode]
   Logs.assert(automaton, 1, "Unknown mode \"", mode, '"')
   return automaton(data)

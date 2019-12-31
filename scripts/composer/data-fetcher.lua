@@ -18,7 +18,7 @@ local function get_images(imgfolder)
   Logs.assert(imgfolder and imgfolder ~= "", 1, "No image folder parameter")
   local imgs = {}
   for entry in fs.dir(imgfolder) do
-    local name, ext = entry:match("^(.*)%.(.-)$")
+    local name, ext = entry:match("^(%d*)%.(.-)$")
     if is_valid_ext(ext) then
       imgs[name] = path.join(imgfolder, entry)
     end

@@ -33,7 +33,8 @@ return function(pwd, flags)
       year = pscfg.year,
       author = pscfg.author,
       ext = pscfg.ext,
-      size = pscfg.size
+      size = pscfg.size,
+      artsize = pscfg.artsize
     }
     Composer.compose(imgfolder, cdbfp, pscfg.mode, outfolder, options)
   end

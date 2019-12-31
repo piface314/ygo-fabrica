@@ -17,8 +17,9 @@ Layouts.anime = {
 }
 
 Layouts.proxy = {
+  
   art = {
-    regular = { x = 84, y = 186, w = 526, h = 526 },
+    regular = { x = 83, y = 185, w = 528, h = 528 },
     pendulum_m = { x = 45, y = 182, w = 603, h = { 448, 569 } },
     pendulum_s = { x = 45, y = 182, w = 603, h = { 484, 569 } }
   },

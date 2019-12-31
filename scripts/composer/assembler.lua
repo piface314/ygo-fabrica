@@ -6,7 +6,8 @@ local Fitter = require 'scripts.composer.fitter'
 
 local Assembler = {}
 
-local options
+local mode = 'proxy'
+local options = {}
 local folders = {}
 folders.res = path.join("res", "composer")
 folders.fonts = path.join(folders.res, "fonts")
@@ -14,7 +15,7 @@ folders.layers = path.join(folders.res, "layers")
 local bases = {}
 local shapes = { anime = {}, proxy = {} }
 
-local function get_base(mode)
+local function get_base()
   if not bases[mode] then
     local basefp = path.join(folders.layers, mode, "_base.png")
     bases[mode] = vips.Image.new_from_file(basefp)
@@ -22,12 +23,23 @@ local function get_base(mode)
   return bases[mode]
 end
 
-function shapes.anime.overlay(fp)
-  return vips.Image.new_from_file(path.join(folders.layers, "anime", fp))
+local function overlay(ov)
+  return vips.Image.new_from_file(path.join(folders.layers, mode, ov))
+end
+
+function shapes.anime.overlay(ov)
+  return overlay(ov)
 end
 
 function shapes.anime.art(fp)
-
+  local art = vips.Image.new_from_file(fp)
+  if art:bands() == 3 then art = art:bandjoin{ 255 } end
+  local artsize = options.artsize
+  if artsize == 'contain' then
+    return Fitter.contain(get_base(), art, Layouts.anime.art)
+  else
+    return Fitter.cover(get_base(), art, Layouts.anime.art)
+  end
 end
 
 function shapes.anime.scales(lsc, rsc)
@@ -46,12 +58,20 @@ function shapes.anime.def(def)
 
 end
 
-function shapes.proxy.overlay(fp)
-  return vips.Image.new_from_file(path.join(folders.layers, "proxy", fp))
+function shapes.proxy.overlay(ov)
+  return overlay(ov)
 end
 
 function shapes.proxy.art(fp)
-
+  local art = vips.Image.new_from_file(fp)
+  if art:bands() == 3 then art = art:bandjoin{ 255 } end
+  local artsize = options.artsize
+  local box = overlay("artbox.png")
+  if artsize == 'contain' then
+    return Fitter.contain(box, art, Layouts.proxy.art.regular)
+  else
+    return Fitter.cover(box, art, Layouts.proxy.art.regular)
+  end
 end
 
 function shapes.proxy.pendulum_art(fp)
@@ -118,9 +138,16 @@ function shapes.proxy.copyright(color)
 
 end
 
-function Assembler.assemble(mode, metalayers, opt)
+function Assembler.set_mode(m)
+  mode = m
+end
+
+function Assembler.set_options(opt)
   options = opt
-  local img = get_base(mode)
+end
+
+function Assembler.assemble(metalayers)
+  local img = get_base()
   for _, metalayer in ipairs(metalayers) do
     local shape, values = metalayer.shape, metalayer.values
     local layer, msg = shapes[mode][shape](unpack(values))
