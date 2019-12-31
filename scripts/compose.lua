@@ -1,5 +1,4 @@
 local path = require 'path'
-local fs = require 'lfs'
 local Composer = require 'scripts.composer.composer'
 local Config = require 'scripts.config'
 local Logs = require 'scripts.logs'
@@ -29,6 +28,13 @@ return function(pwd, flags)
   local fp = flags['-Pall'] or flags['-p']
   local picsets = get_picsets(fp)
   for picset, pscfg in pairs(picsets) do
-    Composer.main(imgfolder, cdbfp, pscfg.mode, pscfg.year, pscfg.author)
+    local outfolder = path.join(pwd, "pics", picset)
+    local options = {
+      year = pscfg.year,
+      author = pscfg.author,
+      ext = pscfg.ext,
+      size = pscfg.size
+    }
+    Composer.compose(imgfolder, cdbfp, pscfg.mode, outfolder, options)
   end
 end

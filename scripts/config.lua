@@ -8,7 +8,7 @@ local Config = {}
 
 local FIELDS = {
   gamedir = { path = true },
-  picset = { mode = true, size = true, ext = true }
+  picset = { mode = true }
 }
 
 local function validate(cfg, fields)
@@ -77,7 +77,9 @@ local function format(cfg)
       return ("    %s: %q%s\n"):format(k, v.path, v.default and " (default)" or "")
     end)
   local picsets = format_list(cfg.picset, "Pic sets", function(k, v)
-      return ("    %s: %s %s%s%s\n"):format(k, v.mode, v.size,
+      return ("    %s: %s%s%s%s%s\n"):format(k, v.mode,
+        v.size and " --size " .. v.size or "",
+        v.ext and " --ext " .. v.ext or "",
         v.field and " --field" or "", v.default and " (default)" or "")
     end)
   return gamedirs .. "\n" .. picsets

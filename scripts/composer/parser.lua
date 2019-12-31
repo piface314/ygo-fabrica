@@ -29,7 +29,7 @@ function Parser.bits(n)
   return coroutine.wrap(function()
     local b = 1
     while n > 0 do
-      if bcheck(n, 1) then
+      if Parser.bcheck(n, 1) then
         coroutine.yield(b)
       end
       n = bit.rshift(n, 1)

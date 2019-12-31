@@ -16,8 +16,6 @@ local spellortrap = types.SPELL + types.TRAP
 local spelltrap_types = types.CONTINUOUS + types.COUNTER + types.EQUIP
   + types.FIELD + types.QUICKPLAY + types.RITUAL
 local frame_types = monster_types + spellortrap
-local atts = 0
-for _, a in pairs(GameConst.code.att) do atts = atts + a end
 
 local function typef_ov(n) return ("type%u.png"):format(n) end
 local function st_ov(n, sfx) return ("st%u%s.png"):format(n, sfx or "") end
@@ -85,7 +83,7 @@ function automatons.anime(data)
       insert(layers, MetaLayer("overlay", linka_ov(b)))
     end
     insert(layers, MetaLayer("overlay", "link.png"))
-    insert(layers, MetaLayer("linkrate", Parser.get_link_rating(data)))
+    insert(layers, MetaLayer("link_rating", Parser.get_link_rating(data)))
     return states.atk()
   end
 
@@ -116,7 +114,7 @@ function automatons.anime(data)
   end
 
   function states.attribute()
-    local att = Parser.match_lsb(data.attribute, atts)
+    local att = Parser.match_lsb(data.attribute, GameConst.code.att.ALL)
     if att == 0 then
       return nil, "No attribute"
     end
@@ -127,7 +125,7 @@ function automatons.anime(data)
   return states[inital]()
 end
 
-function automatons.proxy(data, year, author)
+function automatons.proxy(data)
   local states, inital = {}, 'baseframe'
   local layers = {}
 
@@ -263,7 +261,7 @@ function automatons.proxy(data, year, author)
   end
 
   function states.attribute()
-    local att = Parser.match_lsb(data.attribute, atts)
+    local att = Parser.match_lsb(data.attribute, GameConst.code.att.ALL)
     if att == 0 then
       return nil, "No attribute"
     end
@@ -283,14 +281,15 @@ function automatons.proxy(data, year, author)
 
   function states.serial_code()
     local darkbg = Parser.bcheck(data.type, types.XYZ)
+      and not Parser.bcheck(data.type, types.PENDULUM)
     insert(layers, MetaLayer("serial_code", data.id, darkbg and { 255, 255, 255 }))
     return states.finishing()
   end
 
   function states.finishing()
     local darkbg = Parser.bcheck(data.type, types.XYZ)
-    insert(layers, MetaLayer("copyright", year or 1996, author or "KAZUKI TAKAHASHI",
-      darkbg and { 255, 255, 255 }))
+      and not Parser.bcheck(data.type, types.PENDULUM)
+    insert(layers, MetaLayer("copyright", darkbg and { 255, 255, 255 }))
     insert(layers, MetaLayer("overlay", "bevel.png"))
     insert(layers, MetaLayer("overlay", "holo.png"))
     return layers
@@ -299,10 +298,10 @@ function automatons.proxy(data, year, author)
   return states[inital]()
 end
 
-function Decoder.decode(data, mode, year, author)
+function Decoder.decode(mode, data)
   local automaton = automatons[mode]
   Logs.assert(automaton, 1, "Unknown mode \"", mode, '"')
-  return automaton(data, year, author)
+  return automaton(data)
 end
 
 return Decoder
