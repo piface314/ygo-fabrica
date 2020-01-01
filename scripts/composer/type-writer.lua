@@ -8,7 +8,7 @@ local dpi = 300
 function TypeWriter.print(text, base, color, args)
   local x, y, w, h, f, ff, a = args.x, args.y, args.w, args.h, args.f, args.ff, args.a
   local t = vips.Image.text(text, { font = f, fontfile = ff, dpi = dpi })
-  if h then t = t:resize(h / t:height()) end
+  if h then t = t:resize(1, { vscale = h / t:height() }) end
   if w and t:width() > w then
     t = t:resize(w / t:width(), { vscale = 1 })
   end

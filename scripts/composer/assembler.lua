@@ -2,6 +2,7 @@ local vips = require 'vips'
 local path = require 'path'
 local Layouts = require 'scripts.composer.layouts'
 local Fitter = require 'scripts.composer.fitter'
+local TypeWriter = require 'scripts.composer.type-writer'
 
 
 local Assembler = {}
@@ -43,19 +44,23 @@ function shapes.anime.art(fp)
 end
 
 function shapes.anime.scales(lsc, rsc)
-
+  local lt = TypeWriter.print(tostring(lsc), get_base(), nil, Layouts.anime.lsc)
+  local rt = TypeWriter.print(tostring(rsc), get_base(), nil, Layouts.anime.rsc)
+  return lt:composite(rt, 'over')
 end
 
-function shapes.anime.link_rating(args)
-
+function shapes.anime.link_rating(link_rating)
+  return TypeWriter.print(tostring(link_rating), get_base(), nil, Layouts.anime.lkr)
 end
 
 function shapes.anime.atk(atk)
-
+  atk = atk < 0 and "?" or tostring(atk)
+  return TypeWriter.print(atk, get_base(), nil, Layouts.anime.atk)
 end
 
 function shapes.anime.def(def)
-
+  def = def < 0 and "?" or tostring(def)
+  return TypeWriter.print(def, get_base(), nil, Layouts.anime.def)
 end
 
 function shapes.proxy.overlay(ov)
