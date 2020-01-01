@@ -1,11 +1,13 @@
 
 
 local MetaLayer = {}
+MetaLayer.__index = MetaLayer
 
-local function constructor(shape, ...)
+local function constructor(_, shape, ...)
   return setmetatable({
     shape = shape,
-    values = { ... }
+    values = { ... },
+    transformations = {}
   }, MetaLayer)
 end
 setmetatable(MetaLayer, { __call = constructor })
@@ -16,4 +18,24 @@ function MetaLayer:__tostring()
   return ("@%s(%s)"):format(self.shape, table.concat(s, ", "))
 end
 
-return constructor
+function MetaLayer:add_value(val)
+  table.insert(self.values, val)
+end
+
+function MetaLayer:set_value(i, val)
+  self.values[i] = val
+end
+
+function MetaLayer:get_value(i)
+  return self.values[i]
+end
+
+function MetaLayer:add_transformation(id, fn)
+  self.transformations[id] = fn or true
+end
+
+function MetaLayer:get_transformation(id)
+  return self.transformations[id]
+end
+
+return MetaLayer

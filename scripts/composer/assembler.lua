@@ -9,23 +9,20 @@ local Assembler = {}
 
 local mode = 'proxy'
 local options = {}
-local folders = {}
-folders.res = path.join("res", "composer")
-folders.fonts = path.join(folders.res, "fonts")
-folders.layers = path.join(folders.res, "layers")
+local layers_dir = path.join("res", "composer", "layers")
 local bases = {}
 local shapes = { anime = {}, proxy = {} }
 
 local function get_base()
   if not bases[mode] then
-    local basefp = path.join(folders.layers, mode, "_base.png")
+    local basefp = path.join(layers_dir, mode, "_base.png")
     bases[mode] = vips.Image.new_from_file(basefp)
   end
   return bases[mode]
 end
 
 local function overlay(ov)
-  return vips.Image.new_from_file(path.join(folders.layers, mode, ov))
+  return vips.Image.new_from_file(path.join(layers_dir, mode, ov))
 end
 
 function shapes.anime.overlay(ov)
@@ -92,14 +89,6 @@ function shapes.proxy.pendulum_scales(lsc, rsc)
 end
 
 function shapes.proxy.pendulum_effect(effect)
-
-end
-
-function shapes.proxy.pendulum_lkabase()
-
-end
-
-function shapes.proxy.pendulum_lka(arrow)
 
 end
 
