@@ -5,7 +5,7 @@ local Logs = require 'scripts.logs'
 
 
 local PWD
-local GENFP = path.join("scripts", "generators")
+local GENFP = path.join("res", "new")
 
 local function check_name(pack_name)
   Logs.assert(pack_name, 1, "No name was provided for the new extension pack")

@@ -20,8 +20,8 @@ future are left unchecked.
 - [x] Global and local configurations, e.g. game folders;
 - [x] Synchronization of pack to game folders;
 - [ ] Friendly interface for creating, editing and deleting cards;
-- [ ] Support for different sets of card pics;
-- [ ] Generation of card pics from `.cdb` and raw artwork;
+- [x] Support for different sets of card pics;
+- [x] Generation of card pics from `.cdb` and raw artwork;
 - [x] Export pack to `.zip`, ready for sharing.
 
 ## Installation
