@@ -1,0 +1,136 @@
+digraph {
+  dpi = 150
+  splines = ortho
+  fontname = "mono"
+  rankdir = "LR"
+  ranksep = 1
+  edge [fontname = "Ubuntu Mono", dir="both"]
+  node [
+    shape = record,
+    fontname = "Ubuntu Mono",
+    style = filled,
+    fillcolor = "#ffffcc",
+    penwidth = 1.2
+  ]
+  logs [label=" Logs "]
+  config [label=" Config "]
+  compose [label=" Compose | |
++ _(pwd: string, flags: table)\l"]
+  composer [label=" Composer | |
++ compose(imgfolder: string, cdbfp: string, mode: string, outfolder: string, options: table)\l
+- check_mode(mode: string): boolean\l
+  "]
+  datafetcher [label=" DataFetcher | |
++ get(imgfolder: string, cdbfp: string): table[]\l
+- is_valid_ext(ext: string): boolean\l
+- get_images(imgfolder: string): string\{\}\l
+- open_cdb(cdbfp: string): Database\l
+- keylist(t: table): string[]\l
+- read_cdb(cdb: Database, imgs: string\{\}): table[]\l
+  "]
+  decoder [label=" Decoder |
+- mode: string\l
+- automatons: function\{\}\l
+|
++ set_mode(mode: string)\l
++ decode(data: table): MetaLayer[]
+  "]
+  assembler [label=" Assembler |
+- mode: string\l
+- options: table\l
+- layers_dir: string\l
+- bases: Image\{\}\l
+- shapes: function\{\}\{\}\l
+|
++ assemble(metalayers: MetaLayer[]): Image\l
++ set_mode(mode: string)\l
++ set_options(options: table)\l
+- get_base(): Image\l
+- overlay(ov: string): Image\l
+  "]
+  fitter [label=" Fitter |
+- CC_THRESHOLD: number\l
+|
++ contain(base: Image, img: Image, layout: table): Image\l
++ cover(base: Image, img: Image, layout: table): Image\l
+- feather_edges(img: Image, sigma: number, axis: 'x'\|'y'): Image\l
+  "]
+  metalayer [label=" MetaLayer |
+- shape: string\l
+- values: any[]\l
+- transformations: function\|boolean\{\}\l
+|
++ add_value(val: any)\l
++ add_transformation(id: string, fn: function?)\l
+  "]
+  parser [label=" Parser | |
++ bcheck(a: number, b: number): boolean\l
++ match_msb(a: number, b: number): number\l
++ match_lsb(a: number, b: number): number\l
++ bits(n: number): function\l
++ get_scales(data: table): number, number\l
++ get_levelrank(data: table): number?\l
++ get_link_rating(data: table): number\l
++ get_link_arrows(data: table): number\l
++ get_effects(data: table): string?, string?\l
++ get_race(data: table): string?\l
++ get_sumtype(data: table): string?\l
++ get_ability(data: table): string?\l
+  "]
+  printer [label=" Printer |
+- out_folder: string\l
+- extension: string\l
+- width: number\l
+- height: number\l
+|
++ print(name: string, img: Image)\l
++ set_out_folder(dir: string)\l
++ set_size(size: string)\l
++ set_extension(ext: string)\l
+- resize(img: Image): Image\l
+  "]
+  transformer [label=" Transformer |
+- values: any\{\}\l
+|
++ pendulum_size(effect: string): string\l
++ add_value(id: string, t: any)\l
++ transform(metalayers: MetaLayer[])\l
+  "]
+  typewriter [label=" TypeWriter |
+- DPI: number\l
+|
++ print(text: string, base: Image, color: table, args: table)\l
++ printf(text: string, base: Image, color: table, args: table)\l
+- paint_insert(t: Image, base: Image, color: table, x: number, y: number): Image\l
+  "]
+
+  subgraph dep {
+    edge [ style = "dashed", arrowhead = "empty", arrowtail = "none" ]
+    compose -> {
+      config
+      logs
+      composer
+    }
+    composer -> {
+      datafetcher
+      decoder
+      assembler
+      printer
+      logs
+    }
+    datafetcher -> logs
+    decoder -> {
+      logs
+      metalayer
+      parser
+      transformer
+    }
+    assembler -> {
+      fitter
+      typewriter
+      metalayer
+    }
+    printer -> logs
+    transformer -> metalayer
+  }
+}

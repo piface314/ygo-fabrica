@@ -3,7 +3,7 @@ local vips = require 'vips'
 
 local TypeWriter = {}
 
-local dpi = 300
+local DPI = 300
 
 local function paint_insert(t, base, color, x, y)
   local tw, th = t:width(), t:height()
@@ -17,7 +17,7 @@ end
 
 function TypeWriter.print(text, base, color, args)
   local x, y, w, h, f, ff, a = args.x, args.y, args.w, args.h, args.f, args.ff, args.a
-  local t = vips.Image.text(text, { font = f, fontfile = ff, dpi = dpi })
+  local t = vips.Image.text(text, { font = f, fontfile = ff, dpi = DPI })
   if h then
     t = t:resize(1, { vscale = h / t:height() })
   end
@@ -37,7 +37,7 @@ end
 function TypeWriter.printf(text, base, color, args)
   local x, y, w, h, ft, fs, ff, a, j, i = args.x, args.y, args.w, args.h, args.ft,
     args.fs, args.ff, args.a or 'low', args.j, args.i or 16
-  local opt = { width = w, fontfile = ff, dpi = dpi, justify = j, align = a }
+  local opt = { width = w, fontfile = ff, dpi = DPI, justify = j, align = a }
   for _, size in ipairs(fs) do
     opt.font = ("%s %s"):format(ft, size)
     local t = vips.Image.text(text, opt)

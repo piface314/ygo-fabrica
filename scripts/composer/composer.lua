@@ -8,9 +8,12 @@ local Logs = require 'scripts.logs'
 local Composer = {}
 
 local modes = { anime = true, proxy = true }
+local function check_mode(mode)
+  return modes[mode]
+end
 
 function Composer.compose(imgfolder, cdbfp, mode, outfolder, options)
-  Logs.assert(modes[mode], 1, "unknown mode \"", mode, '"')
+  Logs.assert(check_mode(mode), 1, "unknown mode \"", mode, '"')
   local data = DataFetcher.get(imgfolder, cdbfp)
   local metalayers_set, n = {}, 0
   Decoder.set_mode(mode)

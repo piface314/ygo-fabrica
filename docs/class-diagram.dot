@@ -41,7 +41,7 @@ digraph {
 - create_folder(folder: string)\l
 - create_cdb(pack_name: string)\l
 - copy_file(src: string, dst: string)\l
-  }"]
+  "]
   logs [label=" Logs | |
 + assert(v: any, code: number, ...: string)\l
 + ok(...: string)\l
@@ -97,36 +97,33 @@ digraph {
   "]
   compose [label=" Compose | |
 + _(pwd: string, flags: table)\l"]
-  composer [label=" Composer | |
-+ main(imgfolder: string, cdbfp: string)\l
-"]
-  datafetcher [label=" DataFetcher | |
-+ get(imgfolder: string, cdbfp: string): table\l
-- is_valid_ext(ext: string): boolean\l
-- get_images(imgfolder: string): table\l
-- open_cdb(cdbfp: string): Database\l
-- keylist(t: table): string[]\l
-- read_cdb(cdb: Database, imgs: table): table\l
-"]
+  composer [label=" Composer "]
 
   subgraph dep {
     edge [ style = "dashed", arrowhead = "empty", arrowtail = "none" ]
     new -> logs
     config -> logs
-    ygofab -> new
-    ygofab -> config
-    ygofab -> sync
-    ygofab -> export
-    ygofab -> compose
-    sync -> config
-    sync -> logs
-    ygofab -> logs
-    export -> config
-    export -> logs
-    compose -> config
-    compose -> logs
-    compose -> composer
-    composer -> datafetcher
+    ygofab -> {
+      logs
+      new
+      config
+      sync
+      export
+      compose
+    }
+    sync -> {
+      config
+      logs
+    }
+    export -> {
+      config
+      logs
+    }
+    compose -> {
+      config
+      logs
+      composer
+    }
   }
   ygofab -> interpreter [
     taillabel="1"
