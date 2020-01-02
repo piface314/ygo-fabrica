@@ -19,7 +19,7 @@ local spelltrap_types = types.CONTINUOUS + types.COUNTER + types.EQUIP
   + types.FIELD + types.QUICKPLAY + types.RITUAL
 local frame_types = monster_types + spellortrap
 
-local function typef_ov(n) return ("type%u.png"):format(n) end
+local function typef_ov(n, sfx) return ("type%u%s.png"):format(n, sfx or "") end
 local function st_ov(n, sfx) return ("st%u%s.png"):format(n, sfx or "") end
 local function linka_ov(n, sfx) return ("lka%u%s.png"):format(n, sfx or "") end
 local function rank_ov(n) return ("r%u.png"):format(n) end
@@ -147,13 +147,11 @@ function automatons.proxy(data)
 
   local monster_effect
   function states.pendulum()
-    local p_art_ml = MetaLayer("pendulum_art", data.img)
-    local p_frame_ml = MetaLayer("pendulum_frame")
+    local p_frame_ml = MetaLayer("pendulum_frame", data.img,
+      typef_ov(types.PENDULUM, "%s%s"))
     local p_scales_ml = MetaLayer("pendulum_scales", Parser.get_scales(data))
-    p_art_ml:add_transformation("pendulum")
     p_frame_ml:add_transformation("pendulum")
     p_scales_ml:add_transformation("pendulum")
-    insert(layers, p_art_ml)
     insert(layers, p_frame_ml)
     insert(layers, p_scales_ml)
     local me, pe = Parser.get_effects(data)
