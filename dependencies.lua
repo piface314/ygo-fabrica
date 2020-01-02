@@ -6,5 +6,6 @@ return {
   "lua-zlib",
   "luafilesystem",
   "struct",
-  "zipwriter"
+  "zipwriter",
+  "lua-vips"
 }

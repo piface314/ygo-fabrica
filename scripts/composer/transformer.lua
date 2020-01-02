@@ -11,7 +11,7 @@ end
 setmetatable(Transformer, { __call = constructor })
 
 function Transformer.pendulum_size(pendulum_effect)
-  return pendulum_effect and #pendulum_effect > 160 and "m" or "s"
+  return pendulum_effect and #pendulum_effect > 176 and "m" or "s"
 end
 
 function Transformer:add_value(id, t)

@@ -52,10 +52,10 @@ Layouts.proxy = {
   },
 
   pendulum_effect = {
-    m = { x = 109, y = 644, w = 475, h = 102, j = true, fs = { 4, 3.5 },
+    m = { x = 109, y = 644, w = 475, h = 102, j = true, fs = { 5, 4, 3.5 },
       ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
-    s = { x = 109, y = 680, w = 475, h = 68, j = true, fs = { 4.8 },
-      ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" } -- actually 5pt
+    s = { x = 109, y = 680, w = 475, h = 68, j = true, fs = { 5 },
+      ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" }
   },
 
   monster_desc = { x = 54, y = 766, w = 585,
@@ -64,10 +64,10 @@ Layouts.proxy = {
   flavor_text = { x = 53, y = 794, w = 588, h = 126, j = true, fs = { 5, 4 },
     ft = "ITCStoneSerifLTItalic", ff = fonts .. "flavor-text.ttf", a = "low" },
 
-  monster_effect = { x = 53, y = 794, w = 588, h = 126, j = true, fs = { 5, 4.5, 4, 3.8, 3.6 },
+  monster_effect = { x = 53, y = 795, w = 588, h = 125, j = true, fs = { 5, 4.5, 4, 3.8, 3.6 },
     ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
 
-  spelltrap_effect = { x = 53, y = 764, w = 585, h = 181, j = true, fs = { 5, 4.5, 4 },
+  spelltrap_effect = { x = 53, y = 766, w = 585, h = 180, j = true, fs = { 5, 4.5, 4 },
     ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
 
   atk = { x = 500, y = 927,
