@@ -36,6 +36,7 @@ return function(pwd, flags)
       size = pscfg.size,
       artsize = pscfg.artsize
     }
+    Logs.info("Composing \"", picset, "\"...")
     Composer.compose(imgfolder, cdbfp, pscfg.mode, outfolder, options)
   end
 end

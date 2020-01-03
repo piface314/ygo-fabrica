@@ -16,9 +16,11 @@ local function print_header()
 end
 
 local function is_inside_project()
+  local _, pack_name = path.split(PWD)
+  local cdb_name = "^" .. pack_name .. ".cdb$"
   for entry in fs.dir(PWD) do
     local mode = fs.attributes(path.join(PWD, entry), 'mode')
-    if mode == 'file' and entry:match(".+%.cdb$") then
+    if mode == 'file' and entry:match(cdb_name) then
       return true
     end
   end
@@ -73,8 +75,6 @@ local function cmd_card_delete(flags, ...) end
 
 local function cmd_card_edit(flags, ...) end
 
-local function cmd_card_search(flags, ...) end
-
 local function cmd_compose(flags)
   if is_inside_project() then
     require 'scripts.compose'(PWD, flags)
@@ -118,7 +118,6 @@ local function init_interpreter()
   interpreter:add_command("card create", cmd_card_create)
   interpreter:add_command("card edit", cmd_card_edit)
   interpreter:add_command("card delete", cmd_card_delete, "--clean", 0)
-  interpreter:add_command("card search", cmd_card_search)
   interpreter:add_fallback("", function() return display_help(true) end)
   interpreter:add_fallback("card", function() return display_card_help(true) end)
 end

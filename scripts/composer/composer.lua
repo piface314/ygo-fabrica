@@ -31,12 +31,14 @@ function Composer.compose(imgfolder, cdbfp, mode, outfolder, options)
   Printer.set_out_folder(outfolder)
   Printer.set_extension(options.ext)
   Printer.set_size(options.size)
-  local i = 0
+  local bar = Logs.bar(n)
+  bar:print()
   for id, metalayers in pairs(metalayers_set) do
+    bar:update("Generating " .. id .. "...")
     local img = Assembler.assemble(metalayers)
     Printer.print(id, img)
-    i = i + 1
   end
+  bar:finish("Done!")
 end
 
 return Composer
