@@ -16,7 +16,7 @@ function Printer.set_out_folder(dir)
 end
 
 function Printer.set_size(size)
-  local w, h = (type(size) == 'string' and size or ""):match("(%d*)x(%d*)")
+  local w, h = (type(size) == 'string' and size or ""):match("(%d*)[Xx](%d*)")
   width, height = tonumber(w), tonumber(h)
 end
 

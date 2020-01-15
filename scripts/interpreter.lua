@@ -31,6 +31,7 @@ local function create_command(self, command, fn)
       ct[c] = fn
     end
   end
+  if i == 0 then self.commands = fn end
   at._command = true
   return at
 end
@@ -90,10 +91,10 @@ end
 
 function Interpreter:exec(command, args, flags)
   local ct, i = self.commands, 0
-  repeat
+  while type(ct) ~= 'function' do
     i = i + 1
     ct = ct[command[i]]
-  until type(ct) == 'function'
+  end
   return ct(flags, unpack(args))
 end
 
