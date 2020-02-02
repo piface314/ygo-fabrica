@@ -15,62 +15,31 @@ local function print_header()
   print(require 'scripts.header'(VERSION))
 end
 
--- TODO: remove this check and allow multiple .cdb's
-local function is_inside_project()
-  local _, pack_name = path.split(PWD)
-  local cdb_name = "^" .. pack_name .. ".cdb$"
-  for entry in fs.dir(PWD) do
-    local mode = fs.attributes(path.join(PWD, entry), 'mode')
-    if mode == 'file' and entry:match(cdb_name) then
-      return true
-    end
-  end
-  return false
-end
-
-local function not_in_project_dialogue()
-  print_header()
-  Logs.assert(false, 1, "You are not in a project folder!\n",
-    "You can create a new project using\n\n",
-    "  $ ygofab new <pack-name>\n")
-end
-
 local function display_help(header, msg)
-  if is_inside_project() then
-    if header then print_header() end
-    Logs.assert(false, 1, msg or "This is not a valid command.\n",
-      "Usage:\n\n",
-      "  $ ygofab <command> [options]\n\n",
-      "Available commands:\n\n",
-      "  compose\tGenerates card pics\n",
-      "  config \tShows project configurations\n",
-      "  export \tExports your project to a .zip file\n",
-      "  make   \tConverts card description in .toml into a .cdb\n",
-      "  sync   \tCopies your project files to YGOPro game"
-    )
-  else
-    not_in_project_dialogue()
-  end
+  if header then print_header() end
+  Logs.assert(false, 1, msg or "This is not a valid command.\n",
+    "Usage:\n\n",
+    "  $ ygofab <command> [options]\n\n",
+    "Available commands:\n\n",
+    "  compose\tGenerates card pics\n",
+    "  config \tShows project configurations\n",
+    "  export \tExports your project to a .zip file\n",
+    "  make   \tConverts card description in .toml into a .cdb\n",
+    "  new    \tCreates a new project, given a name\n",
+    "  sync   \tCopies your project files to YGOPro game"
+  )
 end
 
 local function cmd_compose(flags)
-  if is_inside_project() then
-    require 'scripts.compose'(PWD, flags)
-  else
-    not_in_project_dialogue()
-  end
+  require 'scripts.compose'(PWD, flags)
 end
 
 local function cmd_config()
-  require 'scripts.config'(is_inside_project() and PWD)
+  require 'scripts.config'(PWD)
 end
 
 local function cmd_export(flags)
-  if is_inside_project() then
-    require 'scripts.export'(PWD, flags)
-  else
-    not_in_project_dialogue()
-  end
+  require 'scripts.export'(PWD, flags)
 end
 
 local function cmd_make(flags, ...)
@@ -82,11 +51,7 @@ local function cmd_new(_, pack_name)
 end
 
 local function cmd_sync(flags)
-  if is_inside_project() then
-    require 'scripts.sync'(PWD, flags)
-  else
-    not_in_project_dialogue()
-  end
+  require 'scripts.sync'(PWD, flags)
 end
 
 local function init_interpreter()

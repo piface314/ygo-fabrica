@@ -91,7 +91,7 @@ install () {
   fi
   # Copies all files except config.gen.toml
   local here="${BASH_SOURCE%/*}"
-  if ! cp -fR "$here/bin" "$here/lua_modules" "$here/res" "$here/scripts" \
+  if ! cp -fR "$here/bin" "$here/res" "$here/scripts" "$here/lib" \
     "$here/LICENSE" "$here/README.md" $YGOFAB_HOME; then
     echo -e "${ehl}[ERROR]${rs}: Could not copy files."
     return 1
@@ -112,6 +112,10 @@ install () {
   echo
   return 0
 }
+
+# HACK
+install || exit 1
+exit 0
 
 greet || exit 1
 # Is the program installed?

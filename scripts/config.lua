@@ -2,14 +2,18 @@ local path = require 'path'
 local toml = require 'toml'
 local Logs = require 'scripts.logs'
 local colors = require 'scripts.colors'
+require 'lib.table'
 
 
 local Config = {}
 
 local FIELDS = {
   gamedir = { path = true },
-  picset = { mode = true }
+  picset = { mode = true },
+  expansion = { recipe = true }
 }
+
+local merge = table.merge
 
 local function validate(cfg, fields)
   for k, f in pairs(fields or FIELDS) do
@@ -33,26 +37,12 @@ end
 local function load_file(path)
   local cfg = io.open(path, "r")
   if not cfg then
-    Logs.warning("Failed to load \"", path, "\"")
     return nil
   end
   local config = toml.parse(cfg:read('*a'))
   cfg:close()
   validate(config)
   return config
-end
-
-local function merge(dst, src)
-  for k, v in pairs(src) do
-    if type(v) == 'table' then
-      if type(dst[k]) ~= 'table' then
-        dst[k] = {}
-      end
-      merge(dst[k], v)
-    else
-      dst[k] = v
-    end
-  end
 end
 
 local function format_list(cfg, title, fmt)
@@ -82,20 +72,23 @@ local function format(cfg)
         v.ext and " --ext " .. v.ext or "",
         v.field and " --field" or "", v.default and " (default)" or "")
     end)
-  return gamedirs .. "\n" .. picsets
+  local expansions = format_list(cfg.expansion, "Expansions", function(k, v)
+      return ("    %s: %s%s\n"):format(k, v.recipe, v.default and " (default)" or "")
+    end)
+  return gamedirs .. "\n" .. picsets .. "\n" .. expansions
 end
 
 function Config.get(pwd)
   local empty = {}
   validate(empty)
   local global_cfg = load_file("config.toml") or empty
-  local local_cfg = pwd and load_file(path.join(pwd, "config.toml")) or empty
+  local local_cfg = load_file(path.join(pwd, "config.toml"))
   return local_cfg, global_cfg
 end
 
 function Config.get_one(pwd, key, id)
   local local_cfg, global_cfg = Config.get(pwd)
-  local lc = local_cfg[key][id]
+  local lc = local_cfg and local_cfg[key][id] or nil
   local gc = global_cfg[key][id]
   return lc or gc
 end
@@ -108,7 +101,7 @@ function Config.get_default(pwd, key)
     end
     return nil
   end
-  local id, c = search(local_cfg[key])
+  local id, c = search(local_cfg and local_cfg[key] or {})
   if id then
     return id, c
   else
@@ -120,7 +113,7 @@ function Config.get_defaults(pwd, key)
   local local_cfg, global_cfg = Config.get(pwd)
   local cfg = {}
   merge(cfg, global_cfg)
-  merge(cfg, local_cfg)
+  merge(cfg, local_cfg or {})
   local cs = {}
   for id, c in pairs(cfg[key]) do
     if c.default then
@@ -134,7 +127,7 @@ function Config.get_all(pwd, key)
   local local_cfg, global_cfg = Config.get(pwd)
   local cfg = {}
   merge(cfg, global_cfg)
-  merge(cfg, local_cfg)
+  merge(cfg, local_cfg or {})
   return cfg[key]
 end
 
@@ -144,7 +137,7 @@ setmetatable(Config, { __call = function(_, pwd)
   Logs.assert(fglobal_cfg, 1, errmsg)
   Logs.info(colors.FG_MAGENTA, colors.BOLD, "Global configurations:\n\n",
     colors.RESET, fglobal_cfg)
-  if pwd then
+  if local_cfg then
     local flocal_cfg, errmsg = format(local_cfg)
     Logs.assert(flocal_cfg, 1, errmsg)
     Logs.info(colors.FG_MAGENTA, colors.BOLD, "Local configurations:\n\n",
