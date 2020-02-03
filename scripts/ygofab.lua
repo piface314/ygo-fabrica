@@ -42,8 +42,8 @@ local function cmd_export(flags)
   require 'scripts.export'(PWD, flags)
 end
 
-local function cmd_make(flags, ...)
-  require 'scripts.make'(PWD, flags, ...)
+local function cmd_make(flags, exp)
+  require 'scripts.make'(PWD, flags, exp)
 end
 
 local function cmd_new(_, pack_name)
@@ -56,10 +56,12 @@ end
 
 local function init_interpreter()
   interpreter = Interpreter()
-  interpreter:add_command("compose", cmd_compose, "-p", 1, "-Pall", 0)
+  interpreter:add_command("compose", cmd_compose, "-p", 1, "-Pall", 0,
+    "-e", 1, "-Eall", 0)
   interpreter:add_command("config", cmd_config)
-  interpreter:add_command("export", cmd_export, "-p", 1, "-Pall", 0, "-o", 1)
-  interpreter:add_command("make", cmd_make, "--clean", 0)
+  interpreter:add_command("export", cmd_export, "-p", 1, "-Pall", 0, "-o", 1,
+    "-e", 1, "-Eall", 0)
+  interpreter:add_command("make", cmd_make, "--clean", 0, "--all")
   interpreter:add_command("new", cmd_new)
   interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1,
     "--clean", 0, "--no-script", 0, "--no-pics", 0, "--no-exp", 0)
