@@ -27,7 +27,7 @@ function Fitter.contain(base, img, layout)
   local wi, hi = img:width(), img:height()
   local r, ri = w / h, wi / hi
   if math.abs(ri - r) < CC_THRESHOLD then
-    return Fitter.cover(base, img, layout)
+    return Fitter.fill(base, img, layout)
   end
   local scale, bgscale, wb, hb, fg
   if ri > r then
@@ -63,6 +63,12 @@ function Fitter.cover(base, img, layout)
   end
   img = img:resize(scale):crop(wi / 2 - w / 2, hi / 2 - h / 2, w, h)
   return base:insert(img, x, y)
+end
+
+function Fitter.fill(base, img, layout)
+  local x, y, w, h = layout.x, layout.y, layout.w, layout.h
+  local wi, hi = img:width(), img:height()
+  return base:insert(img:resize(w / wi, { vscale = h / hi }), x, y)
 end
 
 return Fitter

@@ -10,7 +10,7 @@ local Assembler = {}
 local mode = 'proxy'
 local options = {}
 local layers_dir = path.join("res", "composer", "layers")
-local bases = {}
+local bases, overlays = {}, { anime = {}, proxy = {} }
 local shapes = { anime = {}, proxy = {} }
 
 local function get_base()
@@ -22,7 +22,11 @@ local function get_base()
 end
 
 local function overlay(ov)
-  return vips.Image.new_from_file(path.join(layers_dir, mode, ov))
+  if not overlays[mode][ov] then
+    local layer = vips.Image.new_from_file(path.join(layers_dir, mode, ov))
+    overlays[mode][ov] = layer
+  end
+  return overlays[mode][ov]
 end
 
 function shapes.anime.overlay(ov)
@@ -33,7 +37,9 @@ function shapes.anime.art(fp)
   local art = vips.Image.new_from_file(fp)
   if art:bands() == 3 then art = art:bandjoin{ 255 } end
   local artsize = options.artsize
-  if artsize == 'contain' then
+  if artsize == 'fill' then
+    return Fitter.fill(get_base(), art, Layouts.anime.art)
+  elseif artsize == 'contain' then
     return Fitter.contain(get_base(), art, Layouts.anime.art)
   else
     return Fitter.cover(get_base(), art, Layouts.anime.art)
@@ -68,7 +74,9 @@ function shapes.proxy.art(fp)
   if art:bands() == 3 then art = art:bandjoin{ 255 } end
   local artsize = options.artsize
   local box = overlay("artbox.png")
-  if artsize == 'contain' then
+  if artsize == 'fill' then
+    return Fitter.fill(box, art, Layouts.proxy.art.regular)
+  elseif artsize == 'contain' then
     return Fitter.contain(box, art, Layouts.proxy.art.regular)
   else
     return Fitter.cover(box, art, Layouts.proxy.art.regular)
@@ -93,7 +101,9 @@ function shapes.proxy.pendulum_frame(fp, frame_fp, size)
   local r = art:width() / art:height()
   local frame_type, layout = best_layout(r, Layouts.proxy.art.pendulum[size])
   local artsize = options.artsize
-  if artsize == 'contain' then
+  if artsize == 'fill' then
+    art = Fitter.fill(get_base(), art, layout)
+  elseif artsize == 'contain' then
     art = Fitter.contain(get_base(), art, layout)
   else
     art = Fitter.cover(get_base(), art, layout)

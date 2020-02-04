@@ -13,7 +13,7 @@ local FIELDS = {
   expansion = { recipe = true }
 }
 
-local merge = table.merge
+local merge, concat = table.merge, table.concat
 
 local function validate(cfg, fields)
   for k, f in pairs(fields or FIELDS) do
@@ -52,7 +52,7 @@ local function format_list(cfg, title, fmt)
   end
   if list and #list > 0 then
     table.sort(list)
-    list = table.concat(list)
+    list = concat(list)
     list = ("  %s%s:%s\n%s")
       :format(colors.FG_MAGENTA, title, colors.RESET, list)
   else
@@ -73,7 +73,9 @@ local function format(cfg)
         v.field and " --field" or "", v.default and " (default)" or "")
     end)
   local expansions = format_list(cfg.expansion, "Expansions", function(k, v)
-      return ("    %s: %s%s\n"):format(k, v.recipe, v.default and " (default)" or "")
+      local recipe = type(v.recipe) == 'table' and v.recipe or {}
+      return ("    %s: %s%s\n"):format(k, "[" .. concat(recipe, ", ") .. "]",
+        v.default and " (default)" or "")
     end)
   return gamedirs .. "\n" .. picsets .. "\n" .. expansions
 end
