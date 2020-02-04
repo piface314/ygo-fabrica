@@ -13,16 +13,13 @@ pronounced just like that, "FAH-bree-kah". From Brazil, with love :green_heart:.
 
 ## Features
 
-Currently available features are checked. Features planned for release in the near
-future are left unchecked.
-
 - [x] Creation of YGOPro extension pack folder structure;
 - [x] Global and local configurations, e.g. game folders;
 - [x] Synchronization of pack to game folders;
-- [ ] Friendly interface for creating, editing and deleting cards;
-- [x] Support for different sets of card pics;
+- [x] Support for different sets of card pics and expansions;
 - [x] Generation of card pics from `.cdb` and raw artwork;
 - [x] Export pack to `.zip`, ready for sharing.
+- [x] Making `.cdb` files out of descriptive `.toml` files;
 
 ## Installation
 
