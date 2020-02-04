@@ -116,7 +116,7 @@ function automatons.anime(data)
   end
 
   function states.attribute()
-    local att = Parser.match_lsb(data.attribute, GameConst.code.att.ALL)
+    local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
     if att == 0 then
       return nil, "No attribute"
     end
@@ -276,7 +276,7 @@ function automatons.proxy(data)
   end
 
   function states.attribute()
-    local att = Parser.match_lsb(data.attribute, GameConst.code.att.ALL)
+    local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
     if att == 0 then
       return nil, "No attribute"
     end

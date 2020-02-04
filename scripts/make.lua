@@ -1,9 +1,10 @@
-local toml = require 'toml'
 local path = require 'path'
 local Logs = require 'scripts.logs'
 local Config = require 'scripts.config'
 local DataFetcher = require 'scripts.make.data-fetcher'
-local MacroExpander = require 'scripts.make.macro-expander'
+local Parser = require 'scripts.make.parser'
+local Encoder = require 'scripts.make.encoder'
+local Writer = require 'scripts.make.writer'
 
 
 local PWD
@@ -35,11 +36,12 @@ return function(pwd, flags, exp)
   PWD = pwd
   local expansions = get_expansions(flags['--all'], exp)
   for id, exp in pairs(expansions) do
+    local cdbfp = path.join(pwd, "expansions", id .. ".cdb")
     Logs.info("Making \"", id, "\"...")
     local files = get_files(exp.recipe)
     local data = DataFetcher.get(files)
-    local sets, cards = MacroExpander.expand(data)
-    print(toml.encode(sets))
-    print(toml.encode(cards))
+    local sets, cards = Parser.parse(data)
+    local entries = Encoder.encode(sets, cards)
+    Writer.write(cdbfp, entries, flags['--clean'])
   end
 end

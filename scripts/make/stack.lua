@@ -3,11 +3,10 @@
 local Stack = {}
 Stack.__index = Stack
 
-function Stack.new()
-  local inst = { items = {}, n = 0 }
-  setmetatable(inst, Stack)
-  return inst
+local function constructor()
+  return setmetatable({ items = {}, n = 0 }, Stack)
 end
+setmetatable(Stack, { __call = constructor })
 
 function Stack:push(item)
   if item ~= nil then
