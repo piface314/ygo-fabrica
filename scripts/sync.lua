@@ -132,12 +132,60 @@ local function copy_expansion(gamedir, gpath, exp)
   end
 end
 
+local function get_set_codes()
+  local src = io.open(path.join(PWD, "expansions", "string.conf"))
+  if not src then return end
+  local setcodes, unwritten = {}, {}
+  for line in src:lines() do
+    local code, name = line:match("^%s*!setname%s+(0x%x+)%s*(.*)$")
+    code = tonumber(code)
+    if code and name then
+      setcodes[code], unwritten[code] = name, name
+    end
+  end
+  src:close()
+  return setcodes, unwritten
+end
+
+local function get_merged_sets(fp, setcodes, unwritten)
+  local f, lines = io.open(fp), ""
+  if f then
+    for line in f:lines() do
+      local code = tonumber(line:match("^%s*!setname%s+(0x%x+).*$") or "")
+      local name = setcodes[code]
+      if name then
+        unwritten[code] = nil
+        lines = lines .. ("!setname 0x%04x %s\n"):format(code, name)
+      else
+        lines = lines .. line .. "\n"
+      end
+    end
+    f:close()
+  end
+  for code, name in pairs(unwritten) do
+    lines = lines .. ("!setname 0x%04x %s\n"):format(code, name)
+  end
+  return lines
+end
+
+local function copy_strings(gamedir, gpath)
+  local setcodes, unwritten = get_set_codes()
+  if not setcodes then return end
+  local target = path.join(gpath, "expansions", "string.conf")
+  local lines = get_merged_sets(target, setcodes, unwritten)
+  dst = io.open(target, "w")
+  if not dst then return end
+  dst:write(lines)
+  dst:close()
+end
+
 return function(pwd, flags)
   PWD = pwd
   local fg, fp, fe, fclean = flags['-Gall'] or flags['-g'], flags['-p'], flags['-e'], flags['--clean']
   local no_script = flags['--no-script']
   local no_pics = flags['--no-pics']
   local no_exp = flags['--no-exp']
+  local no_string = flags['--no-string']
   local gamedirs = get_gamedirs(fg)
   local picset, pscfg, exp
   if not no_pics then
@@ -150,6 +198,7 @@ return function(pwd, flags)
     if not no_script then copy_scripts(gd, gdcfg.path, fclean) end
     if not no_pics then copy_pics(gd, gdcfg.path, picset, pscfg, fclean) end
     if not no_exp then copy_expansion(gd, gdcfg.path, exp) end
+    if not no_string then copy_strings(gd, gdcfg.path) end
   end
   Logs.ok("Sync complete!")
 end

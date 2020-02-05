@@ -42,6 +42,7 @@ return function(pwd, flags, exp)
     local data = DataFetcher.get(files)
     local sets, cards = Parser.parse(data)
     local entries = Encoder.encode(sets, cards)
-    Writer.write(cdbfp, entries, flags['--clean'])
+    Writer.write_sets(pwd, sets)
+    Writer.write_entries(pwd, cdbfp, entries, flags['--clean'])
   end
 end

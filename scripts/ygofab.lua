@@ -64,7 +64,7 @@ local function init_interpreter()
   interpreter:add_command("make", cmd_make, "--clean", 0, "--all")
   interpreter:add_command("new", cmd_new)
   interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1,
-    "--clean", 0, "--no-script", 0, "--no-pics", 0, "--no-exp", 0)
+    "--clean", 0, "--no-script", 0, "--no-pics", 0, "--no-exp", 0, "--no-string", 0)
   interpreter:add_fallback("", function() return display_help(true) end)
 end
 
