@@ -48,17 +48,10 @@ return function(pwd, flags)
   local picsets = get_picsets(fp)
   for picset, pscfg in pairs(picsets) do
     local outfolder = path.join(pwd, "pics", picset)
-    local options = {
-      year = pscfg.year,
-      author = pscfg.author,
-      ext = pscfg.ext,
-      size = pscfg.size,
-      artsize = pscfg.artsize
-    }
     for _, exp in pairs(exps) do
       Logs.info("Composing \"", picset, "\" with ", exp,"...")
       cdbfp = path.join(pwd, "expansions", exp .. ".cdb")
-      Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, options)
+      Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, pscfg)
     end
   end
 end

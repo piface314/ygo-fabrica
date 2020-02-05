@@ -9,7 +9,7 @@ local Transformer = require 'scripts.composer.transformer'
 local Decoder = {}
 
 local insert = table.insert
-local mode = 'proxy'
+local mode, options = 'proxy', {}
 
 local types = GameConst.code.type
 local monster_types = types.NORMAL + types.EFFECT + types.FUSION + types.RITUAL
@@ -25,6 +25,26 @@ local function linka_ov(n, sfx) return ("lka%u%s.png"):format(n, sfx or "") end
 local function rank_ov(n) return ("r%u.png"):format(n) end
 local function level_ov(n) return ("l%u.png"):format(n) end
 local function attr_ov(n) return ("att%u.png"):format(n) end
+
+local min, max, ceil = math.min, math.max, math.ceil
+local function clamp(c) return min(max(ceil(c or 0), 0), 255) end
+local function color_clamp(color)
+  if type(color) ~= 'table' then return nil end
+  return { clamp(color[1]), clamp(color[2]), clamp(color[3]) }
+end
+local black, white = { 0, 0, 0 }, { 255, 255, 255 }
+local name_colors = {
+  [types.NORMAL] = {"name-color-normal", black},
+  [types.EFFECT] = {"name-color-effect", black},
+  [types.FUSION] = {"name-color-fusion", white},
+  [types.RITUAL] = {"name-color-ritual", white},
+  [types.SYNCHRO] = {"name-color-synchro", black},
+  [types.TOKEN] = {"name-color-token", black},
+  [types.XYZ] = {"name-color-xyz", white},
+  [types.LINK] = {"name-color-link", white},
+  [types.SPELL] = {"name-color-spell", white},
+  [types.TRAP] = {"name-color-trap", white}
+}
 
 local automatons = {}
 
@@ -285,8 +305,10 @@ function automatons.proxy(data)
   end
 
   function states.name()
-    local lightbg = Parser.bcheck(data.type, types.SYNCHRO)
-    insert(layers, MetaLayer("name", data.name, lightbg and { 0, 0, 0 }))
+    local frame = Parser.match_msb(data.type, frame_types)
+    local conf, default_color = unpack(name_colors[frame])
+    local color = color_clamp(options[conf])
+    insert(layers, MetaLayer("name", data.name, color or default_color))
     if Parser.bcheck(data.type, types.TOKEN) then
       return states.finishing()
     else
@@ -318,8 +340,8 @@ function automatons.proxy(data)
   return metalayers
 end
 
-function Decoder.set_mode(m)
-  mode = m
+function Decoder.configure(m, opt)
+  mode, options = m, opt
 end
 
 function Decoder.decode(data)

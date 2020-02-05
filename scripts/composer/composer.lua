@@ -16,7 +16,7 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
   Logs.assert(check_mode(mode), 1, "unknown mode \"", mode, '"')
   local data = DataFetcher.get(imgfolder, cdbfp)
   local metalayers_set, n = {}, 0
-  Decoder.set_mode(mode)
+  Decoder.configure(mode, options)
   for _, d in ipairs(data) do
     local metalayers, msg = Decoder.decode(d)
     if metalayers then
@@ -26,8 +26,7 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
       Logs.warning(("Failed at decoding %s: "):format(data.id), msg)
     end
   end
-  Assembler.set_mode(mode)
-  Assembler.set_options(options)
+  Assembler.configure(mode, options)
   Printer.set_out_folder(outfolder)
   Printer.set_extension(options.ext)
   Printer.set_size(options.size)

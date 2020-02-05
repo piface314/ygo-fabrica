@@ -166,9 +166,8 @@ function shapes.proxy.monster_effect(effect)
   return TypeWriter.printf(effect, get_base(), nil, Layouts.proxy.monster_effect)
 end
 
-local white = { 255, 255, 255 }
 function shapes.proxy.name(name, color)
-  return TypeWriter.print(name, get_base(), color or white, Layouts.proxy.name)
+  return TypeWriter.print(name, get_base(), color, Layouts.proxy.name)
 end
 
 local code_template = [[<span letter_spacing="1024">%08u</span>]]
@@ -188,12 +187,8 @@ function shapes.proxy.copyright(color)
     color, Layouts.proxy.copyright)
 end
 
-function Assembler.set_mode(m)
-  mode = m
-end
-
-function Assembler.set_options(opt)
-  options = opt
+function Assembler.configure(m, opt)
+  mode, options = m, opt
 end
 
 function Assembler.assemble(metalayers)
