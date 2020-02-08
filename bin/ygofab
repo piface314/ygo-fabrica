@@ -1,9 +1,0 @@
-#!/bin/bash
-if [ -z "$YGOFAB_HOME" ]; then
-  echo "Please define the environment variable YGOFAB_HOME and add to your PATH"
-else
-  BACK=$PWD
-  cd $YGOFAB_HOME
-  luajit scripts/ygofab.lua $BACK $@
-  cd $BACK
-fi

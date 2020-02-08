@@ -1,4 +1,4 @@
-local colors = require 'scripts.colors'
+local colors = require 'lib.colors'
 
 local Logs = {}
 

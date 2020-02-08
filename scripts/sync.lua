@@ -1,6 +1,7 @@
 local path = require 'path'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
+local fs = require 'lfs'
 require 'lib.table'
 
 
@@ -51,7 +52,7 @@ local function get_picset(flag_p)
 end
 
 local function clean(dir, names)
-  for entry in lfs.dir(dir) do
+  for entry in fs.dir(dir) do
     local name = entry:match("^(.*)%.") or entry
     if names[name] then
       os.remove(path.join(dir, entry))
@@ -78,7 +79,7 @@ local function copy_dir(pattern, src, dst, fclean, tags)
   local function cpd()
     local to_copy, to_clean = {}, {}
     local copied, total = 0, 0
-    for entry in lfs.dir(src) do
+    for entry in fs.dir(src) do
       if entry:match(pattern) then
         insert(to_copy, entry)
         total = total + 1

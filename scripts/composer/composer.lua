@@ -2,7 +2,7 @@ local DataFetcher = require 'scripts.composer.data-fetcher'
 local Decoder = require 'scripts.composer.decoder'
 local Assembler = require 'scripts.composer.assembler'
 local Printer = require 'scripts.composer.printer'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 
 
 local Composer = {}

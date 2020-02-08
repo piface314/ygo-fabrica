@@ -2,7 +2,7 @@ local path = require 'path'
 local zip = require 'ZipWriter'
 local fs = require 'lfs'
 local Config = require 'scripts.config'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 require 'lib.table'
 
 

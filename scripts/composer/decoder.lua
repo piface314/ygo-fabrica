@@ -1,6 +1,6 @@
 local path = require 'path'
 local GameConst = require 'scripts.game-const'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local MetaLayer = require 'scripts.composer.metalayer'
 local Parser = require 'scripts.composer.parser'
 local Transformer = require 'scripts.composer.transformer'

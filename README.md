@@ -26,7 +26,51 @@ future are left unchecked.
 
 ## Installation
 
-Work in progress
+### Linux
+
+Install the following software in their latest versions:
+- LuaJIT ([download](http://luajit.org/download.html), unzip and install with
+`$ make && sudo make install`)
+- libvips ([download](https://github.com/libvips/libvips/releases), unzip, install with
+`$ ./configure`, then `$ make && sudo make install`)
+
+_Note: you can find more details about installation browsing the links._
+
+Then, download the [latest release](https://github.com/piface314/ygo-fabrica/releases) of
+YGOFabrica and unzip it anywhere.
+
+Run `make.lua` with `luajit`. You can `chmod` that file to run it directly or specify
+`luajit`. Like this:
+```
+$ sudo ./make.lua install
+```
+OR
+```
+$ sudo luajit ./make.lua install
+```
+
+If there are no errors, you're ready to go!
+
+This will install YGOFabrica to `/usr/local/ygofab` and place two links in
+`/usr/local/bin` (`ygofab` and `ygopic`) as this is probably already in your `PATH`
+(add it if it's not there).
+
+You can change the install location by giving `install.lua` a path, like:
+```
+$ sudo ./make.lua install path/to/your/folder
+```
+
+In case you have any problems using the program, you can delete the `build` folder from
+the unzipped files and build the dependencies from scratch. (You must have
+[LuaRocks](https://github.com/luarocks/luarocks/wiki/Download) installed and configured
+for Lua5.1/LuaJIT for this to work):
+```
+$ ./make.lua build
+```
+
+### Windows
+
+
 
 ## Use
 Work in progress

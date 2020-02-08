@@ -1,7 +1,7 @@
 local fs = require 'lfs'
 local path = require 'path'
 local sqlite = require 'lsqlite3complete'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 
 
 local PWD

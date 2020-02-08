@@ -1,7 +1,7 @@
 local path = require 'path'
 local toml = require 'toml'
-local Logs = require 'scripts.logs'
-local colors = require 'scripts.colors'
+local Logs = require 'lib.logs'
+local colors = require 'lib.colors'
 require 'lib.table'
 
 

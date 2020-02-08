@@ -1,5 +1,5 @@
 local Stack = require 'scripts.make.stack'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 
 
 local Parser = {}

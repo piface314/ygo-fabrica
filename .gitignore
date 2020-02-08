@@ -1,3 +1,5 @@
 .bup/
+build/*
+bin/*
 **/fonts/*.ttf
 **/fonts/*.otf

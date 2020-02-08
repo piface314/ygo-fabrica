@@ -1,5 +1,5 @@
 local toml = require 'toml'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 
 
 local DataFetcher = {}

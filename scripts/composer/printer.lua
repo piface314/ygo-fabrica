@@ -1,6 +1,6 @@
 local vips = require 'vips'
 local path = require 'path'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local fs = require 'lib.fs'
 
 

@@ -10,7 +10,7 @@ local function feather_edges(img, sigma, axis)
   local wi, hi = img:width(), img:height()
   local alpha = img:extract_band(img:bands() - 1)
   if axis == 'x' then
-    alpha = alpha:crop(margin, 0, wi - 2 * sigma, hi)
+    alpha = alpha:crop(margin, 0, wi - 2 * margin, hi)
       :embed(margin, 0, wi, hi)
       :gaussblur(sigma)
   else

@@ -1,10 +1,10 @@
 local Interpreter = require 'scripts.interpreter'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local fs = require 'lfs'
 local path = require 'path'
 
 
-local VERSION, PWD = "0.0.1"
+local VERSION, PWD = "1.0.0"
 local interpreter
 
 local function get_pwd()
@@ -12,7 +12,7 @@ local function get_pwd()
 end
 
 local function print_header()
-  print(require 'scripts.header'(VERSION))
+  print(require 'lib.header'(VERSION))
 end
 
 local function display_help(header, msg)

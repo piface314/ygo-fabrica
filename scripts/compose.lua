@@ -1,7 +1,7 @@
 local path = require 'path'
 local Composer = require 'scripts.composer.composer'
 local Config = require 'scripts.config'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 require 'lib.table'
 
 

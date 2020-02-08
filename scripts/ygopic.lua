@@ -1,5 +1,5 @@
 local Interpreter = require 'scripts.interpreter'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local path = require 'path'
 
 

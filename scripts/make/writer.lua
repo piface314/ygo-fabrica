@@ -1,6 +1,6 @@
 local fs = require 'lib.fs'
 local sqlite = require 'lsqlite3complete'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local GameConst = require 'scripts.game-const'
 
 

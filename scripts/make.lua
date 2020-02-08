@@ -1,5 +1,5 @@
 local path = require 'path'
-local Logs = require 'scripts.logs'
+local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
 local DataFetcher = require 'scripts.make.data-fetcher'
 local Parser = require 'scripts.make.parser'
