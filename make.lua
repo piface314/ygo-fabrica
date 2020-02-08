@@ -1,4 +1,3 @@
-#!/usr/bin/env luajit
 local Logs = require 'lib.logs'
 local dependencies = require 'dependencies'
 
