@@ -26,6 +26,20 @@ future are left unchecked.
 
 ## Installation
 
+### Fonts
+
+The `res/composer/fonts` folder is supposed to keep font files that are used by the
+Composer module, that generates card pics from your extension pack data. However, the
+official fonts may not be free, and thus cannot be published in this repository. The
+only exception is the font used in Link Rating as I made it myself, so it's already
+there.
+
+If you're already on YGOPro Percy Discord server, you can find me there (PiFace) and
+ask me for a `.zip` file with the fonts.
+
+After getting them, and before installing the program, copy them to that folder
+(`res/composer/fonts`).
+
 ### Linux
 
 Install the following software in their latest versions:
@@ -41,7 +55,10 @@ YGOFabrica, unzip it anywhere and run `make.lua` like this, considering `luajit`
 your `PATH` and that you are inside the unzipped folder:
 ```
 $ sudo luajit make.lua install
+$ luajit make.lua config <game-path>
 ```
+where you should replace `<game-path>` with the actual path of your main YGOPro game
+folder. This setting can be changed later, as described in [Usage](#usage).
 
 If there are no errors, you're ready to go!
 
@@ -49,15 +66,16 @@ This will install YGOFabrica to `/usr/local/ygofab` and place two links in
 `/usr/local/bin` (`ygofab` and `ygopic`) as this is probably already in your `PATH`
 (add it if it's not there).
 
-You can change the install location by giving `install.lua` a path, like:
+You can change the install location by giving `install.lua` a path, like this:
 ```
 $ sudo luajit make.lua install path/to/your/folder
+$ luajit make.lua config <game-path>
 ```
 
-In case you have any problems using the program, you can delete the `build` folder from
-the unzipped files and build the dependencies from scratch. (You must have
+In case you have any problems using the program, you can delete the `lua-modules` folder
+from the unzipped files and build the dependencies from scratch. You must have
 [LuaRocks](https://github.com/luarocks/luarocks/wiki/Download) installed and configured
-for Lua5.1/LuaJIT for this to work):
+for Lua5.1/LuaJIT for this to work. Having LuaRocks, just run:
 ```
 $ luajit make.lua build
 ```
@@ -66,5 +84,5 @@ $ luajit make.lua build
 
 
 
-## Use
+## Usage
 Work in progress

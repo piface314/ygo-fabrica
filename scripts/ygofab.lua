@@ -1,4 +1,4 @@
-local Interpreter = require 'scripts.interpreter'
+local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
 local fs = require 'lfs'
 local path = require 'path'

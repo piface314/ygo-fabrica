@@ -1,4 +1,4 @@
-local Interpreter = require 'scripts.interpreter'
+local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
 local path = require 'path'
 
@@ -28,7 +28,8 @@ local function assert_help(assertion, msg)
     "  --ext <ext>      \tSpecifies which extension is used for output,\n",
     "                   \teither `png`, `jpg` or `jpeg`. Defaults to `jpg`\n\n",
     "  --artsize <mode> \tSpecifies how artwork is fitted into the artbox,\n",
-    "                   \teither `cover` or `contain`, defaults to `cover`\n\n",
+    "                   \teither `cover`, `contain` or `fill`.\n",
+    "                   \tDefaults to `cover`\n\n",
     "  --year <year>    \tSpecifies an year to be used in `proxy` mode in\n",
     "                   \tthe copyright line. Defaults to `1996`\n\n",
     "  --author <author>\tSpecifies an author to be used in `proxy` mode in\n",
