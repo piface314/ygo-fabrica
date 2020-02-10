@@ -27,15 +27,16 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
     end
   end
   Assembler.configure(mode, options)
-  Printer.set_out_folder(outfolder)
-  Printer.set_extension(options.ext)
-  Printer.set_size(options.size)
+  Printer.configure(outfolder, options)
   local bar = Logs.bar(n)
   bar:print()
   for id, metalayers in pairs(metalayers_set) do
     bar:update("Generating " .. id .. "...")
-    local img = Assembler.assemble(metalayers)
+    local img, field = Assembler.assemble(metalayers)
     Printer.print(id, img)
+    if field then
+      Printer.print_field(id, field)
+    end
   end
   bar:finish("Done!")
 end

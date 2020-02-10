@@ -1,4 +1,5 @@
 local fs = require 'lib.fs'
+local path = require 'path'
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local GameConst = require 'scripts.game-const'
@@ -77,19 +78,17 @@ local function write_cdb(cdbfp, entries, clean)
   cdb:close()
 end
 
-local script_template = [[
--- %s
-local s, id = GetID()
-function s.initial_effect(c)
-  %s
-end
-]]
-local st_activate = [[
-  -- activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e1)]]
+local script_template = "-- %s\
+local s, id = GetID()\
+function s.initial_effect(c)\
+  %s\
+end\
+"
+local st_activate = "-- activate\
+  local e1=Effect.CreateEffect(c)\
+  e1:SetType(EFFECT_TYPE_ACTIVATE)\
+  e1:SetCode(EVENT_FREE_CHAIN)\
+  c:RegisterEffect(e1)"
 local function write_scripts(pwd, entries)
   for _, entry in pairs(entries) do
     local t, types = entry.type, GameConst.code.type
@@ -147,7 +146,7 @@ end
 function Writer.write_sets(pwd, sets)
   local setcodes = sets_to_code(sets)
   if not next(setcodes) then return end
-  local fp = path.join(pwd, "expansions", "string.conf")
+  local fp = path.join(pwd, "expansions", "strings.conf")
   local f = io.open(fp, "r")
   local text = gsub_sets(f, setcodes)
   local f = io.open(fp, "w")

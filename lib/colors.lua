@@ -1,3 +1,5 @@
+local IS_WIN = package.config:sub(1,1) == "\\"
+if IS_WIN then os.execute("call :setESC > nul 2> nul") end
 return {
   FG_BLACK = "\x1b[30m",
   FG_DRED = "\x1b[31m",

@@ -32,7 +32,7 @@ local function get_expansion(flag_e)
   else
     local id, exp = Config.get_default(PWD, 'expansion')
     Logs.assert(id, 1,
-      "Please specify an expansion using `-p <expansion>` or define a default expansion.")
+      "Please specify an expansion using `-e <expansion>` or define a default expansion.")
     return id
   end
 end
@@ -100,7 +100,7 @@ local function copy_dir(pattern, src, dst, fclean, tags)
   if s then
     Logs.info(("%d out of %d %s copied for %q"):format(copied, total, tags[1], tags[2]))
     if copied == 0 then
-      Logs.warning("No ", tags[1]," copied for this gamedir. Something seems wrong...")
+      Logs.warning("No ", tags[1]," copied for this gamedir.")
     end
   else
     Logs.warning(("Failed while copying %s for %q:\n"):format(tags[1], tags[2]), copied)
@@ -134,7 +134,7 @@ local function copy_expansion(gamedir, gpath, exp)
 end
 
 local function get_set_codes()
-  local src = io.open(path.join(PWD, "expansions", "string.conf"))
+  local src = io.open(path.join(PWD, "expansions", "strings.conf"))
   if not src then return end
   local setcodes, unwritten = {}, {}
   for line in src:lines() do
@@ -172,11 +172,12 @@ end
 local function copy_strings(gamedir, gpath)
   local setcodes, unwritten = get_set_codes()
   if not setcodes then return end
-  local target = path.join(gpath, "expansions", "string.conf")
+  local target = path.join(gpath, "expansions", "strings.conf")
   local lines = get_merged_sets(target, setcodes, unwritten)
-  dst = io.open(target, "w")
+  local dst = io.open(target, "w")
   if not dst then return end
   dst:write(lines)
+  Logs.info("Written strings.conf for \"", gamedir, '"')
   dst:close()
 end
 
@@ -193,7 +194,7 @@ return function(pwd, flags)
     picset, pscfg = get_picset(fp)
   end
   if not no_exp then
-    exp = get_expansion(flag_e)
+    exp = get_expansion(fe)
   end
   for gd, gdcfg in pairs(gamedirs) do
     if not no_script then copy_scripts(gd, gdcfg.path, fclean) end

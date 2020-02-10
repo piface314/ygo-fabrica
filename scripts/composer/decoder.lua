@@ -340,6 +340,12 @@ function automatons.proxy(data)
   return metalayers
 end
 
+local function check_field(data)
+  if options.field and Parser.bcheck(data.type, types.FIELD) then
+    return MetaLayer("field", data.img)
+  end
+end
+
 function Decoder.configure(m, opt)
   mode, options = m, opt
 end
@@ -347,7 +353,12 @@ end
 function Decoder.decode(data)
   local automaton = automatons[mode]
   Logs.assert(automaton, 1, "Unknown mode \"", mode, '"')
-  return automaton(data)
+  local metalayers, errmsg = automaton(data)
+  local field = check_field(data)
+  if field then
+    insert(metalayers, field)
+  end
+  return metalayers, errmsg
 end
 
 return Decoder

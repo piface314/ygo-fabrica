@@ -94,7 +94,7 @@ local function add_dir(pattern, dir, zipfile, zipdir, tag)
   if s then
     Logs.info(("%d out of %d %s added"):format(added, total, tag))
     if added == 0 then
-      Logs.warning("No ", tag," added. Something seems wrong...")
+      Logs.warning("No ", tag," added.")
     end
   else
     Logs.warning(("Failed while adding %s:\n"):format(tag), added)

@@ -37,10 +37,10 @@ end
 function TypeWriter.printf(text, base, color, args)
   local x, y, w, h, ft, fs, ff, a, j, i = args.x, args.y, args.w, args.h, args.ft,
     args.fs, args.ff, args.a or 'low', args.j, args.i or 16
-  local opt = { width = w, fontfile = ff, dpi = DPI, justify = j, align = a }
+  local opt, t = { width = w, fontfile = ff, dpi = DPI, justify = j, align = a }
   for _, size in ipairs(fs) do
     opt.font = ("%s %s"):format(ft, size)
-    local t = vips.Image.text(text, opt)
+    t = vips.Image.text(text, opt)
     if t:height() <= h then
       return paint_insert(t, base, color, x, y)
     end

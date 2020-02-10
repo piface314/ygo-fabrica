@@ -1,6 +1,6 @@
 -- This project needs the following rocks to work:
 return {
-  "lpath",
+  "lua-path",
   "lsqlite3complete",
   "lua-toml",
   "lua-zlib",

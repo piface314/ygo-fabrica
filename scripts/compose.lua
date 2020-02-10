@@ -40,7 +40,6 @@ end
 
 return function(pwd, flags)
   PWD = pwd
-  local _, pack_name = path.split(pwd)
   local imgfolder = path.join(pwd, "artwork")
   local fe = flags['-Eall'] or flags['-e']
   local fp = flags['-Pall'] or flags['-p']
@@ -49,8 +48,8 @@ return function(pwd, flags)
   for picset, pscfg in pairs(picsets) do
     local outfolder = path.join(pwd, "pics", picset)
     for _, exp in pairs(exps) do
-      Logs.info("Composing \"", picset, "\" with ", exp,"...")
-      cdbfp = path.join(pwd, "expansions", exp .. ".cdb")
+      Logs.info("Composing \"", picset, "\" with ", exp, "...")
+      local cdbfp = path.join(pwd, "expansions", exp .. ".cdb")
       Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, pscfg)
     end
   end

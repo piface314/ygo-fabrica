@@ -15,7 +15,7 @@ end
 table.merge = merge
 
 function table.keys(t)
-  keys = {}
+  local keys = {}
   for k in pairs(t) do
     keys[#keys + 1] = k
   end

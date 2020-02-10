@@ -4,6 +4,8 @@ local Layouts = {}
 
 local fonts = "res/composer/fonts/"
 
+Layouts.field = { x = 0, y = 0, w = 512, h = 512 }
+
 Layouts.anime = {
   art = { x = 13, y = 14, w = 544, h = 582, blur = 4 },
   atk = { x = 234, y = 725, w = 157, h = 48,

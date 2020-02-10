@@ -29,6 +29,19 @@ local function overlay(ov)
   return overlays[mode][ov]
 end
 
+local field_pic, field_base
+local function field(fp)
+  if not field_base then
+    field_base = vips.Image.new_from_file(path.join(layers_dir, "_field.png"))
+  end
+  local art = vips.Image.new_from_file(fp)
+  if art:bands() == 3 then art = art:bandjoin{ 255 } end
+  field_pic = Fitter.cover(field_base, art, Layouts.field)
+    :composite(field_base, 'over')
+end
+shapes.anime.field = field
+shapes.proxy.field = field
+
 function shapes.anime.overlay(ov)
   return overlay(ov)
 end
@@ -193,14 +206,15 @@ end
 
 function Assembler.assemble(metalayers)
   local img = get_base()
+  field_pic = nil
   for _, metalayer in ipairs(metalayers) do
     local shape, values = metalayer.shape, metalayer.values
-    local layer, msg = shapes[mode][shape](unpack(values))
+    local layer = shapes[mode][shape](unpack(values))
     if layer then
       img = img:composite(layer, 'over')
     end
   end
-  return img
+  return img, field_pic
 end
 
 return Assembler

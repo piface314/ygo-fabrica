@@ -2,4 +2,5 @@
 **/fonts/*.ttf
 **/fonts/*.otf
 !res/composer/fonts/link-rating.otf
-lua-modules/*
+modules/*
+build/*

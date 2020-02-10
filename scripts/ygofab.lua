@@ -1,7 +1,5 @@
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
-local fs = require 'lfs'
-local path = require 'path'
 
 
 local VERSION, PWD = "1.0.0"
