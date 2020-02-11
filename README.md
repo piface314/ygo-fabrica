@@ -29,9 +29,9 @@ future are left unchecked.
 - [x] Export pack to `.zip`, ready for sharing.
 - [x] Making `.cdb` files out of descriptive `.toml` files;
 
-Note: to generate card pics from you card databases, this software uses an image
-processing library that **only** works on 64-bit systems. This is irrelevant for the
-rest of the features, though.
+Note: to generate card pics from a card databases, this software uses an image processing
+library that **only** works on 64-bit systems. This is irrelevant for the rest of the
+features, though.
 
 ---
 
@@ -42,7 +42,8 @@ adequate [pre-built release](https://github.com/piface314/ygo-fabrica/releases) 
 your system and unzip it anywhere. In this case, skip to the
 [installation instructions](#installation).
 
-But, if you want to or need to build from source, you'll need these properly installed:
+But, if you want to or need to build from source, the following software must be properly
+installed:
 - [LuaJIT](http://luajit.org/download.html)
 - [LuaRocks](https://github.com/luarocks/luarocks/wiki/Download)
 - [zlib](https://www.zlib.net/)
@@ -55,7 +56,7 @@ though, here are some tips:
 - Be careful to build a 64-bit version of LuaJIT in order to use the card pic generation
 feature. You'll need [Visual Studio](https://visualstudio.microsoft.com/pt-br/free-developer-offers/)
 (specifically Visual Studio Developer Command Prompt) for this.
-- Make sure that you build LuaRocks with the LuaJIT you installed, not the pre-bundled
+- Make sure that LuaRocks is built with the installed LuaJIT, not the pre-bundled
 Lua interpreter that comes with it.
 - Read [this StackOverflow question](https://stackoverflow.com/questions/60140305/how-to-install-lua-zlib-with-luarocks-on-windows)
 to build zlib.
@@ -80,10 +81,10 @@ _`"lua-zlib ZLIB_DIR=C:\\lib\\zlib"` before running the above command._
 
 If you built YGOFabrica from source **or** downloaded and unzipped a
 [pre-built release](https://github.com/piface314/ygo-fabrica/releases) for your
-system, you will see a folder called `res`.
+system, there will be a folder called `res`.
 
 Inside it, there is `res/composer/fonts`, which is supposed to keep font files
-used by the Composer module, that generates card pics from your extension pack data.
+used by the Composer module, that generates card pics from a card database.
 However, the official fonts may not be free, and thus cannot be published in this
 repository. The only exception is the font used in Link Rating as I made it myself, so
 it's already there.
@@ -120,7 +121,7 @@ This will install YGOFabrica to `/usr/local/ygofab` and place two links (`ygofab
 `ygopic`) in `/usr/local/bin`, as the latter probably is already in your `PATH` (add it
 if it's not there).
 
-You can change the install location by giving `make.lua` a path, like this:
+The install location can be changed by giving `make.lua` a path:
 ```
 $ sudo luajit make.lua install path/to/your/folder
 $ luajit make.lua config <game-path>
@@ -131,16 +132,16 @@ $ luajit make.lua config <game-path>
 _In case you're not familiar with changing environment variables like `PATH`, check_
 _[this link](https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho)._
 
-**If you decided to build from source**, you already have LuaJIT installed. So now you
-have to download [libvips](https://github.com/libvips/libvips/releases) (latest version,
-choose `vips-dev-w64-all-x.y,z.zip`, where `x.y.z` is the version) and unzip it anywhere.
+**If you decided to build from source**, LuaJIT is already installed. So now download
+[libvips](https://github.com/libvips/libvips/releases) (choose
+`vips-dev-w64-all-x.y,z.zip`, where `x.y.z` is the latest version) and unzip it anywhere.
 Then, add `vips-dev-x.y\bin` to your `PATH` environment variable. _E.g., if you_
 _downloaded vips v8.9.1 and unzipped it to `C:\Program Files\vips-dev-8.9`, add_
 _`C:\Program Files\vips-dev-8.9\bin` to your `PATH`._
 
 **If you downloaded a pre-built release**, both LuaJIT and libvips are already included.
-So you must copy the `luajit` and `vips` folder anywhere you like. Then, add `luajit` and
-`vips\bin` to your `PATH` environment variable. _E.g., if you copied `luajit` to_
+Copy `luajit` and `vips` folders anywhere. Then, add `luajit` and `vips\bin` to your
+`PATH` environment variable. _E.g., if you copied `luajit` to_
 _`C:\Program Files\luajit`, add that to you `PATH`, and if you copied `vips` to_
 _`C:\Program FIles\vips`, add `C:\Program Files\vips\bin` to your `PATH`._
 
@@ -152,8 +153,8 @@ Now, run command prompt with admin rights, access the build/pre-built folder, an
 where `<game-path>` is the actual path of your main YGOPro game folder. This setting
 can be changed later, as described in [Usage](#usage).
 
-This will install YGOFabrica to `C:\Program Files\YGOFabrica`. You can change the
-install location by giving `make.lua` a path, like this:
+This will install YGOFabrica to `C:\Program Files\YGOFabrica`. The install location can
+be changed by giving `make.lua` a path:
 ```
 > luajit make.lua install path\to\your\folder
 > luajit make.lua config <game-path>
@@ -161,7 +162,7 @@ install location by giving `make.lua` a path, like this:
 
 In any case, one last step to get YGOFabrica working is to add the install folder
 to your `PATH` (as already stated, `C:\Program Files\YGOFabrica` by default). If
-you're in doubt, check the last part of the installation log in you command prompt;
+in doubt, check the last part of the installation log in your command prompt;
 it will tell you what you have to do.
 
 Now you're ready to go!
@@ -170,23 +171,156 @@ Now you're ready to go!
 
 ## Usage
 
-As stated before, this is a command line tool. So, in order to use it, your terminal
-or command prompt will be your best friend. There is a total of seven commands you
-can use, each described here. Commands from `ygofab` share some common flags, which
-are described [here](#common-flags).
+As stated before, this is a command line tool. So, in order to use it, the terminal
+or command prompt will be your best friend. There are seven commands available, each
+described here. Commands from `ygofab` share some common flags, which are described
+[here](#common-flags).
+
+In this use guide, when part of a command is enclosed in angle brackets, `<like-this>`,
+that means it must be replace by some value (without the brackets), otherwise
+the command won't work. And when part of a command is enclosed in square brackets,
+`[like-this]`, that means whatever is inside the brackets is optional.
 
 ### `ygofab new`
 
+```
+$ ygofab new <project-name>
+```
+This command creates a folder inside your working directory, with the name you provide in
+`<project-name>`, and also creates in it a whole structure for your project. More
+specifically, it creates the following:
+- `<project-name>/artwork`
+- `<project-name>/expansions`
+- `<project-name>/expansions/<project-name>.cdb`
+- `<project-name>/pics`
+- `<project-name>/script`
+- `<project-name>/config.toml`
+
+After running this command, `cd` into your project to use the other commands.
+
 ### `ygofab config`
 
+```
+$ ygofab config
+```
+
+This command shows all the configurations that are active to the project you are in, i.e.,
+it shows local configurations of the current project and your global configurations, which
+apply to all of your projects. But what are those?
+
+You can configure different aspects of YGOFabrica through `config.toml` files. If that
+file is inside your project, whatever is inside that file defines _local configurations_.
+Also, during installation, after running `luajit make.lua config`, a `config.toml` file
+was created for you to define _global configurations_. On Linux, that file is located at
+`~/ygofab/config.toml`; on Windows, `%UserProfile%\ygofab\config.toml` (e.g., if your
+username is Yugi, then the file is at `C:\Users\Yugi\ygofab\config.toml`).
+
+Those `.toml` files are ordinary text files, but, as their extension suggest, you should
+follow the syntax of the [TOML](https://github.com/toml-lang/toml) language, which is
+very easy to read and write with.
+
+There are three possible configurations you can set: `gamedir`, `picset` and `expansion`.
+
+`gamedir` describes a directory where YGOPro is installed. This probably is going to be
+a global configuration, as the game(s) is highly likely to be the same for all projects.
+A `gamedir` is defined as follows:
+```toml
+[gamedir.<name>]
+path = "/path/to/your/gamedir"
+```
+where `<name>` must be replaced by an identifying name for that `gamedir`. That is the
+name used to refer to a `gamedir` in other commands. As defined my TOML, those names can
+only contain alphanumeric characters, underscores or dashes (`A-Za-z0-9_-`), e.g., the
+global `config.toml` is created with a `gamedir` called `main`.
+
+`picset` describes how card pics will be generated by [`ygofab compose`](#ygofab-compose).
+For example, you might want to have a `picset` for small card pics that will be used in
+the game, but you also want another `picset` with HD card pics for printing. A `picset`
+is defined as follows:
+```toml
+[picset.<name>]
+mode = "proxy"
+```
+where <name>, again, must be replaced by an identifying name. `mode` is the only setting
+that is mandatory, others are explained in details in [`ygopic`](#ygopic).
+
+`expansion` describes the name of a `.cdb` file and can also define a set of files to be
+used by [`ygofab make`](#ygofab-make) to generate that `.cdb` file. An `expansion` is
+defined as follows:
+```toml
+[expansion.<name>]
+recipe = []
+```
+where <name> also must be replaced by an identifying name. That `recipe` setting is
+mandatory it can be left empty at first. That is explained in details in
+[`ygofab make`](#ygofab-make).
+
+Any configuration can be defined as default by writing `default = true` among its values.
+This will make other commands assume that's the configuration you want to use if none is
+specified.
+
 ### `ygofab make`
+```
+$ ygofab make [-e <expansion>] [-Eall] [--clean]
+```
+This command transforms a set of `.toml` files describing cards into a card database
+(`.cdb`) file. Not only that, but archetypes (or sets, in YGOPro terminology) can also
+be defined inside those `.toml` files and transformed into a `strings.conf` file, which
+in turn can be placed in YGOPro to make the archetype names appear on a card.
+
+This is where expansion `recipe` is used. The `.toml` files listed in a `recipe` are
+combined and used by this command to do its job. For example:
+```toml
+[expansion.test]
+recipe = ["macro.toml", "sets.toml", "cards.toml"]
+```
+
+Also, there is a feature called macros. Macros can be used inside any text field to spare
+some typing. For example, if you define and use a macro like this:
+```toml
+[macro]
+HARD-OPT = '''You can only use this effect of $1 once per turn'''
+
+[card.test]
+name = "Test Card"
+effect = '''
+Destroy all cards on the field. ${HARD-OPT|"Test Card"}.'''
+```
+The effect of that card will be transformed into
+```
+Destroy all cards on the field. You can only use this effect of "Test Card" once per turn.
+```
+As you can see, a macro can receive text as arguments and use them in specific parts of
+it own text, denoted by `$1` (meaning the first argument), `$2` (second argument), etc.
+It might have no arguments as well, in which case, a macro is simply used as `${MACRO}`.
+To separate arguments, you any special character can be used, except for `$`, `{` and `}`.
+`|` can be used most of the time as card text does not usually include it.
+
+Check [these examples](examples) of how to define cards, sets and macros.
+
+It's worth noting that cards and sets can be defined partially, and even in separate
+files. So if you want, for example, to define your cards for more languages, you can
+define card values, types, etc. in one file, and card text in other files, so you don't
+have to write all values again and again.
 
 ### `ygofab compose`
+```
+$ ygofab compose [-p <picset>] [-Pall] [-e <expansion>] [-Eall]
+```
 
 ### `ygofab sync`
+```
+$ ygofab sync [-g <gamedir>] [-Gall] [-p <picset>] [-e <expansion>] [--clean] [--no-script] [--no-pics] [--no-exp] [--no-string]
+```
 
 ### `ygofab export`
+```
+$ ygofab export [-e <expansion>] [-Eall] [-p <picset>] [-o <output-path>]
+```
 
 ### `ygopic`
+```
+$ ygopic <mode> <art-folder> <cdb> <output> [options]
+```
 
 ### Common Flags

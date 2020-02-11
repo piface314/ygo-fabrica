@@ -45,11 +45,6 @@ local function write_file(str, dst)
   dstfile:close()
 end
 
-local function copy_file(src, dst)
-  Logs.info("Creating \"", dst, "\" file...")
-  write_file(read_file(src), dst)
-end
-
 local function create_config(pack_name)
   Logs.info("Creating \"config.toml\" file...")
   local cgen = read_file(path.join(GENFP, "config.gen.toml"))
@@ -67,6 +62,5 @@ return function (pwd, pack_name)
   create_folder(path.join(pack_name, "expansions"))
   create_cdb(pack_name)
   create_config(pack_name)
-  copy_file(path.join(GENFP, "default.gitignore"), path.join(pack_name, ".gitignore"))
   Logs.ok("\"", pack_name, "\" pack successfully created!")
 end

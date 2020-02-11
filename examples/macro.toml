@@ -1,0 +1,25 @@
+# These are examples of how macros can be used to spare typing repeated card texts.
+# E.g., Union, Gemini and Spirit monsters usually share a default text.
+
+# These examples does not show whole card data for the sake of simplicity.
+
+[macro]
+UNION = '''Once per turn, you can either: Target 1 $1 you control; equip this card to that target, OR: Unequip this card and Special Summon it. A monster equipped with this card is unaffected by your opponent's $2, also if the equipped monster would be destroyed by battle or card effect, destroy this card instead'''
+
+[card.a-core]
+id = 30012506
+name = "A-Assault Core"
+effect = '''
+${UNION|LIGHT Machine|monster effects (except its own)}. If this card is sent from the field to the GY: You can add 1 other Union monster from your GY to your hand.'''
+
+[card.b-drake]
+id = 77411244
+name = "B-Buster Drake"
+effect = '''
+${UNION|LIGHT Machine|Spell effects}. If this card is sent from the field to the GY: You can add 1 Union monster from your Deck to your hand.'''
+
+[card.c-wyvern]
+id = 3405259
+name = "C-Crush Wyvern"
+effect = '''
+${UNION|LIGHT Machine|Trap effects}. If this card is sent from the field to the GY: You can Special Summon 1 Union monster from your hand.'''

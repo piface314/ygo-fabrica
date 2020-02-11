@@ -8,7 +8,16 @@ local insert = table.insert
 local generics = {
   number = function(key)
       return function(entry, card)
-        entry[key] = tonumber(card[key] or "") or 0
+        entry[key] = tonumber(card[key]) or 0
+      end
+    end,
+  number_q = function(key)
+      return function(entry, card)
+        if card[key] == "?" then
+          entry[key] = -2
+        else
+          entry[key] = tonumber(card[key]) or 0
+        end
       end
     end,
   combined = function(key)
@@ -31,7 +40,7 @@ local encode = {
   ot = generics.combined('ot'),
   alias = generics.number('alias'),
   type = generics.combined('type'),
-  atk = generics.number('atk'),
+  atk = generics.number_q('atk'),
   race = generics.combined('race'),
   attribute = generics.combined('attribute'),
   category = generics.combined('category'),
@@ -62,7 +71,7 @@ function encode.strings(entry, card)
 end
 
 function encode.setcode(entry, card, sets)
-  if tonumber(card.setcode or "") then
+  if tonumber(card.setcode) then
     entry.setcode = tonumber(card.setcode)
     return
   end
@@ -78,7 +87,7 @@ function encode.setcode(entry, card, sets)
   entry.setcode = setcode
 end
 
-local generic_def = generics.number('def')
+local generic_def = generics.number_q('def')
 function encode.def(entry, card)
   local arrows = card['link-arrows']
   if type(arrows) == 'string' then
@@ -89,14 +98,17 @@ function encode.def(entry, card)
 end
 
 function encode.level(entry, card)
-  local scales = card['pendulum-scales']
+  local scales = card['pendulum-scale']
   local level = tonumber(card['link-rating'] or card.rank or card.level or "") or 0
-  if type(scales) == 'table' then
-    local lsc = tonumber(scales[1] or "") or 0
-    local rsc = tonumber(scales[2] or "") or 0
-    level = bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
+  local lsc, rsc = 0, 0
+  if tonumber(scales) then
+    scales = tonumber(scales)
+    lsc, rsc = scales, scales
+  elseif type(scales) == 'table' then
+    lsc = tonumber(scales[1]) or 0
+    rsc = tonumber(scales[2]) or 0
   end
-  entry.level = level
+  entry.level = bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
 end
 
 function Encoder.encode(sets, cards)

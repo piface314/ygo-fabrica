@@ -27,23 +27,25 @@ local function level_ov(n) return ("l%u.png"):format(n) end
 local function attr_ov(n) return ("att%u.png"):format(n) end
 
 local min, max, ceil = math.min, math.max, math.ceil
-local function clamp(c) return min(max(ceil(c or 0), 0), 255) end
+local function clamp(v) return min(max(ceil(tonumber(v, 16)), 0), 255) end
 local function color_clamp(color)
-  if type(color) ~= 'table' then return nil end
-  return { clamp(color[1]), clamp(color[2]), clamp(color[3]) }
+  if type(color) ~= 'string' then return nil end
+  local r, g, b = color:match("^#(%x%x)(%x%x)(%x%x)$")
+  if not r then return nil end
+  return { clamp(r), clamp(g), clamp(b) }
 end
 local black, white = { 0, 0, 0 }, { 255, 255, 255 }
 local name_colors = {
-  [types.NORMAL] = {"name-color-normal", black},
-  [types.EFFECT] = {"name-color-effect", black},
-  [types.FUSION] = {"name-color-fusion", white},
-  [types.RITUAL] = {"name-color-ritual", white},
-  [types.SYNCHRO] = {"name-color-synchro", black},
-  [types.TOKEN] = {"name-color-token", black},
-  [types.XYZ] = {"name-color-xyz", white},
-  [types.LINK] = {"name-color-link", white},
-  [types.SPELL] = {"name-color-spell", white},
-  [types.TRAP] = {"name-color-trap", white}
+  [types.NORMAL] = {"color-normal", black},
+  [types.EFFECT] = {"color-effect", black},
+  [types.FUSION] = {"color-fusion", white},
+  [types.RITUAL] = {"color-ritual", white},
+  [types.SYNCHRO] = {"color-synchro", black},
+  [types.TOKEN] = {"color-token", black},
+  [types.XYZ] = {"color-xyz", white},
+  [types.LINK] = {"color-link", white},
+  [types.SPELL] = {"color-spell", white},
+  [types.TRAP] = {"color-trap", white}
 }
 
 local automatons = {}

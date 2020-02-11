@@ -1,7 +1,0 @@
-# Use this to ignore unwanted files in your git repository.
-
-# Ignore export results.
-*.zip
-
-# Lines beginning with # are comments.
-# You can add more lines as you wish:
