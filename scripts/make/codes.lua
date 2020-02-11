@@ -22,13 +22,13 @@ for k, t in pairs(GameConst.code) do
 end
 
 function Codes.combine(group, keys)
-  local sum = 0
+  local c = 0
   local code_group = codes[group]
   for key in keys:gmatch("[%a-_]+") do
     key = normalize(key)
-    sum = sum + (code_group[key] or 0)
+    c = bit.bor(c, (code_group[key] or 0))
   end
-  return sum
+  return c
 end
 
 return Codes

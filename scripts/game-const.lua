@@ -30,7 +30,8 @@ GameConst.code = {
     BOTTOM_LEFT = 0x001, BOTTOM = 0x002, BOTTOM_RIGHT = 0x004,
     ALL = 0x1EF
   },
-  ot = { OCG = 1, TCG = 2 },
+  ot = { OCG = 0x1, TCG = 0x2, ANIME = 0x4, ILLEGAL = 0x8,
+    VIDEOGAME = 0x10, VG = 0x10, CUSTOM = 0x20 },
   category = {
     DESTROY_ST = 0x1, DESTROY_MONSTER = 0x2, BANISH = 0x4, GRAVEYARD = 0x8,
     TO_HAND = 0x10, TO_DECK = 0x20, DESTROY_HAND = 0x40, DESTROY_DECK = 0x80,
