@@ -26,8 +26,8 @@ future are left unchecked.
 - [x] Synchronization of pack to game folders;
 - [x] Support for different sets of card pics and expansions;
 - [x] Generation of card pics from `.cdb` and raw artwork;
-- [x] Export pack to `.zip`, ready for sharing.
-- [x] Making `.cdb` files out of descriptive `.toml` files;
+- [x] Export pack to `.zip`, ready for sharing;
+- [x] Making `.cdb` files out of descriptive `.toml` files.
 
 Note: to generate card pics from a card databases, this software uses an image processing
 library that **only** works on 64-bit systems. This is irrelevant for the rest of the
@@ -81,7 +81,7 @@ _`"lua-zlib ZLIB_DIR=C:\\lib\\zlib"` before running the above command._
 
 If you built YGOFabrica from source **or** downloaded and unzipped a
 [pre-built release](https://github.com/piface314/ygo-fabrica/releases) for your
-system, there will be a folder called `res`.
+system, there is a folder called `res`.
 
 Inside it, there is `res/composer/fonts`, which is supposed to keep font files
 used by the Composer module, that generates card pics from a card database.
@@ -144,7 +144,7 @@ _`C:\Program Files\vips-dev-8.9\bin` to your `PATH`._
 Copy `luajit` and `vips` folders anywhere. Then, add `luajit` and `vips\bin` to your
 `PATH` environment variable. _E.g., if you copied `luajit` to_
 _`C:\Program Files\luajit`, add that to you `PATH`, and if you copied `vips` to_
-_`C:\Program FIles\vips`, add `C:\Program Files\vips\bin` to your `PATH`._
+_`C:\Program Files\vips`, add `C:\Program Files\vips\bin` to your `PATH`._
 
 Now, run command prompt with admin rights, access the build/pre-built folder, and run
 ```
@@ -172,11 +172,11 @@ If there were no errors, now you're ready to go!
 ## Usage
 
 As stated before, this is a command line tool. So, in order to use it, the terminal
-or command prompt will be your best friend. There are seven commands available, each
-described here. Commands from `ygofab` share some common flags, which are described
-[here](#common-flags).
+or command prompt will be your best friend. Each available command is described here.
+Commands from `ygofab` share some common flags, which are described
+[later](#common-flags).
 
-In this use guide, when part of a command is enclosed in angle brackets, `<like-this>`,
+In this usage guide, when part of a command is enclosed in angle brackets, `<like-this>`,
 that means it must be replace by some value (without the brackets), otherwise
 the command won't work. And when part of a command is enclosed in square brackets,
 `[like-this]`, that means whatever is inside the brackets is optional.
