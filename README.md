@@ -89,7 +89,7 @@ However, the official fonts may not be free, and thus cannot be published in thi
 repository. The only exception is the font used in Link Rating as I made it myself, so
 it's already there.
 
-If you're already on YGOPro Percy Discord server, you can find me there (@PiFace) and
+If you're already on YGOPro Percy Discord server, you can find me there (PiFace) and
 ask me for a `.zip` file with the fonts.
 
 After getting them, and before installing the program, copy them to that folder
