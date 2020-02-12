@@ -107,9 +107,9 @@ local function copy_dir(pattern, src, dst, fclean, tags)
   end
 end
 
-local function copy_scripts(gamedir, gpath, fclean)
+local function copy_scripts(gamedir, gpath)
   copy_dir("c%d+%.lua", path.join(PWD, "script"),
-    path.join(gpath, "script"), fclean, { "scripts", gamedir })
+    path.join(gpath, "script"), false, { "scripts", gamedir })
 end
 
 local function copy_pics(gamedir, gpath, picset, pscfg, fclean)
@@ -197,7 +197,7 @@ return function(pwd, flags)
     exp = get_expansion(fe)
   end
   for gd, gdcfg in pairs(gamedirs) do
-    if not no_script then copy_scripts(gd, gdcfg.path, fclean) end
+    if not no_script then copy_scripts(gd, gdcfg.path) end
     if not no_pics then copy_pics(gd, gdcfg.path, picset, pscfg, fclean) end
     if not no_exp then copy_expansion(gd, gdcfg.path, exp) end
     if not no_string then copy_strings(gd, gdcfg.path) end

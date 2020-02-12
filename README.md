@@ -129,7 +129,8 @@ $ luajit make.lua config <game-path>
 
 ### Windows
 
-_In case you're not familiar with changing environment variables like `PATH`, check_
+_In case you're not familiar with changing environment variables like `PATH`, just type_
+_`env` in Windows search bar, or check_
 _[this link](https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho)._
 
 **If you decided to build from source**, LuaJIT is already installed. So now download
@@ -148,24 +149,23 @@ _`C:\Program FIles\vips`, add `C:\Program Files\vips\bin` to your `PATH`._
 Now, run command prompt with admin rights, access the build/pre-built folder, and run
 ```
 > luajit make.lua install
-> luajit make.lua config <game-path>
 ```
-where `<game-path>` is the actual path of your main YGOPro game folder. This setting
-can be changed later, as described in [Usage](#usage).
-
-This will install YGOFabrica to `C:\Program Files\YGOFabrica`. The install location can
-be changed by giving `make.lua` a path:
+This will install YGOFabrica to `C:\Program Files\YGOFabrica`, but that location can
+be changed by giving `make.lua` a path instead:
 ```
-> luajit make.lua install path\to\your\folder
-> luajit make.lua config <game-path>
+> luajit make.lua install "<path>"
+```
+Then, run the following command, where `<game-path>` is the actual path of your main
+YGOPro game folder. This setting can be changed later, as described in [Usage](#usage).
+```
+> luajit make.lua config "<game-path>"
 ```
 
-In any case, one last step to get YGOFabrica working is to add the install folder
-to your `PATH` (as already stated, `C:\Program Files\YGOFabrica` by default). If
-in doubt, check the last part of the installation log in your command prompt;
-it will tell you what you have to do.
+The last step to get YGOFabrica working is to add the install folder (as already stated,
+`C:\Program Files\YGOFabrica` by default) to your `PATH`. If in doubt, check the last
+part of the installation log in your command prompt; it will tell you what to do.
 
-Now you're ready to go!
+If there were no errors, now you're ready to go!
 
 ---
 
@@ -196,7 +196,7 @@ specifically, it creates the following:
 - `<project-name>/script`
 - `<project-name>/config.toml`
 
-After running this command, `cd` into your project to use the other commands.
+After running this command, `cd` into your project to use other commands.
 
 ### `ygofab config`
 
@@ -241,8 +241,8 @@ is defined as follows:
 [picset.<name>]
 mode = "proxy"
 ```
-where <name>, again, must be replaced by an identifying name. `mode` is the only setting
-that is mandatory, others are explained in details in [`ygopic`](#ygopic).
+where <name>, again, must be replaced by an identifying name. `mode` is the only required
+setting, others are explained in details in [`ygopic`](#ygopic).
 
 `expansion` describes the name of a `.cdb` file and can also define a set of files to be
 used by [`ygofab make`](#ygofab-make) to generate that `.cdb` file. An `expansion` is
@@ -251,8 +251,8 @@ defined as follows:
 [expansion.<name>]
 recipe = []
 ```
-where <name> also must be replaced by an identifying name. That `recipe` setting is
-mandatory it can be left empty at first. That is explained in details in
+where <name> also must be replaced by an identifying name. `recipe` is the only required
+setting, and it can be left empty at first. That is explained in details in
 [`ygofab make`](#ygofab-make).
 
 Any configuration can be defined as default by writing `default = true` among its values.
@@ -266,7 +266,10 @@ $ ygofab make [-e <expansion>] [-Eall] [--clean]
 This command transforms a set of `.toml` files describing cards into a card database
 (`.cdb`) file. Not only that, but archetypes (or sets, in YGOPro terminology) can also
 be defined inside those `.toml` files and transformed into a `strings.conf` file, which
-in turn can be placed in YGOPro to make the archetype names appear on a card.
+in turn can be placed in YGOPro to make the archetype names appear on a card. Also, a
+script file is created for each generated entry in the database, except for Normal
+monsters. If the flag `--clean` is used, all previous entries in the database are erased
+before inserting new ones.
 
 This is where expansion `recipe` is used. The `.toml` files listed in a `recipe` are
 combined and used by this command to do its job. For example:
@@ -282,9 +285,9 @@ some typing. For example, if you define and use a macro like this:
 HARD-OPT = '''You can only use this effect of $1 once per turn'''
 
 [card.test]
-name = "Test Card"
+name = "OP Card"
 effect = '''
-Destroy all cards on the field. ${HARD-OPT|"Test Card"}.'''
+Destroy all other cards on the field. ${HARD-OPT|"Test Card"}.'''
 ```
 The effect of that card will be transformed into
 ```
@@ -293,7 +296,7 @@ Destroy all cards on the field. You can only use this effect of "Test Card" once
 As you can see, a macro can receive text as arguments and use them in specific parts of
 it own text, denoted by `$1` (meaning the first argument), `$2` (second argument), etc.
 It might have no arguments as well, in which case, a macro is simply used as `${MACRO}`.
-To separate arguments, you any special character can be used, except for `$`, `{` and `}`.
+To separate arguments, any special character can be used, except for `$`, `{` and `}`.
 `|` can be used most of the time as card text does not usually include it.
 
 Check [these examples](examples) of how to define cards, sets and macros.
@@ -308,19 +311,100 @@ have to write all values again and again.
 $ ygofab compose [-p <picset>] [-Pall] [-e <expansion>] [-Eall]
 ```
 
+This commands reads `.cdb` file(s) of a configured expansion(s) and image files in the
+`artwork` folder, and generates card pics according to configured picset(s).
+
+The different settings that can be specified in a picset are explained in details
+in [`ygopic`](#ygopic).
+
+![How `ygofab compose` works](docs/compose.png)
+
 ### `ygofab sync`
 ```
 $ ygofab sync [-g <gamedir>] [-Gall] [-p <picset>] [-e <expansion>] [--clean] [--no-script] [--no-pics] [--no-exp] [--no-string]
 ```
 
+This command copies all relevant files of your project to the specified gamedir(s).
+
+If the flag `--clean` is used, previously existing card pic files in each gamedir are
+deleted if their name is the same a card that is being copied. E.g., card pic
+`12345678.jpg` is being copied to the gamedir, but `12345678.png` was there already;
+without `--clean`, after copying, both files would exist, but with `--clean`,
+`12345678.png` is deleted before `12345678.jpg` is copied.
+
+If the flags `--no-script`, `--no-pics`, `--no-exp` or `--no-string` are used, then
+scripts, card pics, expansions or `strings.conf` will not be copied, respectively.
+
 ### `ygofab export`
 ```
 $ ygofab export [-e <expansion>] [-Eall] [-p <picset>] [-o <output-path>]
 ```
+This command compresses all relevant files of your project to a `.zip` file, ready for
+sharing it with players. By default, those `.zip` files are created in the project root
+directory, but other folder can be specified with the `-o` flag. Each `.zip` is created
+with this name pattern: `<expansion-name>-<picset-name>.zip`.
 
 ### `ygopic`
 ```
 $ ygopic <mode> <art-folder> <cdb> <output> [options]
 ```
+This command does essentially the same thing as [`ygofab compose`](#ygofab-compose), but
+it can be used with arbitrary `.cdb` files and images. This is useful if you just want
+to genereate card pics of previously existing cards in the game, not related to
+any project, for example.
+
+There are four required arguments to make `ygopic` work:
+
+| Argument       | Meaning                                                   |
+| -------------- | --------------------------------------------------------- |
+| `<mode>`       | Specifies card pic style, either `anime` or `proxy`.      |
+| `<art-folder>` | Path to a folder containing artwork for the cards.        |
+| `<cdb>`        | Path to a card database file `.cdb` describing each card. |
+| `<output>`     | Path to a folder that will contain output images.         |
+
+`mode` corresponds to the required setting of a `picset`, while other optional settings
+correspond each to an option of the `ygopic` command, listed below.
+
+- `--size WxH`: W and H determines width and height of the output images. If only W or H
+is specified, aspect ratio is preserved. Example: `--size 256x` will output images in
+256px in width, keeping aspect ratio. Defaults to original size.
+- `--ext <ext>`: Specifies which extension is used for output, either `png`, `jpg` or
+`jpeg`. Defaults to `jpg`.
+- `--artsize <mode>`: Specifies how artwork is fitted into the artbox, either `cover`,
+`contain` or `fill`. Defaults to `cover`.
+- `--year <year>`: Specifies an year to be used in `proxy` mode in the copyright line.
+Defaults to `1996`.
+- `--author <author>`: Specifies an author to be used in `proxy` mode in the copyright line.
+Defaults to `KAZUKI TAKAHASHI`.
+- `--field`: Enables the generation of field background images.
+- `--color-* <color>`: Changes the color used for card names in `proxy` mode, according
+to the card type (\*). <color> must be a color string in hex format. E.g.,
+`--color-effect "#ffffff"` specifies white for Effect Monsters card name,
+`--color-trap "#ffff00"`specifies yellow for Trap Cards name, etc. In total, these are
+the possible options of this kind: `--color-normal`, `--color-effect`, `--color-spell`,
+`--color-trap`, `--color-ritual`, `--color-fusion`, `--color-synchro`, `--color-xyz`,
+`--color-link`.
+
+To configure those options for a picset, just specify them in `config.toml` without the
+leading dashes:
+```toml
+[picset.example]
+mode = 'anime'
+size = '256x'
+ext = 'png'
+year = 2020
+author = 'PIFACE'
+field = true
+color-effect = '#ffffff'
+color-trap = '#ffff00'
+```
 
 ### Common Flags
+
+- `-e <expansion>` and `-Eall`: specify an expansion, or all expansions, respectively.
+- `-g <gamedir>` and `-Gall`: specify a gamedir, or all gamedirs, respectively.
+- `-p <picset>` and `-Pall`: specify a picset, or all picsets, respectively.
+
+If an `all` version of a flag is specified, it will take precedence. If a command does
+not allow an `all` version, it means that command only works with exactly 1 of that
+configuration.

@@ -12,8 +12,14 @@ local function check_mode(mode)
   return modes[mode]
 end
 
+local function check_folders(imgfolder, outfolder)
+  Logs.assert(imgfolder ~= outfolder, 1, "Artwork folder cannot be the same as ",
+    "output folder")
+end
+
 function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
   Logs.assert(check_mode(mode), 1, "unknown mode \"", mode, '"')
+  check_folders(imgfolder, outfolder)
   local data = DataFetcher.get(imgfolder, cdbfp)
   local metalayers_set, n = {}, 0
   Decoder.configure(mode, options)
