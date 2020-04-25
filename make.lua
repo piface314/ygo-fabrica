@@ -179,7 +179,7 @@ function config.write(gamepath)
 
 # Define one or more game directories
 [gamedir.main]
-path = '%s'
+path = '''%s'''
 default = true
 
 # Define one or more picsets
@@ -197,7 +197,7 @@ function config.start(_, gamepath)
   Logs.ok("YGOFabrica has been successfully configured!")
 end
 
-local interpreter = Interpreter()
+local interpreter = Interpreter.new()
 interpreter:add_command('build', build.start)
 interpreter:add_command('install', install.start)
 interpreter:add_command('config', config.start)
