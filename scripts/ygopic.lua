@@ -75,7 +75,7 @@ local function run(flags, mode, imgfolder, cdbfp, outfolder)
 end
 
 local function init_interpreter()
-  interpreter = Interpreter()
+  interpreter = Interpreter.new()
   interpreter:add_command("", run, "--size", 1, "--ext", 1, "--artsize", 1,
     "--year", 1, "--author", 1, "--field", 0, "--color-normal", 1, "--color-effect", 1,
     "--color-fusion", 1, "--color-ritual", 1, "--color-synchro", 1, "--color-token", 1,

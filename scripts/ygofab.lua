@@ -53,7 +53,7 @@ local function cmd_sync(flags)
 end
 
 local function init_interpreter()
-  interpreter = Interpreter()
+  interpreter = Interpreter.new()
   interpreter:add_command("compose", cmd_compose, "-p", 1, "-Pall", 0,
     "-e", 1, "-Eall", 0)
   interpreter:add_command("config", cmd_config)

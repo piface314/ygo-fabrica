@@ -3,12 +3,11 @@
 local Transformer = {}
 Transformer.__index = Transformer
 
-local function constructor()
+function Transformer.new()
   return setmetatable({
     values = {}
   }, Transformer)
 end
-setmetatable(Transformer, { __call = constructor })
 
 function Transformer.pendulum_size(pendulum_effect)
   return pendulum_effect and #pendulum_effect > 176 and "m" or "s"

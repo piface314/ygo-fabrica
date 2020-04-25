@@ -3,14 +3,13 @@
 local MetaLayer = {}
 MetaLayer.__index = MetaLayer
 
-local function constructor(_, shape, ...)
+function MetaLayer.new(shape, ...)
   return setmetatable({
     shape = shape,
     values = { ... },
     transformations = {}
   }, MetaLayer)
 end
-setmetatable(MetaLayer, { __call = constructor })
 
 function MetaLayer:__tostring()
   local s = {}

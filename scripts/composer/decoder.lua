@@ -1,4 +1,3 @@
-local path = require 'path'
 local GameConst = require 'scripts.game-const'
 local Logs = require 'lib.logs'
 local MetaLayer = require 'scripts.composer.metalayer'
@@ -55,7 +54,7 @@ function automatons.anime(data)
   local layers = {}
 
   function states.art()
-    insert(layers, MetaLayer("art", data.img))
+    insert(layers, MetaLayer.new("art", data.img))
     if Parser.bcheck(data.type, spellortrap) then
       return states.spelltrap()
     elseif Parser.bcheck(data.type, types.MONSTER) then
@@ -67,7 +66,7 @@ function automatons.anime(data)
 
   function states.spelltrap()
     local st = Parser.match_lsb(data.type, spellortrap)
-    insert(layers, MetaLayer("overlay", typef_ov(st)))
+    insert(layers, MetaLayer.new("overlay", typef_ov(st)))
     return layers
   end
 
@@ -76,7 +75,7 @@ function automatons.anime(data)
     if mtype == 0 then
       return nil, "Missing monster type"
     end
-    insert(layers, MetaLayer("overlay", typef_ov(mtype)))
+    insert(layers, MetaLayer.new("overlay", typef_ov(mtype)))
     if Parser.bcheck(data.type, types.PENDULUM) then
       return states.pendulum()
     elseif Parser.bcheck(data.type, types.LINK) then
@@ -90,8 +89,8 @@ function automatons.anime(data)
 
   function states.pendulum()
     local lsc, rsc = Parser.get_scales(data)
-    insert(layers, MetaLayer("overlay", typef_ov(types.PENDULUM)))
-    insert(layers, MetaLayer("scales", lsc, rsc))
+    insert(layers, MetaLayer.new("overlay", typef_ov(types.PENDULUM)))
+    insert(layers, MetaLayer.new("scales", lsc, rsc))
     if Parser.bcheck(data.type, types.LINK) then
       return states.link()
     elseif Parser.bcheck(data.type, types.XYZ) then
@@ -102,19 +101,19 @@ function automatons.anime(data)
   end
 
   function states.link()
-    insert(layers, MetaLayer("overlay", "lka-base.png"))
+    insert(layers, MetaLayer.new("overlay", "lka-base.png"))
     for b in Parser.bits(Parser.get_link_arrows(data)) do
-      insert(layers, MetaLayer("overlay", linka_ov(b)))
+      insert(layers, MetaLayer.new("overlay", linka_ov(b)))
     end
-    insert(layers, MetaLayer("overlay", "link.png"))
-    insert(layers, MetaLayer("link_rating", Parser.get_link_rating(data)))
+    insert(layers, MetaLayer.new("overlay", "link.png"))
+    insert(layers, MetaLayer.new("link_rating", Parser.get_link_rating(data)))
     return states.atk()
   end
 
   function states.rank()
     local rank = Parser.get_levelrank(data)
     if rank then
-      insert(layers, MetaLayer("overlay", rank_ov(rank)))
+      insert(layers, MetaLayer.new("overlay", rank_ov(rank)))
     end
     return states.def()
   end
@@ -122,18 +121,18 @@ function automatons.anime(data)
   function states.level()
     local level = Parser.get_levelrank(data)
     if level then
-      insert(layers, MetaLayer("overlay", level_ov(level)))
+      insert(layers, MetaLayer.new("overlay", level_ov(level)))
     end
     return states.def()
   end
 
   function states.def()
-    insert(layers, MetaLayer("def", data.def))
+    insert(layers, MetaLayer.new("def", data.def))
     return states.atk()
   end
 
   function states.atk()
-    insert(layers, MetaLayer("atk", data.atk))
+    insert(layers, MetaLayer.new("atk", data.atk))
     return states.attribute()
   end
 
@@ -142,7 +141,7 @@ function automatons.anime(data)
     if att == 0 then
       return nil, "No attribute"
     end
-    insert(layers, MetaLayer("overlay", attr_ov(data.attribute)))
+    insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     return layers
   end
 
@@ -152,14 +151,14 @@ end
 function automatons.proxy(data)
   local states, inital = {}, 'baseframe'
   local layers = {}
-  local transformer = Transformer()
+  local transformer = Transformer.new()
 
   function states.baseframe()
     local frame = Parser.match_msb(data.type, frame_types)
     if frame == 0 then
       return nil, "Missing card type"
     end
-    insert(layers, MetaLayer("overlay", typef_ov(frame)))
+    insert(layers, MetaLayer.new("overlay", typef_ov(frame)))
     if Parser.bcheck(data.type, types.PENDULUM) then
       return states.pendulum()
     else
@@ -169,9 +168,9 @@ function automatons.proxy(data)
 
   local monster_effect
   function states.pendulum()
-    local p_frame_ml = MetaLayer("pendulum_frame", data.img,
+    local p_frame_ml = MetaLayer.new("pendulum_frame", data.img,
       typef_ov(types.PENDULUM, "%s%s"))
-    local p_scales_ml = MetaLayer("pendulum_scales", Parser.get_scales(data))
+    local p_scales_ml = MetaLayer.new("pendulum_scales", Parser.get_scales(data))
     p_frame_ml:add_transformation("pendulum")
     p_scales_ml:add_transformation("pendulum")
     insert(layers, p_frame_ml)
@@ -180,7 +179,7 @@ function automatons.proxy(data)
     monster_effect = me
     transformer:add_value("pendulum", Transformer.pendulum_size(pe))
     if pe then
-      local pe_ml = MetaLayer("pendulum_effect", pe)
+      local pe_ml = MetaLayer.new("pendulum_effect", pe)
       pe_ml:add_transformation("pendulum")
       insert(layers, pe_ml)
     end
@@ -195,11 +194,11 @@ function automatons.proxy(data)
 
   function states.pendulum_link()
     local function p1(self, t) self:set_value(1, self:get_value(1):format(t)) end
-    local lka_base_ml = MetaLayer("overlay", "lka-basep%s.png")
+    local lka_base_ml = MetaLayer.new("overlay", "lka-basep%s.png")
     lka_base_ml:add_transformation("pendulum", p1)
     insert(layers, lka_base_ml)
     for b in Parser.bits(Parser.get_link_arrows(data)) do
-      local lka_ml = MetaLayer("overlay", linka_ov(b, "p%s"))
+      local lka_ml = MetaLayer.new("overlay", linka_ov(b, "p%s"))
       lka_ml:add_transformation("pendulum", p1)
       insert(layers, lka_ml)
     end
@@ -207,7 +206,7 @@ function automatons.proxy(data)
   end
 
   function states.art()
-    insert(layers, MetaLayer("art", data.img))
+    insert(layers, MetaLayer.new("art", data.img))
     if Parser.bcheck(data.type, spellortrap) then
       return states.spelltrap()
     elseif Parser.bcheck(data.type, types.LINK) then
@@ -222,35 +221,35 @@ function automatons.proxy(data)
   function states.spelltrap()
     local st_type = Parser.match_lsb(data.type, spelltrap_types)
     if st_type == 0 then
-      insert(layers, MetaLayer("overlay", st_ov(data.type)))
+      insert(layers, MetaLayer.new("overlay", st_ov(data.type)))
     else
       local st = Parser.match_lsb(data.type, spellortrap)
-      insert(layers, MetaLayer("overlay", st_ov(st, "p")))
-      insert(layers, MetaLayer("overlay", st_ov(st_type)))
+      insert(layers, MetaLayer.new("overlay", st_ov(st, "p")))
+      insert(layers, MetaLayer.new("overlay", st_ov(st_type)))
     end
-    insert(layers, MetaLayer("spelltrap_effect", data.desc))
+    insert(layers, MetaLayer.new("spelltrap_effect", data.desc))
     return states.name()
   end
 
   function states.link_arrows()
-    insert(layers, MetaLayer("overlay", "lka-base.png"))
+    insert(layers, MetaLayer.new("overlay", "lka-base.png"))
     for b in Parser.bits(Parser.get_link_arrows(data)) do
-      insert(layers, MetaLayer("overlay", linka_ov(b)))
+      insert(layers, MetaLayer.new("overlay", linka_ov(b)))
     end
     return states.link_rating()
   end
 
   function states.link_rating()
-    insert(layers, MetaLayer("overlay", "link.png"))
+    insert(layers, MetaLayer.new("overlay", "link.png"))
     local link_rating = Parser.get_link_rating(data)
-    insert(layers, MetaLayer("link_rating", link_rating))
+    insert(layers, MetaLayer.new("link_rating", link_rating))
     return states.atk()
   end
 
   function states.rank()
     local rank = Parser.get_levelrank(data)
     if rank then
-      insert(layers, MetaLayer("overlay", rank_ov(rank)))
+      insert(layers, MetaLayer.new("overlay", rank_ov(rank)))
     end
     return states.def()
   end
@@ -258,18 +257,18 @@ function automatons.proxy(data)
   function states.level()
     local level = Parser.get_levelrank(data)
     if level then
-      insert(layers, MetaLayer("overlay", level_ov(level)))
+      insert(layers, MetaLayer.new("overlay", level_ov(level)))
     end
     return states.def()
   end
 
   function states.def()
-    insert(layers, MetaLayer("def", data.def))
+    insert(layers, MetaLayer.new("def", data.def))
     return states.atk()
   end
 
   function states.atk()
-    insert(layers, MetaLayer("atk", data.atk))
+    insert(layers, MetaLayer.new("atk", data.atk))
     return states.monster_desc()
   end
 
@@ -282,7 +281,7 @@ function automatons.proxy(data)
     local effnorm = (Parser.bcheck(data.type, types.EFFECT) and "/Effect")
       or (Parser.bcheck(data.type, types.NORMAL) and "/Normal") or ""
     local desc = ("%s%s%s%s%s%s"):format(race, sumtype, pend, ability, tuner, effnorm)
-    insert(layers, MetaLayer("monster_desc", desc))
+    insert(layers, MetaLayer.new("monster_desc", desc))
     return states.monster_text()
   end
 
@@ -290,9 +289,9 @@ function automatons.proxy(data)
     local me = monster_effect or Parser.get_effects(data)
     if Parser.bcheck(data.type, types.NORMAL)
       and not Parser.bcheck(data.type, types.TOKEN) then
-      insert(layers, MetaLayer("flavor_text", me))
+      insert(layers, MetaLayer.new("flavor_text", me))
     else
-      insert(layers, MetaLayer("monster_effect", me))
+      insert(layers, MetaLayer.new("monster_effect", me))
     end
     return states.attribute()
   end
@@ -302,7 +301,7 @@ function automatons.proxy(data)
     if att == 0 then
       return nil, "No attribute"
     end
-    insert(layers, MetaLayer("overlay", attr_ov(data.attribute)))
+    insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     return states.name()
   end
 
@@ -310,7 +309,7 @@ function automatons.proxy(data)
     local frame = Parser.match_msb(data.type, frame_types)
     local conf, default_color = unpack(name_colors[frame])
     local color = color_clamp(options[conf])
-    insert(layers, MetaLayer("name", data.name, color or default_color))
+    insert(layers, MetaLayer.new("name", data.name, color or default_color))
     if Parser.bcheck(data.type, types.TOKEN) then
       return states.finishing()
     else
@@ -321,16 +320,16 @@ function automatons.proxy(data)
   function states.serial_code()
     local darkbg = Parser.bcheck(data.type, types.XYZ)
       and not Parser.bcheck(data.type, types.PENDULUM)
-    insert(layers, MetaLayer("serial_code", data.id, darkbg and { 255, 255, 255 }))
+    insert(layers, MetaLayer.new("serial_code", data.id, darkbg and { 255, 255, 255 }))
     return states.finishing()
   end
 
   function states.finishing()
     local darkbg = Parser.bcheck(data.type, types.XYZ)
       and not Parser.bcheck(data.type, types.PENDULUM)
-    insert(layers, MetaLayer("copyright", darkbg and { 255, 255, 255 }))
-    insert(layers, MetaLayer("overlay", "bevel.png"))
-    insert(layers, MetaLayer("overlay", "holo.png"))
+    insert(layers, MetaLayer.new("copyright", darkbg and { 255, 255, 255 }))
+    insert(layers, MetaLayer.new("overlay", "bevel.png"))
+    insert(layers, MetaLayer.new("overlay", "holo.png"))
     return layers
   end
 
@@ -344,7 +343,7 @@ end
 
 local function check_field(data)
   if options.field and Parser.bcheck(data.type, types.FIELD) then
-    return MetaLayer("field", data.img)
+    return MetaLayer.new("field", data.img)
   end
 end
 

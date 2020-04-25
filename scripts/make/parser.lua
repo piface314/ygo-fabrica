@@ -4,7 +4,7 @@ local Logs = require 'lib.logs'
 
 local Parser = {}
 
-local ceil, concat = math.ceil, table.concat
+local concat = table.concat
 
 local function apply_macro(macro, argv)
 	return (macro:gsub("($+)(%d+)", function(esc, i)
@@ -16,7 +16,7 @@ local function apply_macro(macro, argv)
 end
 
 local function parse(macros, str)
-  local stack = Stack()
+  local stack = Stack.new()
   local function parse(macros, str, cursor, up_sep)
     local cursor, len = cursor or 1, str:len()
 
@@ -87,7 +87,7 @@ local function parse(macros, str)
 end
 
 local function scan(macros, group)
-  for id, entry in pairs(group) do
+  for _, entry in pairs(group) do
     for fname, field in pairs(entry) do
       if type(field) == 'string' then
         entry[fname] = parse(macros, field)

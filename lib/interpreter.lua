@@ -6,13 +6,12 @@ Interpreter.__index = Interpreter
 local insert = table.insert
 local unpack = unpack or table.unpack
 
-local function constructor()
+function Interpreter.new()
   return setmetatable({
     argtree = {},
     commands = {}
   }, Interpreter)
 end
-setmetatable(Interpreter, { __call = constructor })
 
 local function create_command(self, command, fn)
   local at, ct = self.argtree, self.commands
