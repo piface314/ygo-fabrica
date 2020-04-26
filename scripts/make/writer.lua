@@ -11,25 +11,14 @@ local insert, concat = table.insert, table.concat
 
 local tables = {'texts', 'datas'}
 
-local drop = [[DROP TABLE IF EXISTS %s]]
-local function open_cdb(cdbfp, clean)
+local function open_cdb(cdbfp)
   local db, err, msg = sqlite.open(cdbfp)
   Logs.assert(db, err, msg)
   local sqlf = io.open(path.join("res", "new", "create-cdb.sql"), "r")
   local create_sql = sqlf:read("*a")
   sqlf:close()
-  if clean then
-    local drops = {}
-    for _, t in ipairs(tables) do insert(drops, drop:format(t)) end
-    db:exec(concat(drops, ";"))
-  end
   db:exec(create_sql)
   return db
-end
-
-local function get_val_fmt(n)
-  local s = ("\"%s\","):rep(n):sub(1, -2)
-  return "(" .. s .. ")"
 end
 
 local cols = {
@@ -39,12 +28,16 @@ local cols = {
   "race", "attribute", "category" }
 }
 
-local sqls = {}
-for k, v in pairs(cols) do
-  sqls[k] = ([[REPLACE INTO %s (%s) VALUES %%s]]):format(k, concat(v, ","))
+local function get_val_fmt(n)
+  return "(" .. ("\"%s\","):rep(n):sub(1, -2) .. ")"
 end
 
-local val_fmt = { texts = get_val_fmt(19), datas = get_val_fmt(11) }
+local delete_sql = [[DELETE FROM %s WHERE id NOT IN (%s)]]
+local replace_sqls, val_fmt = {}, {}
+for t, cs in pairs(cols) do
+  replace_sqls[t] = ([[REPLACE INTO %s (%s) VALUES %%s]]):format(t, concat(cs, ","))
+  val_fmt[t] = get_val_fmt(#cs)
+end
 
 local function get_tuple(table, entry)
   local tuple = {}
@@ -58,21 +51,32 @@ local function get_tuple(table, entry)
   return tuple
 end
 
-local function get_command(table, entries)
-  local tuples = {}
+local function get_cmd_and_ids(table, entries)
+  local tuples, ids = {}, {}
   for _, entry in pairs(entries) do
     insert(tuples, val_fmt[table]:format(unpack(get_tuple(table, entry))))
+    insert(ids, entry.id)
   end
-  return sqls[table]:format(concat(tuples, ","))
+  return replace_sqls[table]:format(concat(tuples, ",")), ids
+end
+
+local function clean_cdb(cdb, table, ids)
+  local del = delete_sql:format(table, concat(ids, ","))
+  local err = cdb:exec(del)
+  if err ~= sqlite.OK then
+    Logs.warning("Error while cleaning .cdb. Error code: ", err)
+  end
 end
 
 local function write_cdb(cdbfp, entries, clean)
-  local cdb = open_cdb(cdbfp, clean)
+  local cdb = open_cdb(cdbfp)
   for _, table in ipairs(tables) do
-    local command = get_command(table, entries)
+    local command, ids = get_cmd_and_ids(table, entries)
     local err = cdb:exec(command)
     if err ~= sqlite.OK then
       Logs.warning("Error while writing .cdb. Error code: ", err)
+    elseif clean then
+      clean_cdb(cdb, table, ids)
     end
   end
   cdb:close()
@@ -85,7 +89,7 @@ function s.initial_effect(c)\
 end\
 "
 local st_activate = "-- activate\
-  local e1=Effect.CreateEffect(c)\
+  local e1 = Effect.CreateEffect(c)\
   e1:SetType(EFFECT_TYPE_ACTIVATE)\
   e1:SetCode(EVENT_FREE_CHAIN)\
   c:RegisterEffect(e1)"
