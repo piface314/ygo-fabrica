@@ -1,6 +1,9 @@
 local colors = require 'lib.colors'
 local HIGHLIGHT = colors.FG_MAGENTA .. colors.BOLD
-return function(version)
+
+local Info = { version = "1.0.1" }
+
+function Info.get_header()
   return ([[
 
                     %s---_____
@@ -16,7 +19,7 @@ __     __  ____     %s_ / \ _%s    ____
    |_|    \____/      %s\_/%s     |_| /_/  \_\|___/|_|\_\|_| \___//_/  \_\
             %s/ /            / /
            /  -----____   / /
-            --_____    --- /          %sversion %s%s
+            --_____    --- /          %sv%s%s
                    -----___%s
 ]]):format(
   HIGHLIGHT, colors.RESET,
@@ -28,7 +31,13 @@ __     __  ____     %s_ / \ _%s    ____
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
-  version,
+  Info.version,
   HIGHLIGHT, colors.RESET
 )
 end
+
+function Info.get_version()
+  return "ygofabrica-v" .. Info.version
+end
+
+return Info

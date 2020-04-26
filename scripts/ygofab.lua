@@ -1,21 +1,21 @@
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
+local Info = require 'lib.info'
 
 
-local VERSION, PWD = "1.0.0"
+local PWD = arg[1]
 local interpreter
 
-local function get_pwd()
-  return arg[1]
-end
-
 local function print_header()
-  print(require 'lib.header'(VERSION))
+  Logs.info(Info.get_header())
 end
 
 local function display_help(header, msg)
   if header then print_header() end
-  Logs.assert(false, 1, msg or "This is not a valid command.\n",
+  local f = msg and Logs.assert or function(_, _, _, ...)
+    Logs.info(...)
+  end
+  f(false, 1, msg or "This is not a valid command.\n",
     "Usage:\n\n",
     "  $ ygofab <command> [options]\n\n",
     "Available commands:\n\n",
@@ -26,6 +26,14 @@ local function display_help(header, msg)
     "  new    \tCreates a new project, given a name\n",
     "  sync   \tCopies your project files to YGOPro game"
   )
+end
+
+local function cmd_version(flags)
+  if flags['--version'] or flags['-v'] then
+    Logs.info(Info.get_version())
+  else
+    display_help(true)
+  end
 end
 
 local function cmd_compose(flags)
@@ -66,7 +74,6 @@ local function init_interpreter()
   interpreter:add_fallback("", function() return display_help(true) end)
 end
 
-PWD = get_pwd()
 init_interpreter()
 local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
 if errmsg then

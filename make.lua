@@ -1,6 +1,6 @@
 local Logs = require 'lib.logs'
 local Interpreter = require 'lib.interpreter'
-local dependencies = require 'dependencies'
+local spec = require 'spec'
 
 
 local IS_WIN = package.config:sub(1,1) == "\\"
@@ -31,8 +31,19 @@ local function cp(src, dst, file)
   end
 end
 
+local function read_file(fp)
+  local f, errmsg = io.open(fp, 'r')
+  if not f then
+    err = errmsg
+    return false
+  end
+  local content = f:read('*a')
+  f:close()
+  return content
+end
+
 local function write_file(fp, content)
-  local f, errmsg = io.open(fp, "w")
+  local f, errmsg = io.open(fp, 'w')
   if not f then
     err = errmsg
     return false
@@ -53,7 +64,7 @@ build.tree = "modules"
 function build.tree_folder() return create_folder(build.tree) end
 
 function build.dependencies()
-  for _, dep in ipairs(dependencies) do
+  for _, dep in ipairs(spec.dependencies) do
     local ok = exec(("luarocks install %s --tree=%s"):format(dep, build.tree))
     if not ok then
       err = "Failed to install dependency " .. dep
@@ -103,6 +114,13 @@ package.path = ("modules/share/lua/%s/?.lua;modules/share/lua/%s/?/init.lua;%s")
   :format(version, version, package.path)
 package.cpath = ("modules/lib/lua/%s/?.]] .. (IS_WIN and "dll" or "so")
   .. [[;%s"):format(version, package.cpath)]])
+end
+
+function build.version()
+  local info = read_file("lib/info.lua")
+  if not info then return false end
+  info = info:gsub([[version = ".-"]], ("version = %q"):format(spec.version), 1)
+  return write_file("lib/info.lua", info)
 end
 
 function build.start()

@@ -1,14 +1,11 @@
+local path = require 'path'
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
-local path = require 'path'
+local Info = require 'lib.info'
 
 
-local PWD
+local PWD = arg[1]
 local interpreter
-
-local function get_pwd()
-  return arg[1]
-end
 
 local function assert_help(assertion, msg)
   Logs.assert(assertion, 1, msg, "\n",
@@ -44,6 +41,9 @@ local function assert_help(assertion, msg)
 end
 
 local function run(flags, mode, imgfolder, cdbfp, outfolder)
+  if flags['--version'] or flags['-v'] then
+    return Logs.info(Info.get_version())
+  end
   local Composer = require 'scripts.composer.composer'
   assert_help(mode, "Please specify <mode>")
   assert_help(imgfolder, "Please specify <art-folder>")
@@ -79,10 +79,10 @@ local function init_interpreter()
   interpreter:add_command("", run, "--size", 1, "--ext", 1, "--artsize", 1,
     "--year", 1, "--author", 1, "--field", 0, "--color-normal", 1, "--color-effect", 1,
     "--color-fusion", 1, "--color-ritual", 1, "--color-synchro", 1, "--color-token", 1,
-    "--color-xyz", 1, "--color-link", 1, "--color-spell", 1, "--color-trap", 1)
+    "--color-xyz", 1, "--color-link", 1, "--color-spell", 1, "--color-trap", 1,
+    "--version", 0, "-v", 0)
 end
 
-PWD = get_pwd()
 init_interpreter()
 local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
 assert_help(not errmsg, errmsg)
