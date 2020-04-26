@@ -120,6 +120,7 @@ function build.version()
   local info = read_file("lib/info.lua")
   if not info then return false end
   info = info:gsub([[version = ".-"]], ("version = %q"):format(spec.version), 1)
+    :gsub([[version_name = ".-"]], ("version_name = %q"):format(spec.version_name), 1)
   return write_file("lib/info.lua", info)
 end
 

@@ -34,7 +34,7 @@ local function assert_help(assertion, msg)
     "  --field          \tEnables the generation of field background images\n\n",
     "  --color-* <color>\tChanges the color used for card names in `proxy`\n",
     "                   \tmode, according to the card type (*). <color>\n",
-    "                   \tmust be a color string in hex format.",
+    "                   \tmust be a color string in hex format.\ns",
     "                   \tE.g., `--color-effect \"#ffffff\"` specifies white\n",
     "                   \tfor Effect Monsters card name."
   )
