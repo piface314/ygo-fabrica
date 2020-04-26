@@ -14,6 +14,11 @@ card pics, etc.
 The name of the project is based on the Portuguese word for factory, _fábrica_, and is
 pronounced just like that, "FAH-bree-kah". From Brazil, with love :green_heart:.
 
+Also, the generation of card pics was only made possible thanks to icycatelf, an artist
+at DeviantArt that published their
+[templates](https://www.deviantart.com/icycatelf/art/YGO-Series-10-Master-PSD-676448168)
+for the card proxies. 
+
 ---
 
 ## Features
