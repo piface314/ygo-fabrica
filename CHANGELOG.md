@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gamedir path delimiter is now `'''` to avoid conflicts.
 - Infinite loop for long multiline text no longer happens.
 - `--clean` flag in `ygofab make` no longer drops tables.
+- `--version`/`-v` flag wasn't present
 
 ## [1.0.0] - Artefato Astral // 2019-02-12
 ### Added
