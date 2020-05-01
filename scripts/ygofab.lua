@@ -10,12 +10,8 @@ local function print_header()
   Logs.info(Info.get_header())
 end
 
-local function display_help(header, msg)
-  if header then print_header() end
-  local f = msg and Logs.assert or function(_, _, _, ...)
-    Logs.info(...)
-  end
-  f(false, 1, msg or "This is not a valid command.\n",
+local function display_help(msg)
+  local usage = {
     "Usage:\n\n",
     "  $ ygofab <command> [options]\n\n",
     "Available commands:\n\n",
@@ -25,14 +21,22 @@ local function display_help(header, msg)
     "  make   \tConverts card description in .toml into a .cdb\n",
     "  new    \tCreates a new project, given a name\n",
     "  sync   \tCopies your project files to YGOPro game"
-  )
+  }
+  if msg then
+    Logs.assert(false, 1, msg, "\n", unpack(usage))
+  else
+    print_header()
+    Logs.info(unpack(usage))
+  end
 end
 
-local function cmd_version(flags)
+local function cmd_version(flags, ...)
   if flags['--version'] or flags['-v'] then
     Logs.info(Info.get_version())
+  elseif #({...}) > 0 then
+    display_help("This is not a valid command.\n")
   else
-    display_help(true)
+    display_help()
   end
 end
 
@@ -71,12 +75,11 @@ local function init_interpreter()
   interpreter:add_command("new", cmd_new)
   interpreter:add_command("sync", cmd_sync, "-g", 1, "-Gall", 0, "-p", 1, "-e", 1,
     "--clean", 0, "--no-script", 0, "--no-pics", 0, "--no-exp", 0, "--no-string", 0)
-  interpreter:add_fallback("", function() return display_help(true) end)
+  interpreter:add_command("", cmd_version, "--version", 0, "-v", 0)
 end
 
 init_interpreter()
-local errmsg, cmd, args, flags = interpreter:parse(unpack(arg, 2))
+local errmsg = interpreter:exec(unpack(arg, 2))
 if errmsg then
-  display_help(false, errmsg .. "\n")
+  display_help(errmsg)
 end
-interpreter:exec(cmd, args, flags)

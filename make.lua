@@ -189,8 +189,6 @@ end
 local config = {}
 
 function config.write(gamepath)
-  err = "Please specify your game path"
-  if not gamepath then return false end
   local home = IS_WIN and (os.getenv("USERPROFILE") .. "\\ygofab") or (os.getenv("HOME") .. "/ygofab")
   return create_folder(home)
     and write_file(home .. "/config.toml", ([[
@@ -220,9 +218,8 @@ local interpreter = Interpreter.new()
 interpreter:add_command('build', build.start)
 interpreter:add_command('install', install.start)
 interpreter:add_command('config', config.start)
-interpreter:add_fallback('', function()
+interpreter:add_command('', function()
   Logs.assert(false, 1, "Please specify `build`, `install` or `config`")
 end)
-local errmsg, cmd, args, flags = interpreter:parse(unpack(arg))
+local errmsg = interpreter:exec(...)
 Logs.assert(not errmsg, 1, errmsg)
-interpreter:exec(cmd, args, flags)

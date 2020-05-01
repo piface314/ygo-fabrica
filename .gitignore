@@ -1,6 +1,7 @@
-.bup/
 **/fonts/*.ttf
 **/fonts/*.otf
 !res/composer/fonts/link-rating.otf
 modules/*
 build/*
+*.tar.gz
+*.zip
