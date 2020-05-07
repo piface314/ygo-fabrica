@@ -76,5 +76,6 @@ luajit\luajit make.lua install "%target%"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 luajit\luajit make.lua config
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
+if exist fonts ( luajit\luajit make.lua fonts )
 echo.
 pause

@@ -1,9 +1,9 @@
 **/fonts/*.ttf
 **/fonts/*.otf
-!res/composer/fonts/link-rating.otf
 modules/*
 vips/*
 luajit/*
 build/*
+fonts/*
 *.tar.gz
 *.zip

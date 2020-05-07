@@ -24,8 +24,13 @@ end
 local function cp(src, dst, file)
   err = ("Failed to copy %q to %q"):format(src, dst)
   if IS_WIN then
-    return exec((file and "copy /y %q %q" or "xcopy %q %q /s/h/e/k/c/y/i")
-      :format(src, dst .. "\\" .. src))
+    src, dst = src:gsub("/+", "\\"), dst:gsub("/+", "\\")
+    if file then
+      local src_file = src:match(".*\\(.-)$") or src
+      return exec(("copy /y %q %q"):format(src, dst .. "\\" .. src_file))
+    else
+      return exec(("xcopy %q %q /s/h/e/k/c/y/i"):format(src, dst .. "\\" .. src))
+    end
   else
     return exec(("cp -ar %s %s"):format(src, dst))
   end
@@ -148,6 +153,7 @@ function install.copy()
     and cp("lib", install.base)
     and cp("res", install.base)
     and cp("scripts", install.base)
+    and cp("CHANGELOG.md", install.base, true)
     and cp("LICENSE", install.base, true)
     and cp("README.md", install.base, true)
 end
@@ -214,12 +220,33 @@ function config.start(_, gamepath)
   Logs.ok("YGOFabrica has been successfully configured!")
 end
 
+
+local fonts = {}
+function fonts.copy(fp)
+  local Fonts = require 'scripts.composer.fonts'
+  local target = install.base .. "/" .. Fonts.path
+  fp = fp or "fonts"
+  for _, file in ipairs(Fonts.list()) do
+    if not cp(fp .. "/" .. file, target, true) then
+      err = ("Could not find font %q"):format(file)
+      return false
+    end
+  end
+  return true
+end
+
+function fonts.start(_, fp)
+  Logs.assert(fonts.copy(fp), 1, err)
+  Logs.ok("Fonts were successfully installed to YGOFabrica!")
+end
+
 local interpreter = Interpreter.new()
 interpreter:add_command('build', build.start)
 interpreter:add_command('install', install.start)
 interpreter:add_command('config', config.start)
+interpreter:add_command('fonts', fonts.start)
 interpreter:add_command('', function()
-  Logs.assert(false, 1, "Please specify `build`, `install` or `config`")
+  Logs.assert(false, 1, "Please specify `build`, `install`, `config` or `fonts`")
 end)
 local errmsg = interpreter:exec(...)
 Logs.assert(not errmsg, 1, errmsg)

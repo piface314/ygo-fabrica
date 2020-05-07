@@ -1,23 +1,22 @@
+local Fonts = require 'scripts.composer.fonts'
 
 
 local Layouts = {}
-
-local fonts = "res/composer/fonts/"
 
 Layouts.field = { x = 0, y = 0, w = 512, h = 512 }
 
 Layouts.anime = {
   art = { x = 13, y = 14, w = 544, h = 582, blur = 4 },
   atk = { x = 234, y = 725, w = 157, h = 48,
-    f = "MatrixBoldSmallCaps 18.7", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "18.7"), ff = Fonts.get_file("values"), a = "high" },
   def = { x = 493, y = 725, w = 157, h = 48,
-    f = "MatrixBoldSmallCaps 18.7", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "18.7"), ff = Fonts.get_file("values"), a = "high" },
   lsc = { x = 180, y = 543, w = 75,
-    f = "MatrixBoldSmallCaps 20", ff = fonts .. "values.ttf", a = "centre" },
+    f = Fonts.get_family("values", "20"), ff = Fonts.get_file("values"), a = "centre" },
   rsc = { x = 390, y = 543, w = 75,
-    f = "MatrixBoldSmallCaps 20", ff = fonts .. "values.ttf", a = "centre" },
+    f = Fonts.get_family("values", "20"), ff = Fonts.get_file("values"), a = "centre" },
   lkr = { x = 450, y = 732, w = 52,
-    f = "CodeTalker 12.5", ff = fonts .. "link-rating.otf", a = "low" }
+    f = Fonts.get_family("link_rating", "12.5"), ff = Fonts.get_file("link_rating"), a = "low" }
 }
 
 Layouts.proxy = {
@@ -37,61 +36,61 @@ Layouts.proxy = {
   },
 
   name = { x = 54, y = 54, w = 512,
-    f = "MatrixSmallCaps 20", ff = fonts .. "card-name.ttf", a = "low" },
+    f = Fonts.get_family("card_name", "20"), ff = Fonts.get_file("card_name"), a = "low" },
 
   lscale = {
     m = { x = 70, y = 695, w = 42,
-      f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "centre" },
+      f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "centre" },
     s = { x = 70, y = 715, w = 42,
-      f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "centre" }
+      f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "centre" }
   },
 
   rscale = {
     m = { x = 623, y = 695, w = 42,
-      f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "centre" },
+      f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "centre" },
     s = { x = 623, y = 715, w = 42,
-      f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "centre" }
+      f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "centre" }
   },
 
   pendulum_effect = {
     m = { x = 109, y = 644, w = 475, h = 102, j = true, fs = { 5, 4, 3.5 },
-      ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
+      ft = Fonts.get_family("effect"), ff = Fonts.get_file("effect"), a = "low" },
     s = { x = 109, y = 680, w = 475, h = 68, j = true, fs = { 5 },
-      ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" }
+      ft = Fonts.get_family("effect"), ff = Fonts.get_file("effect"), a = "low" }
   },
 
   monster_desc = { x = 54, y = 766, w = 585,
-    f = "ITCStoneSerifSmallCapsBold 6.5", ff = fonts .. "monster-desc.ttf", a = "low" },
+    f = Fonts.get_family("monster_desc", "6.5"), ff = Fonts.get_file("monster_desc"), a = "low" },
 
   flavor_text = { x = 53, y = 794, w = 588, h = 126, j = true, fs = { 5, 4 },
-    ft = "ITCStoneSerifLTItalic", ff = fonts .. "flavor-text.ttf", a = "low" },
+    ft = Fonts.get_family("flavor_text"), ff = Fonts.get_file("flavor_text"), a = "low" },
 
   monster_effect = { x = 53, y = 795, w = 588, h = 125, j = true, fs = { 5, 4.5, 4, 3.8, 3.6 },
-    ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
+    ft = Fonts.get_family("effect"), ff = Fonts.get_file("effect"), a = "low" },
 
   spelltrap_effect = { x = 53, y = 766, w = 585, h = 180, j = true, fs = { 5, 4.5, 4 },
-    ft = "MatrixBook", ff = fonts .. "effect.ttf", a = "low" },
+    ft = Fonts.get_family("effect"), ff = Fonts.get_file("effect"), a = "low" },
 
   atk = { x = 500, y = 927,
-    f = "MatrixBoldSmallCaps 7.25", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "7.25"), ff = Fonts.get_file("values"), a = "high" },
 
   atk_u = { x = 500, y = 927, w = 13, h = 19,
-    f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "high" },
 
   def = { x = 640, y = 927,
-    f = "MatrixBoldSmallCaps 7.25", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "7.25"), ff = Fonts.get_file("values"), a = "high" },
 
   def_u = { x = 640, y = 927, w = 13, h = 19,
-    f = "MatrixBoldSmallCaps 12", ff = fonts .. "values.ttf", a = "high" },
+    f = Fonts.get_family("values", "12"), ff = Fonts.get_file("values"), a = "high" },
 
   link_rating = { x = 639, y = 927,
-    f = "CodeTalker 6.5", ff = fonts .. "link-rating.otf", a = "high" },
+    f = Fonts.get_family("link_rating", "6.5"), ff = Fonts.get_file("link_rating"), a = "high" },
 
   serial_code = { x = 32, y = 968, w = 120,
-    f = "Stone Serif 4.5", ff = fonts .. "signature.ttf", a = "low" },
+    f = Fonts.get_family("signature", "4.5"), ff = Fonts.get_file("signature"), a = "low" },
 
   copyright = { x = 631, y = 968, w = 260,
-    f = "Stone Serif 4.25", ff = fonts .. "signature.ttf", a = "high" }
+    f = Fonts.get_family("signature", "4.25"), ff = Fonts.get_file("signature"), a = "high" }
 }
 
 return Layouts
