@@ -5,11 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Simpler installers for both Linux and Windows.
+
+### Changed
+- Default install location changed to `%LOCALAPPDATA%\YGOFabrica` for Windows.
+- Global configurations location changed to `%APPDATA%\YGOFabrica` for Windows.
+
 ### Deprecated
-- `--clean` flag in `ygofab sync` will be removed.
+- `--clean` flag in `ygofab sync` will be removed soon.
 
 ### Fixed
-- Composer no longer writes empty text.
+- Composer no longer tries to write empty text.
 - Gamedir path delimiter is now `'''` to avoid conflicts.
 - Infinite loop for long multiline text no longer happens.
 - `--clean` flag in `ygofab make` no longer drops tables.

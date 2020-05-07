@@ -8,7 +8,7 @@ require 'lib.table'
 local Config = {}
 
 local IS_WIN = package.config:sub(1,1) == "\\"
-local home = IS_WIN and (os.getenv("USERPROFILE") .. "\\ygofab") or (os.getenv("HOME") .. "/ygofab")
+local HOME = IS_WIN and (os.getenv("APPDATA") .. "\\YGOFabrica") or (os.getenv("HOME") .. "/ygofab")
 
 local FIELDS = {
   gamedir = { path = true },
@@ -86,7 +86,7 @@ end
 function Config.get(pwd)
   local empty = {}
   validate(empty)
-  local global_cfg = load_file(path.join(home, "config.toml")) or empty
+  local global_cfg = load_file(path.join(HOME, "config.toml")) or empty
   local local_cfg = load_file(path.join(pwd, "config.toml"))
   return local_cfg, global_cfg
 end

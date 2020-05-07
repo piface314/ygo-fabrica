@@ -84,10 +84,11 @@ function build.correct_toml()
   if m:match("prefixes") then return true end
   local add = "\
 \t\tlocal prefixes = { ['0x'] = 16, ['0o'] = 8, ['0b'] = 2 }\
+\t\tlocal ranges = { [2] = '[01]', [8] = '[0-7]', [16] = '%x' }\
 \t\tlocal base = prefixes[char(0) .. char(1)]\
 \t\tif base then\
 \t\t\tstep(2)\
-\t\t\tlocal digits = ({ [2] = '[01]', [8] = '[0-7]', [16] = '%x' })[base]\
+\t\t\tlocal digits = ranges[base]\
 \t\t\twhile(bounds()) do\
 \t\t\t\tif char():match(digits) then\
 \t\t\t\t\tnum = num .. char()\
@@ -110,7 +111,7 @@ end
 function build.path_req()
   return write_file(build.tree .. "/set-paths.lua", [[
 local version = _VERSION:match("%d+%.%d+")
-package.path = ("modules/share/lua/%s/?.lua;modules/share/lua/%s/?/init.lua;%s")
+package.path = ("./?.lua;./?/init.lua;modules/share/lua/%s/?.lua;modules/share/lua/%s/?/init.lua;%s")
   :format(version, version, package.path)
 package.cpath = ("modules/lib/lua/%s/?.]] .. (IS_WIN and "dll" or "so")
   .. [[;%s"):format(version, package.cpath)]])
@@ -131,7 +132,7 @@ function build.start()
 end
 
 local install = {}
-install.base = IS_WIN and "C:\\Program Files\\YGOFabrica" or "/usr/local/ygofab"
+install.base = IS_WIN and (os.getenv("LOCALAPPDATA") .. "\\YGOFabrica") or "/usr/local/ygofab"
 
 function install.set_paths(base)
   install.base = base or install.base
@@ -182,16 +183,15 @@ end
 function install.start(_, base)
   install.set_paths(base)
   Logs.assert(install.base_folder() and install.copy() and install.bins(), 1, err)
-  Logs.ok("YGOFabrica has been successfully installed!", IS_WIN and (" Now add " ..
-    install.bin .. " to your PATH so you can run `ygofab` and `ygopic` from cmd.") or "")
+  Logs.ok("YGOFabrica has been successfully installed!")
 end
 
 local config = {}
 
 function config.write(gamepath)
-  local home = IS_WIN and (os.getenv("USERPROFILE") .. "\\ygofab") or (os.getenv("HOME") .. "/ygofab")
-  return create_folder(home)
-    and write_file(home .. "/config.toml", ([[
+  local base = IS_WIN and (os.getenv("APPDATA") .. "\\YGOFabrica") or (os.getenv("HOME") .. "/ygofab")
+  return create_folder(base)
+    and write_file(base .. "/config.toml", ([[
 # Global configurations for YGOFabrica
 
 # Define one or more game directories
@@ -206,7 +206,7 @@ size = '256x'
 ext = 'jpg'
 field = true
 default = true
-]]):format(gamepath))
+]]):format(gamepath or ""))
 end
 
 function config.start(_, gamepath)

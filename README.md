@@ -1,4 +1,4 @@
-<img src="docs/logo.png" width="500" alt="YGOFabrica logo">
+<p align="center"><img src="docs/logo.png" width="500" alt="YGOFabrica logo"></p>
 
 A project manager for YGOPro extension packs.
 
