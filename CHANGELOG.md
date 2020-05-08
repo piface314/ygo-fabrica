@@ -8,13 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 - `--clean` flag in `ygofab sync` will be removed soon.
 
-## [1.0.1] - Artefato Astral // 2019-05-08
+## [1.0.1] - Artefato Astral // 2020-05-08
 ### Added
 - Simpler installers for both Linux and Windows.
 
 ### Changed
-- Default install location changed to `%LOCALAPPDATA%\YGOFabrica` for Windows.
-- Global configurations location changed to `%APPDATA%\YGOFabrica` for Windows.
+- Default install location changed from `C:\Program Files\YGOFabrica` to `%LOCALAPPDATA%\YGOFabrica` for Windows.
+- Global configurations location changed from `%USERPROFILE%\ygofab` to `%APPDATA%\YGOFabrica` for Windows.
 
 ### Fixed
 - Composer no longer tries to write empty text.
