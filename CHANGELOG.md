@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 - `--clean` flag in `ygofab sync` will be removed soon.
 
-## [1.0.1] - Artefato Astral // 2019-05-07
+## [1.0.1] - Artefato Astral // 2019-05-08
 ### Added
 - Simpler installers for both Linux and Windows.
 
@@ -34,4 +34,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generation of `.cdb` out of textual card description.
 
 [Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
+[1.0.1]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.1
 [1.0.0]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.0
