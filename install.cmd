@@ -74,8 +74,8 @@ rem ==========================================
 
 luajit\luajit make.lua install "%target%"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-luajit\luajit make.lua config
+luajit\luajit make.lua config "%1"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 if exist fonts ( luajit\luajit make.lua fonts )
-echo.
+echo "Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use! :D"
 pause
