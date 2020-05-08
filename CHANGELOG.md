@@ -5,8 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Deprecated
-- `--clean` flag in `ygofab sync` will be removed soon.
 
 ## [1.0.1] - Artefato Astral // 2020-05-08
 ### Added
@@ -15,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Default install location changed from `C:\Program Files\YGOFabrica` to `%LOCALAPPDATA%\YGOFabrica` for Windows.
 - Global configurations location changed from `%USERPROFILE%\ygofab` to `%APPDATA%\YGOFabrica` for Windows.
+
+### Deprecated
+- `--clean` flag in `ygofab sync` will be removed soon.
 
 ### Fixed
 - Composer no longer tries to write empty text.
@@ -34,5 +35,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generation of `.cdb` out of textual card description.
 
 [Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
-[1.0.1]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.1
+[1.0.1]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.0
