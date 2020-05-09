@@ -1,0 +1,14 @@
+language: shell
+os: linux
+dist: bionic
+git:
+  depth: 1
+addons:
+  apt:
+    update: true
+    packages:
+      - luajit
+      - luarocks
+      - zlib1g-dev
+      - libvips-dev
+script: luajit make.lua build
