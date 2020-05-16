@@ -1,5 +1,5 @@
 return {
-  version = "1.0.1",
+  version = "1.0.2",
   version_name = "artefato-astral",
   dependencies = {
     "lua-path",

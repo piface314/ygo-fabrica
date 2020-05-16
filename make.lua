@@ -3,7 +3,7 @@ local Interpreter = require 'lib.interpreter'
 local spec = require 'spec'
 
 
-local IS_WIN = package.config:sub(1,1) == "\\"
+local IS_WIN = package.config:sub(1, 1) == "\\"
 local function exec(command)
   if IS_WIN then
     local code1, _, code2 = os.execute(command)
@@ -113,15 +113,6 @@ function build.correct_toml()
   return write_file(toml_fp, ("%s%s%s"):format(pf, add, sf))
 end
 
-function build.path_req()
-  return write_file(build.tree .. "/set-paths.lua", [[
-local version = _VERSION:match("%d+%.%d+")
-package.path = ("./?.lua;./?/init.lua;modules/share/lua/%s/?.lua;modules/share/lua/%s/?/init.lua;%s")
-  :format(version, version, package.path)
-package.cpath = ("modules/lib/lua/%s/?.]] .. (IS_WIN and "dll" or "so")
-  .. [[;%s"):format(version, package.cpath)]])
-end
-
 function build.version()
   local info = read_file("lib/info.lua")
   if not info then return false end
@@ -131,13 +122,15 @@ function build.version()
 end
 
 function build.start()
-  Logs.assert(build.tree_folder() and build.dependencies()
-    and build.correct_toml() and build.path_req(), 1, err)
+  local steps = build.tree_folder() and build.dependencies() and build.correct_toml()
+  Logs.assert(steps, 1, err)
   Logs.ok("YGOFabrica has been successfully built!")
 end
 
 local install = {}
-install.base = IS_WIN and (os.getenv("LOCALAPPDATA") .. "\\YGOFabrica") or "/usr/local/ygofab"
+install.base = IS_WIN
+  and (os.getenv("LOCALAPPDATA") .. "\\YGOFabrica")
+  or "/usr/local/ygofab"
 
 function install.set_paths(base)
   install.base = base or install.base
@@ -162,42 +155,48 @@ function install.bins()
   if IS_WIN then
     local bin = ([[
 @echo off
-set ygofab_home="%s"
-set back="%%%%cd%%%%"
-cd "%%%%ygofab_home%%%%"
-luajit -l modules.set-paths scripts/%%s.lua %%%%back%%%% %%%%*
-cd %%%%back%%%%
+setlocal
+set "YGOFAB_ROOT=$root"
+set "LUA_PATH=%YGOFAB_ROOT%/?.lua;%YGOFAB_ROOT%/?/init.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?/init.lua"
+set "LUA_CPATH=%YGOFAB_ROOT%/modules/lib/lua/5.1/?.dll"
+set "PATH=%YGOFAB_ROOT%/luajit;%YGOFAB_ROOT%/vips/bin;%PATH%"
+luajit "%YGOFAB_ROOT%/scripts/$script.lua" %*
+endlocal
 @echo on
-]]):format(install.base)
-    return write_file(install.bin .. "\\ygofab.bat", bin:format("ygofab"))
-      and write_file(install.bin .. "\\ygopic.bat", bin:format("ygopic"))
+]]):gsub("$root", install.base)
+    os.remove(install.bin .. "\\ygofab.bat")
+    os.remove(install.bin .. "\\ygopic.bat")
+    return write_file(install.bin .. "\\ygofab.cmd", bin:gsub("$script", "ygofab"))
+      and write_file(install.bin .. "\\ygopic.cmd", bin:gsub("$script", "ygopic"))
   else
     local bin = ([[
 #!/usr/bin/env bash
-ygofab_home=%s
-back=$PWD
-cd $ygofab_home
-luajit -l modules.set-paths scripts/%%s.lua $back $@
-cd $back
-]]):format(install.base)
-    return write_file(install.bin .. "/ygofab", bin:format("ygofab"))
-      and write_file(install.bin .. "/ygopic", bin:format("ygopic"))
+export YGOFAB_ROOT="$root"
+export LUA_PATH="${YGOFAB_ROOT}/?.lua;${YGOFAB_ROOT}/?/init.lua;${YGOFAB_ROOT}/modules/share/lua/5.1/?.lua;${YGOFAB_ROOT}/modules/share/lua/5.1/?/init.lua"
+export LUA_CPATH="${YGOFAB_ROOT}/modules/lib/lua/5.1/?.so"
+luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
+]]):gsub("$root", install.base)
+    return write_file(install.bin .. "/ygofab", bin:gsub("$script", "ygofab"))
+      and write_file(install.bin .. "/ygopic", bin:gsub("$script", "ygopic"))
       and chmod(install.bin .. "/ygofab") and chmod(install.bin .. "/ygopic")
   end
 end
 
 function install.start(_, base)
   install.set_paths(base)
-  Logs.assert(install.base_folder() and install.copy() and install.bins(), 1, err)
+  local steps = install.base_folder() and install.copy() and install.bins()
+  Logs.assert(steps, 1, err)
   Logs.ok("YGOFabrica has been successfully installed!")
 end
 
 local config = {}
 
 function config.write(gamepath)
-  local base = IS_WIN and (os.getenv("APPDATA") .. "\\YGOFabrica") or (os.getenv("HOME") .. "/ygofab")
-  return create_folder(base)
-    and write_file(base .. "/config.toml", ([[
+  -- TODO: change (os.getenv("HOME") .. "/ygofab" to (os.getenv("HOME") .. "/.config/ygofab"
+  local base = IS_WIN
+    and (os.getenv("APPDATA") .. "\\YGOFabrica")
+    or (os.getenv("HOME") .. "/ygofab")
+  local content = ([[
 # Global configurations for YGOFabrica
 
 # Define one or more game directories
@@ -212,7 +211,8 @@ size = '256x'
 ext = 'jpg'
 field = true
 default = true
-]]):format(gamepath or ""))
+]]):format(gamepath or "")
+  return create_folder(base) and write_file(base .. "/config.toml", content)
 end
 
 function config.start(_, gamepath)

@@ -1,5 +1,5 @@
 local fs = require 'lib.fs'
-local path = require 'path'
+local path = fs.path
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local GameConst = require 'scripts.game-const'
@@ -14,7 +14,7 @@ local tables = {'texts', 'datas'}
 local function open_cdb(cdbfp)
   local db, err, msg = sqlite.open(cdbfp)
   Logs.assert(db, err, msg)
-  local sqlf = io.open(path.join("res", "new", "create-cdb.sql"), "r")
+  local sqlf = io.open(path.prjoin("res", "new", "create-cdb.sql"), "r")
   local create_sql = sqlf:read("*a")
   sqlf:close()
   db:exec(create_sql)
@@ -93,7 +93,7 @@ local st_activate = "-- activate\
   e1:SetType(EFFECT_TYPE_ACTIVATE)\
   e1:SetCode(EVENT_FREE_CHAIN)\
   c:RegisterEffect(e1)"
-local function write_scripts(pwd, entries)
+local function write_scripts(entries)
   for _, entry in pairs(entries) do
     local t, types = entry.type, GameConst.code.type
     local script
@@ -102,7 +102,7 @@ local function write_scripts(pwd, entries)
     elseif bit.band(t, types.SPELL + types.TRAP) ~= 0 then
       script = script_template:format(entry.name, st_activate)
     end
-    local fp = path.join(pwd, "script", ("c%d.lua"):format(entry.id))
+    local fp = path.join("script", ("c%d.lua"):format(entry.id))
     if script and not fs.exists(fp) then
       local f = io.open(fp, "w")
       if f then
@@ -147,10 +147,10 @@ local function gsub_sets(f, setcodes)
   return lines
 end
 
-function Writer.write_sets(pwd, sets)
+function Writer.write_sets(sets)
   local setcodes = sets_to_code(sets)
   if not next(setcodes) then return end
-  local fp = path.join(pwd, "expansions", "strings.conf")
+  local fp = path.join("expansions", "strings.conf")
   local f = io.open(fp, "r")
   local text = gsub_sets(f, setcodes)
   local f = io.open(fp, "w")
@@ -159,9 +159,9 @@ function Writer.write_sets(pwd, sets)
   f:close()
 end
 
-function Writer.write_entries(pwd, cdbfp, entries, clean)
+function Writer.write_entries(cdbfp, entries, clean)
   write_cdb(cdbfp, entries, clean)
-  write_scripts(pwd, entries)
+  write_scripts(entries)
 end
 
 return Writer

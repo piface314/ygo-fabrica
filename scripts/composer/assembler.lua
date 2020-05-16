@@ -1,5 +1,5 @@
 local vips = require 'vips'
-local path = require 'path'
+local path = require 'lib.fs'.path
 local Layouts = require 'scripts.composer.layouts'
 local Fitter = require 'scripts.composer.fitter'
 local TypeWriter = require 'scripts.composer.type-writer'
@@ -9,7 +9,7 @@ local Assembler = {}
 
 local mode = 'proxy'
 local options = {}
-local layers_dir = path.join("res", "composer", "layers")
+local layers_dir = path.prjoin("res", "composer", "layers")
 local bases, overlays = {}, { anime = {}, proxy = {} }
 local shapes = { anime = {}, proxy = {} }
 

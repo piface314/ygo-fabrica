@@ -1,6 +1,6 @@
-local fs = require 'lfs'
+local fs = require 'lib.fs'
+local path = fs.path
 local sqlite = require 'lsqlite3complete'
-local path = require 'path'
 local Logs = require 'lib.logs'
 
 
@@ -32,7 +32,7 @@ end
 
 local function keylist(t)
   local l = {}
-  for k, _ in pairs(t) do
+  for k in pairs(t) do
     insert(l, k)
   end
   return l
@@ -51,15 +51,16 @@ local function read_cdb(cdb, imgs)
       id = vals[1],
       name = vals[2] or "",
       desc = vals[3] or "",
-      type = tonumber(vals[4]),
-      atk = tonumber(vals[5]),
-      def = tonumber(vals[6]),
-      level = tonumber(vals[7]),
-      race = tonumber(vals[8]),
-      attribute = tonumber(vals[9])
+      type = tonumber(vals[4]) or 0,
+      atk = tonumber(vals[5]) or 0,
+      def = tonumber(vals[6]) or 0,
+      level = tonumber(vals[7]) or 0,
+      race = tonumber(vals[8]) or 0,
+      attribute = tonumber(vals[9]) or 0
     })
     return 0
   end)
+  Logs.assert(code == 0, code, "Failed to read .cdb")
   return data
 end
 

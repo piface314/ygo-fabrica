@@ -1,6 +1,6 @@
-local path = require 'path'
-local Logs = require 'lib.logs'
 local fs = require 'lib.fs'
+local path = fs.path
+local Logs = require 'lib.logs'
 
 
 local Printer = {}

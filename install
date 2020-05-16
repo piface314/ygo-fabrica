@@ -5,7 +5,7 @@ install_luajit() {
     return 0
   fi
   echo "Installing LuaJIT"
-  cd "./luajit" && make && sudo make install \
+  cd ./luajit && make && sudo make install \
     || ( echo "Failed installing LuaJIT." ; cd .. ; exit 1 ) 
   cd ..
 }
@@ -16,7 +16,7 @@ install_vips() {
     return 0
   fi
   echo "Installing libvips"
-  cd "./vips" && ./configure && make && sudo make install \
+  cd ./vips && ./configure && make && sudo make install \
     || ( echo "Failed installing libvips." ; cd .. ; exit 1 )
   cd ..
 }

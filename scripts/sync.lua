@@ -1,38 +1,36 @@
-local path = require 'path'
 local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
-local fs = require 'lfs'
+local fs = require 'lib.fs'
+local path = fs.path
 require 'lib.table'
 
 
 local insert = table.insert
 
-local PWD
-
 local function get_gamedirs(flag_g)
   local all = flag_g and not flag_g[1]
   local gamedir = flag_g and flag_g[1]
   if all then
-    return Config.get_all(PWD, 'gamedir')
+    return Config.get_all('gamedir')
   elseif gamedir then
-    local gd = Config.get_one(PWD, 'gamedir', gamedir)
-    Logs.assert(gd, 1, "Gamedir \"", gamedir, "\" is not configured.")
+    local gd = Config.get_one('gamedir', gamedir)
+    Logs.assert(gd, 1, 'Gamedir "', gamedir, '" is not configured.')
     return { [gamedir] = gd }
   else
-    return Config.get_defaults(PWD, 'gamedir')
+    return Config.get_defaults('gamedir')
   end
 end
 
 local function get_expansion(flag_e)
   local expansion = flag_e and flag_e[1]
   if expansion then
-    local exp = Config.get_one(PWD, 'expansion', expansion)
-    Logs.assert(exp, 1, "Expansion \"", expansion, "\" is not configured.")
+    local exp = Config.get_one('expansion', expansion)
+    Logs.assert(exp, 1, 'Expansion "', expansion, '" is not configured.')
     return expansion
   else
-    local id, exp = Config.get_default(PWD, 'expansion')
+    local id = Config.get_default('expansion')
     Logs.assert(id, 1,
-      "Please specify an expansion using `-e <expansion>` or define a default expansion.")
+      'Please specify an expansion using `-e <expansion>` or define a default expansion.')
     return id
   end
 end
@@ -40,13 +38,13 @@ end
 local function get_picset(flag_p)
   local picset = flag_p and flag_p[1]
   if picset then
-    local ps = Config.get_one(PWD, 'picset', picset)
-    Logs.assert(ps, 1, "Pic set \"", picset, "\" is not configured.")
+    local ps = Config.get_one('picset', picset)
+    Logs.assert(ps, 1, 'Pic set "', picset, '" is not configured.')
     return picset, ps
   else
-    local id, ps = Config.get_default(PWD, 'picset')
+    local id, ps = Config.get_default('picset')
     Logs.assert(id, 1,
-      "Please specify a picset using `-p <picset>` or define a default picset.")
+      'Please specify a picset using `-p <picset>` or define a default picset.')
     return id, ps
   end
 end
@@ -98,43 +96,43 @@ local function copy_dir(pattern, src, dst, fclean, tags)
   end
   local s, copied, total = pcall(cpd)
   if s then
-    Logs.info(("%d out of %d %s copied for %q"):format(copied, total, tags[1], tags[2]))
+    Logs.info(('%d out of %d %s copied for %q'):format(copied, total, tags[1], tags[2]))
     if copied == 0 then
-      Logs.warning("No ", tags[1]," copied for this gamedir.")
+      Logs.warning('No ', tags[1], ' copied for this gamedir.')
     end
   else
-    Logs.warning(("Failed while copying %s for %q:\n"):format(tags[1], tags[2]), copied)
+    Logs.warning(('Failed while copying %s for %q:\n'):format(tags[1], tags[2]), copied)
   end
 end
 
 local function copy_scripts(gamedir, gpath)
-  copy_dir("c%d+%.lua", path.join(PWD, "script"),
-    path.join(gpath, "script"), false, { "scripts", gamedir })
+  copy_dir("c%d+%.lua", "script", path.join(gpath, "script"),
+    false, {"scripts", gamedir})
 end
 
 local function copy_pics(gamedir, gpath, picset, pscfg, fclean)
   if not pscfg.ext then pscfg.ext = "jpg" end
-  copy_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset),
-    path.join(gpath, "pics"), fclean, { "pics", gamedir })
+  copy_dir("%d+%." .. pscfg.ext, path.join("pics", picset), path.join(gpath, "pics"),
+    fclean, { "pics", gamedir })
   if pscfg.field then
-    copy_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset, "field"),
+    copy_dir("%d+%." .. pscfg.ext, path.join("pics", picset, "field"),
       path.join(gpath, "pics", "field"), fclean, { "field pics", gamedir })
   end
 end
 
 local function copy_expansion(gamedir, gpath, exp)
   local expansion = exp .. ".cdb"
-  local src = path.join(PWD, "expansions", expansion)
+  local src = path.join("expansions", expansion)
   local dst = path.join(gpath, "expansions", expansion)
   if cp(src, dst) == 1 then
-    Logs.info("Copied expansion for \"", gamedir, '"')
+    Logs.info('Copied expansion for "', gamedir, '"')
   else
-    Logs.warning("Failed to copy expansion")
+    Logs.warning('Failed to copy expansion')
   end
 end
 
 local function get_set_codes()
-  local src = io.open(path.join(PWD, "expansions", "strings.conf"))
+  local src = io.open(path.join("expansions", "strings.conf"))
   if not src then return end
   local setcodes, unwritten = {}, {}
   for line in src:lines() do
@@ -177,13 +175,13 @@ local function copy_strings(gamedir, gpath)
   local dst = io.open(target, "w")
   if not dst then return end
   dst:write(lines)
-  Logs.info("Written strings.conf for \"", gamedir, '"')
+  Logs.info('Written strings.conf for "', gamedir, '"')
   dst:close()
 end
 
-return function(pwd, flags)
-  PWD = pwd
-  local fg, fp, fe, fclean = flags['-Gall'] or flags['-g'], flags['-p'], flags['-e'], flags['--clean']
+return function(flags)
+  local fg, fp, fe = flags['-Gall'] or flags['-g'], flags['-p'], flags['-e']
+  local fclean = flags['--clean']
   local no_script = flags['--no-script']
   local no_pics = flags['--no-pics']
   local no_exp = flags['--no-exp']
