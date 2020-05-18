@@ -30,7 +30,7 @@ goto :code
 :check
   set token=%1
   set token=%token:"=%
-  if "%token%" == "%target%" ( set contains=1 )
+  if "%token%" == "%target%" ( set "contains=1" )
   exit /b
 
 :code
@@ -40,7 +40,7 @@ for /f "usebackq tokens=2,*" %%A in (`reg query HKCU\Environment /v PATH`) do (
 
 call :pathvar_iter "%user_path%"
 
-if !contains! == 1 ( goto :dont_set_env )
+if !contains! neq 0 ( goto :dont_set_env )
 
 echo %user_path% > user-path-backup.txt
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
@@ -59,5 +59,5 @@ if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 luajit\luajit make.lua config "%1"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 if exist fonts ( luajit\luajit make.lua fonts )
-echo "Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use! :D"
+echo Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use^^! :D
 pause
