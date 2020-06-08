@@ -1,10 +1,8 @@
+local Version = require 'lib.version'
 local colors = require 'lib.colors'
 local HIGHLIGHT = colors.FG_MAGENTA .. colors.BOLD
 
-local Info = { version = "1.0.1", version_name = "artefato-astral" }
-
-function Info.get_header()
-  return ([[
+return ([[
 
                     %s---_____
                    /  _____ -----__
@@ -31,13 +29,6 @@ __     __  ____     %s_ / \ _%s    ____
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
   HIGHLIGHT, colors.RESET,
-  Info.version, Info.version_name,
+  Version.number, Version.name,
   HIGHLIGHT, colors.RESET
 )
-end
-
-function Info.get_version()
-  return ("ygofabrica v%s %s"):format(Info.version, Info.version_name)
-end
-
-return Info

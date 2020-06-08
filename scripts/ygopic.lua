@@ -1,6 +1,6 @@
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
-local Info = require 'lib.info'
+local Version = require 'lib.version'
 
 
 local function assert_help(assertion, msg)
@@ -49,7 +49,7 @@ end
 
 local function run(flags, mode, imgfolder, cdbfp, outfolder)
   if flags['--version'] or flags['-v'] then
-    return Logs.info(Info.get_version())
+    return Logs.info(Version.formatted())
   end
   local Composer = require 'scripts.composer.composer'
   assert_help(mode, "Please specify <mode>")

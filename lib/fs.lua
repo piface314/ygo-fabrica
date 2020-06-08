@@ -95,7 +95,7 @@ local program_root = ""
 --- Sets the program root folder path to `proot`
 --- @param proot string
 function fs.path.setproot(proot)
-  program_root = proot
+  program_root = proot or ""
 end
 
 --- Returns the program root folder path

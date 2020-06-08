@@ -60,7 +60,7 @@ build guide too, if you need.
 YGOFabrica uses some font files to generate card pics from a card database.
 However, the official fonts may not be free, and thus cannot be published in this
 repository. If you're already on EDOPro Percy Discord server, you can look for a pinned
-message in the `#card-scripting-101` channel that contains a download links to
+message in the `#card-scripting-101` channel that contains a download link to
 `ygofab-fonts.zip`.
 
 Download the latest [release](https://github.com/piface314/ygo-fabrica/releases)

@@ -1,10 +1,10 @@
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
-local Info = require 'lib.info'
+local Version = require 'lib.version'
 
 
 local function print_header()
-  Logs.info(Info.get_header())
+  Logs.info(require 'lib.header')
 end
 
 local function display_help(msg)
@@ -29,7 +29,7 @@ end
 
 local function cmd_version(flags, ...)
   if flags['--version'] or flags['-v'] then
-    Logs.info(Info.get_version())
+    Logs.info(Version.formatted())
   elseif #arg > 0 then
     display_help("This is not a valid command.\n")
   else

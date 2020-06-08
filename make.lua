@@ -63,8 +63,18 @@ local function chmod(fp)
   return exec(("chmod +x %s"):format(fp))
 end
 
-local build = {}
-build.tree = "modules"
+local build = { tree = "modules" }
+local install = {}
+local config = {}
+local fonts = {}
+
+if IS_WIN then
+  install.base = spec.install_path.windows
+  config.base = spec.config_path.windows
+else
+  install.base = spec.install_path.linux
+  config.base = spec.config_path.linux
+end
 
 function build.tree_folder() return create_folder(build.tree) end
 
@@ -113,32 +123,34 @@ function build.correct_toml()
   return write_file(toml_fp, ("%s%s%s"):format(pf, add, sf))
 end
 
-function build.version()
-  local info = read_file("lib/info.lua")
-  if not info then return false end
-  info = info:gsub([[version = ".-"]], ("version = %q"):format(spec.version), 1)
-    :gsub([[version_name = ".-"]], ("version_name = %q"):format(spec.version_name), 1)
-  return write_file("lib/info.lua", info)
-end
-
 function build.start()
   local steps = build.tree_folder() and build.dependencies() and build.correct_toml()
   Logs.assert(steps, 1, err)
   Logs.ok("YGOFabrica has been successfully built!")
 end
 
-local install = {}
-install.base = IS_WIN
-  and (os.getenv("LOCALAPPDATA") .. "\\YGOFabrica")
-  or "/usr/local/ygofab"
-
 function install.set_paths(base)
   install.base = base or install.base
-  install.bin = IS_WIN and install.base or "/usr/local/bin"
+  install.bin = IS_WIN and install.base or spec.bin_path
 end
 
 function install.base_folder()
   return create_folder(install.base)
+end
+
+function install.spec()
+  local info = read_file("lib/version.lua")
+  if not info then return false end
+  local data = {
+    number = spec.version,
+    name = spec.version_name
+  }
+  info = info:gsub([[([_%w]+)%s*=%s*(['"]).-%2]], function(key)
+    local v = data[key]
+    if not v then return nil end
+    return ("%s = %q"):format(key, v)
+  end)
+  return write_file("lib/version.lua", info)
 end
 
 function install.copy()
@@ -184,18 +196,14 @@ end
 
 function install.start(_, base)
   install.set_paths(base)
-  local steps = install.base_folder() and install.copy() and install.bins()
+  local steps = install.base_folder() and install.spec() and install.copy()
+    and install.bins()
   Logs.assert(steps, 1, err)
   Logs.ok("YGOFabrica has been successfully installed!")
 end
 
-local config = {}
-
 function config.write(gamepath)
-  -- TODO: change (os.getenv("HOME") .. "/ygofab" to (os.getenv("HOME") .. "/.config/ygofab"
-  local base = IS_WIN
-    and (os.getenv("APPDATA") .. "\\YGOFabrica")
-    or (os.getenv("HOME") .. "/ygofab")
+  local base = config.base
   local content = ([[
 # Global configurations for YGOFabrica
 
@@ -220,8 +228,6 @@ function config.start(_, gamepath)
   Logs.ok("YGOFabrica has been successfully configured!")
 end
 
-
-local fonts = {}
 function fonts.copy(fp)
   local Fonts = require 'scripts.composer.fonts'
   local target = install.base .. "/" .. Fonts.path
