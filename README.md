@@ -19,8 +19,6 @@ at DeviantArt that published their
 [templates](https://www.deviantart.com/icycatelf/art/YGO-Series-10-Master-PSD-676448168)
 for the card proxies. 
 
----
-
 ## Features
 
 Currently available features are checked. Features planned for release in the near
@@ -35,11 +33,9 @@ future are left unchecked.
 - [x] Making `.cdb` files out of descriptive `.toml` files.
 - [ ] Multi-language support.
 
-Note: to generate card pics from a card databases, this software uses an image processing
-library that **only** works on 64-bit systems. This is irrelevant for the rest of the
-features, though.
-
----
+> Note: to generate card pics from a card databases, this software uses an image processing
+> library that **only** works on 64-bit systems. This is irrelevant for the rest of the
+> features, though.
 
 ## Wiki
 
@@ -50,16 +46,14 @@ For further instructions about how to install and use YGOFabrica, go to the
 [wiki](https://github.com/piface314/ygo-fabrica/wiki)! You can find there a step-by-step
 build guide too, if you need.
 
----
-
 ## Installation
 
 > This is a short version of the install instructions, suitable only for those who
-> download a prebuilt release.
+> download a prebuilt release - which is the most common case.
 
 YGOFabrica uses some font files to generate card pics from a card database.
 However, the official fonts may not be free, and thus cannot be published in this
-repository. If you're already on EDOPro Percy Discord server, you can look for a pinned
+repository. If you're already on EDOPro Discord server, you can look for a pinned
 message in the `#card-scripting-101` channel that contains a download link to
 `ygofab-fonts.zip`.
 
@@ -68,10 +62,8 @@ and extract it anywhere. Also, extract the contents of `ygofab-fonts.zip` to tha
 folder. You should now see a folder called `fonts` resting besides other files like
 `install`, `install.cmd`, `make.lua`, etc.
 
-Now, if you're on Linux, run `install`, or run `install.cmd` if you're on Windows.
+Now, if you're on Linux, run `sudo ./install`, or run `install.cmd` if you're on Windows.
 If no errors pop up, it's done!
-
----
 
 ## Usage
 
