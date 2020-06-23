@@ -42,8 +42,10 @@ call :pathvar_iter "%user_path%"
 
 if !contains! neq 0 ( goto :dont_set_env )
 
-echo %user_path% > user-path-backup.txt
+set "backup_fp=user-path-backup.txt"
+echo %user_path% > %backup_fp%
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
+echo Previous value of user variable PATH has been written to %backup_fp%
 set "user_path=%target%;%user_path%"
 setx PATH "%user_path%"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
