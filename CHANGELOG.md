@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - Artefato Astral // 2020-06-12
+## [1.0.2] - Artefato Astral // 2020-06-23
 ### Fixed
 - `ygopic` no longer broken.
 - Solved problems with working on different drives in Windows.
