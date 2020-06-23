@@ -2,9 +2,6 @@
 setlocal enabledelayedexpansion
 
 set target=%LOCALAPPDATA%\YGOFabrica
-set path_ygofab=%target%
-set path_lua=%target%\luajit
-set path_vips=%target%\vips\bin
 
 rem ==========================================
 rem Copy luajit and vips
@@ -18,9 +15,7 @@ rem ==========================================
 rem Set environment variables
 rem ==========================================
 
-set contains_ygofab=0
-set contains_lua=0
-set contains_vips=0
+set contains=0
 
 goto :code
 :pathvar_iter
@@ -35,9 +30,7 @@ goto :code
 :check
   set token=%1
   set token=%token:"=%
-  if "%token%" == "%path_ygofab%" ( set "contains_ygofab=1" )
-  if "%token%" == "%path_lua%" ( set "contains_lua=1" )
-  if "%token%" == "%path_vips%" ( set "contains_vips=1" )
+  if "%token%" == "%target%" ( set "contains=1" )
   exit /b
 
 :code
@@ -47,26 +40,17 @@ for /f "usebackq tokens=2,*" %%A in (`reg query HKCU\Environment /v PATH`) do (
 
 call :pathvar_iter "%user_path%"
 
-set should_set_env=0
-if "!contains_vips!" == "0" (
-  set "user_path=%path_vips%;%user_path%"
-  set should_set_env=1
-)
-if "!contains_lua!" == "0" (
-  set "user_path=%path_lua%;%user_path%"
-  set should_set_env=1
-)
-if "!contains_ygofab!" == "0" (
-  set "user_path=%path_ygofab%;%user_path%"
-  set should_set_env=1
-)
+if !contains! neq 0 ( goto :dont_set_env )
 
-if "!should_set_env!" == "0" ( goto :dont_set_env )
-  echo %user_path% > user-path-backup.txt
-  if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-  setx PATH "%user_path%"
-  if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-  :dont_set_env
+set "backup_fp=user-path-backup.txt"
+echo %user_path% > %backup_fp%
+if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
+echo Previous value of user variable PATH has been written to %backup_fp%
+set "user_path=%target%;%user_path%"
+setx PATH "%user_path%"
+if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
+
+:dont_set_env
 
 rem ==========================================
 rem Install program files
@@ -77,5 +61,5 @@ if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 luajit\luajit make.lua config "%1"
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
 if exist fonts ( luajit\luajit make.lua fonts )
-echo "Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use! :D"
+echo Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use^^! :D
 pause

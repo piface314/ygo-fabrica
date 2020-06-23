@@ -1,11 +1,10 @@
-local fs = require 'lfs'
-local path = require 'path'
+local fs = require 'lib.fs'
+local path = fs.path
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 
 
-local PWD
-local GENFP = path.join("res", "new")
+local GENFP = path.prjoin("res", "new")
 
 local function check_name(pack_name)
   Logs.assert(pack_name, 1, "No name was provided for the new extension pack")
@@ -13,14 +12,14 @@ local function check_name(pack_name)
 end
 
 local function create_folder(folder)
-  Logs.info("Creating \"", folder, "\" folder...")
-  local success, msg, errcode = fs.mkdir(path.join(PWD, folder))
+  Logs.info('Creating "', folder, '" folder...')
+  local success, msg, errcode = fs.mkdir(folder)
   Logs.assert(success, errcode, ("%q - %s"):format(folder, msg))
 end
 
 local function create_cdb(pack_name)
   Logs.info("Creating card database...")
-  local db, err, msg = sqlite.open(path.join(PWD, pack_name, "expansions",
+  local db, err, msg = sqlite.open(path.join(pack_name, "expansions",
     pack_name .. ".cdb"))
   Logs.assert(db, err, msg)
   local sqlf = io.open(path.join(GENFP, "create-cdb.sql"), "r")
@@ -38,22 +37,21 @@ local function read_file(src)
   return str
 end
 
-local function write_file(str, dst)
-  local dstfile, msg = io.open(path.join(PWD, dst), "w")
+local function write_file(dst, str)
+  local dstfile, msg = io.open(dst, "w")
   Logs.assert(dstfile, 1, msg)
   dstfile:write(str)
   dstfile:close()
 end
 
 local function create_config(pack_name)
-  Logs.info("Creating \"config.toml\" file...")
+  Logs.info('Creating "config.toml" file...')
   local cgen = read_file(path.join(GENFP, "config.gen.toml"))
   local dst = path.join(pack_name, "config.toml")
-  write_file(cgen:gsub("$EXPANSION", pack_name), dst)
+  write_file(dst, cgen:gsub("$EXPANSION", pack_name))
 end
 
-return function (pwd, pack_name)
-  PWD = pwd
+return function (pack_name)
   check_name(pack_name)
   create_folder(pack_name)
   create_folder(path.join(pack_name, "artwork"))
@@ -62,5 +60,5 @@ return function (pwd, pack_name)
   create_folder(path.join(pack_name, "expansions"))
   create_cdb(pack_name)
   create_config(pack_name)
-  Logs.ok("\"", pack_name, "\" pack successfully created!")
+  Logs.ok('"', pack_name, '" pack successfully created!')
 end

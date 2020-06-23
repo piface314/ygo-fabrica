@@ -4,8 +4,6 @@ local Logs = require 'lib.logs'
 
 local DataFetcher = {}
 
-local insert = table.insert
-
 local function read_file(fp)
   local f, msg = io.open(fp, "r")
   Logs.assert(f, 1, msg)

@@ -1,6 +1,8 @@
+local path = require 'lib.fs'.path
 local Fonts = require 'scripts.composer.fonts'
 
 
+Fonts.path = path.normalize(path.getproot()) .. '/' .. Fonts.path
 local Layouts = {}
 
 Layouts.field = { x = 0, y = 0, w = 512, h = 512 }

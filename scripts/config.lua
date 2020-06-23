@@ -1,4 +1,4 @@
-local path = require 'path'
+local path = require 'lib.fs'.path
 local toml = require 'toml'
 local Logs = require 'lib.logs'
 local colors = require 'lib.colors'
@@ -7,7 +7,8 @@ require 'lib.table'
 
 local Config = {}
 
-local IS_WIN = package.config:sub(1,1) == "\\"
+local IS_WIN = package.config:sub(1, 1) == "\\"
+-- TODO: change to (os.getenv("HOME") .. "/.config/ygofab")
 local HOME = IS_WIN and (os.getenv("APPDATA") .. "\\YGOFabrica") or (os.getenv("HOME") .. "/ygofab")
 
 local FIELDS = {
@@ -83,23 +84,23 @@ local function format(cfg)
   return gamedirs .. "\n" .. picsets .. "\n" .. expansions
 end
 
-function Config.get(pwd)
+function Config.get()
   local empty = {}
   validate(empty)
   local global_cfg = load_file(path.join(HOME, "config.toml")) or empty
-  local local_cfg = load_file(path.join(pwd, "config.toml"))
+  local local_cfg = load_file("config.toml")
   return local_cfg, global_cfg
 end
 
-function Config.get_one(pwd, key, id)
-  local local_cfg, global_cfg = Config.get(pwd)
+function Config.get_one(key, id)
+  local local_cfg, global_cfg = Config.get()
   local lc = local_cfg and local_cfg[key][id] or nil
   local gc = global_cfg[key][id]
   return lc or gc
 end
 
-function Config.get_default(pwd, key)
-  local local_cfg, global_cfg = Config.get(pwd)
+function Config.get_default(key)
+  local local_cfg, global_cfg = Config.get()
   local function search(t)
     for id, c in pairs(t) do
       if c.default then return id, c end
@@ -114,8 +115,8 @@ function Config.get_default(pwd, key)
   end
 end
 
-function Config.get_defaults(pwd, key)
-  local local_cfg, global_cfg = Config.get(pwd)
+function Config.get_defaults(key)
+  local local_cfg, global_cfg = Config.get()
   local cfg = {}
   merge(cfg, global_cfg)
   merge(cfg, local_cfg or {})
@@ -128,16 +129,16 @@ function Config.get_defaults(pwd, key)
   return cs
 end
 
-function Config.get_all(pwd, key)
-  local local_cfg, global_cfg = Config.get(pwd)
+function Config.get_all(key)
+  local local_cfg, global_cfg = Config.get()
   local cfg = {}
   merge(cfg, global_cfg)
   merge(cfg, local_cfg or {})
   return cfg[key]
 end
 
-setmetatable(Config, { __call = function(_, pwd)
-  local local_cfg, global_cfg = Config.get(pwd)
+setmetatable(Config, { __call = function()
+  local local_cfg, global_cfg = Config.get()
   local fglobal_cfg, errmsg = format(global_cfg)
   Logs.assert(fglobal_cfg, 1, errmsg)
   Logs.info(colors.FG_MAGENTA, colors.BOLD, "Global configurations:\n\n",

@@ -1,28 +1,24 @@
-local path = require 'path'
+local fs = require 'lib.fs'
+local path = fs.path
 local zip = require 'ZipWriter'
-local fs = require 'lfs'
 local Config = require 'scripts.config'
 local Logs = require 'lib.logs'
 require 'lib.table'
 
 
-local insert, keys = table.insert, table.keys
-
-local PWD
-
 local function get_expansions(flag_e)
   local all = flag_e and not flag_e[1]
   local expansion = flag_e and flag_e[1]
   if all then
-    local exps = Config.get_all(PWD, 'expansion')
-    return keys(exps)
+    local exps = Config.get_all('expansion')
+    return table.keys(exps)
   elseif expansion then
-    local exp = Config.get_one(PWD, 'expansion', expansion)
-    Logs.assert(exp, 1, "Expansion \"", expansion, "\" is not configured.")
+    local exp = Config.get_one('expansion', expansion)
+    Logs.assert(exp, 1, 'Expansion "', expansion, '" is not configured.')
     return { expansion }
   else
-    local exps = Config.get_defaults(PWD, 'expansion')
-    return keys(exps)
+    local exps = Config.get_defaults('expansion')
+    return table.keys(exps)
   end
 end
 
@@ -30,18 +26,18 @@ local function get_picsets(flag_p)
   local all = flag_p and not flag_p[1]
   local picset = flag_p and flag_p[1]
   if all then
-    return Config.get_all(PWD, 'picset')
+    return Config.get_all('picset')
   elseif picset then
-    local ps = Config.get_one(PWD, 'picset', picset)
-    Logs.assert(ps, 1, "Pic set \"", picset, "\" is not configured.")
+    local ps = Config.get_one('picset', picset)
+    Logs.assert(ps, 1, 'Pic set "', picset, '" is not configured.')
     return { [picset] = ps }
   else
-    return Config.get_defaults(PWD, 'picset')
+    return Config.get_defaults('picset')
   end
 end
 
 local function get_outdir(flag_o)
-  return flag_o and flag_o[1] or PWD
+  return flag_o and flag_o[1] or ""
 end
 
 local function get_output(outdir, exp, picset)
@@ -102,33 +98,31 @@ local function add_dir(pattern, dir, zipfile, zipdir, tag)
 end
 
 local function add_scripts(zipname, zipfile)
-  add_dir("c%d+%.lua", path.join(PWD, "script"), zipfile,
-    path.join(zipname, "script"), "scripts")
+  add_dir("c%d+%.lua", "script", zipfile, path.join(zipname, "script"), "scripts")
 end
 
 local function add_pics(zipname, zipfile, picset, pscfg)
   if not pscfg.ext then pscfg.ext = "jpg" end
-  add_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset), zipfile,
+  add_dir("%d+%." .. pscfg.ext, path.join("pics", picset), zipfile,
     path.join(zipname, "pics"), "pics")
   if pscfg.field then
-    add_dir("%d+%." .. pscfg.ext, path.join(PWD, "pics", picset, "field"),
+    add_dir("%d+%." .. pscfg.ext, path.join("pics", picset, "field"),
       zipfile, path.join(zipname, "pics", "field"), "field pics")
   end
 end
 
-local function add_expansion(zipname, zipfile, exp)
+local function add_expansion(zipfile, exp)
   exp = exp .. ".cdb"
-  local desc, r, errmsg = reader(path.join(PWD, "expansions", exp), false)
+  local desc, r, errmsg = reader(path.join("expansions", exp), false)
   if r then
-    zipfile:write(path.join(zipname, "expansions", exp), desc, r)
+    zipfile:write(path.join("expansions", exp), desc, r)
     Logs.info("Added expansion")
   else
     Logs.warning("Failed to add expansion:\n", errmsg)
   end
 end
 
-return function(pwd, flags)
-  PWD = pwd
+return function(flags)
   local fe, fp, fo = flags['-Eall'] or flags['-e'], flags['-Pall'] or flags['-p'], flags['-o']
   local outdir = get_outdir(fo)
   local picsets = get_picsets(fp)
@@ -140,7 +134,7 @@ return function(pwd, flags)
       local zipfile = create_zip(out)
       add_scripts(zipname, zipfile)
       add_pics(zipname, zipfile, id, pscfg)
-      add_expansion(zipname, zipfile, exp)
+      add_expansion(zipfile, exp)
       zipfile:close()
     end
   end
