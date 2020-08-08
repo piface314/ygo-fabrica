@@ -47,7 +47,7 @@ function Logs.bar(n)
   local bar_string = "\r%5.1f%% [%s%s%s%s] %" .. #tostring(n) .. "d/%d %s"
   local prev_s = 0
   function bar:print(label)
-    local rate = progress / n
+    local rate = n > 0 and progress / n or 0
     local qt_fill = round(rate * BAR_WIDTH)
     local fill, miss = CHAR:rep(qt_fill), SPACE:rep(BAR_WIDTH - qt_fill)
     local s = bar_string:format(rate * 100, colors.FG_GREEN .. colors.BOLD, fill, miss,

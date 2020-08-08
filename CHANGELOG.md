@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
+
+### Fixed
+- Ritual Spells no longer have a blue frame.
+- Warnings for `ygofab compose` correctly display id of a broken card.
+
+## [2.0.0] - Barian Babélico // 
 
 ## [1.0.2] - Artefato Astral // 2020-06-23
 ### Fixed
@@ -29,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--clean` flag in `ygofab make` no longer drops tables.
 - `--version`/`-v` flag wasn't present
 
-## [1.0.0] - Artefato Astral // 2019-02-12
+## [1.0.0] - Artefato Astral // 2020-02-12
 ### Added
 - Creation of YGOPro extension pack folder structure.
 - Global and local configurations, e.g. game folders.
@@ -40,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generation of `.cdb` out of textual card description.
 
 [Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
+[2.0.0]: https://github.com/piface314/ygo-fabrica/compare/v1.0.2...v2.0.0
 [1.0.2]: https://github.com/piface314/ygo-fabrica/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.0

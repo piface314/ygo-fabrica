@@ -154,7 +154,8 @@ function automatons.proxy(data)
   local transformer = Transformer.new()
 
   function states.baseframe()
-    local frame = Parser.match_msb(data.type, frame_types)
+    local is_st = Parser.bcheck(data.type, spellortrap)
+    local frame = Parser.match_msb(data.type, is_st and spellortrap or monster_types)
     if frame == 0 then
       return nil, "Missing card type"
     end

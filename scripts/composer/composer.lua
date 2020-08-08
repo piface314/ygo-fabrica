@@ -29,7 +29,7 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
       metalayers_set[d.id] = metalayers
       n = n + 1
     else
-      Logs.warning(("Failed at decoding %s: "):format(data.id), msg)
+      Logs.warning(("Failed at decoding %s: "):format(d.id), msg)
     end
   end
   Assembler.configure(mode, options)

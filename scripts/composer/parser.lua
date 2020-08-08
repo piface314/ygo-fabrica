@@ -86,8 +86,11 @@ end
 
 local abilities = types.FLIP + types.GEMINI + types.SPIRIT + types.TOON + types.UNION
 function Parser.get_ability(data)
-  local ability = Parser.match_lsb(data.type, abilities)
-  return GameConst.name.type[ability]
+  local abs = {}
+  for b in Parser.bits(bit.band(data.type, abilities)) do
+    table.insert(abs, GameConst.name.type[b])
+  end
+  return table.concat(abs, "/")
 end
 
 return Parser

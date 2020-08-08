@@ -1,8 +1,8 @@
 
 
 local Version = {
-  number = "",
-  name = ""
+  number = "1.1.0",
+  name = "artefato-astral"
 }
 
 function Version.formatted()
