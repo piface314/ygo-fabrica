@@ -18,9 +18,7 @@ function Logs.assert(v, ...)
   if not v then
     io.stderr:write(colors.FG_RED, colors.BOLD, '[', i18n('logs.err'), '] ', colors.RESET, ...)
     io.stderr:write('\n')
-    for _, cb in ipairs(err_cb) do
-      cb()
-    end
+    for _, cb in ipairs(err_cb) do cb() end
     os.exit(1)
   end
 end
@@ -28,7 +26,7 @@ end
 --- Shows a success message and writes any number of strings to the standard output,
 --- adding a newline at the end.
 function Logs.ok(...)
-  io.write(colors.FG_GREEN, colors.BOLD, '[', i18n('logs.ok'),'] ', colors.RESET, ...)
+  io.write(colors.FG_GREEN, colors.BOLD, '[', i18n('logs.ok'), '] ', colors.RESET, ...)
   io.write('\n')
 end
 
@@ -57,24 +55,22 @@ function Logs.bar(n)
   local progress = 0
   local bar_string = '\r%5.1f%% [%s%s%s%s] %' .. #tostring(n) .. 'd/%d %s'
   local prev_s = 0
-  function bar:print(label)
-    local rate = n > 0 and progress / n or 0
+  n = math.max(0, n)
+  function bar:print(label, prelabel)
+    local rate = math.min(progress / n, 1)
     local qt_fill = round(rate * BAR_WIDTH)
     local fill, miss = CHAR:rep(qt_fill), SPACE:rep(BAR_WIDTH - qt_fill)
     local s = bar_string:format(rate * 100, colors.FG_GREEN .. colors.BOLD,
                                 fill, miss, colors.RESET, progress, n,
                                 label or '')
-    io.write('\r', SPACE:rep(prev_s))
-    io.write(s)
+    prelabel = prelabel and prelabel .. '\n' or ''
+    io.write('\r', prelabel, SPACE:rep(prev_s), s)
     io.flush()
     prev_s = #s - FMT_WD
   end
-  function bar:update(label, i)
-    progress = progress + (i or 1)
-    if progress > n then
-      progress = n
-    end
-    self:print(label)
+  function bar:update(label, prelabel, i)
+    progress = math.min(progress + (i or 1), n)
+    self:print(label, prelabel)
   end
   function bar:finish(label)
     self:print(label)

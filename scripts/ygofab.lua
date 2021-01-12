@@ -33,7 +33,7 @@ local function cmd_version(flags, ...)
   if flags['--version'] or flags['-v'] then
     Logs.info(Version.formatted())
   elseif #arg > 0 then
-    display_help(i18n 'invalid_command' .. '\n')
+    display_help(i18n 'ygofab.invalid_command' .. '\n')
   else
     display_help()
   end
@@ -73,7 +73,7 @@ interpreter:add_command('compose', cmd_compose, '-p', 1, '-Pall', 0, '-e', 1,
                         '-Eall', 0)
 interpreter:add_command('config', cmd_config)
 interpreter:add_command('export', cmd_export, '-p', 1, '-Pall', 0, '-o', 1,
-                        '-e', 1, '-Eall', 0)
+                        '-e', 1, '-Eall', 0, '-v', 0, '--verbose', 0)
 interpreter:add_command('make', cmd_make, '--clean', 0, '--all', 0)
 interpreter:add_command('new', cmd_new)
 interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,

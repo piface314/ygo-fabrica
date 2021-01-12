@@ -31,6 +31,12 @@ return {
     },
     export = {
       status = 'Exportando %q com %q...',
+      zip_create_error = 'ao criar o .zip:',
+      zip_add_error = 'ao adicionar arquivo ao .zip:',
+      scan_scripts = 'Procurando por scripts...',
+      scan_pics = 'Procurando por imagens de carta...',
+      scan_fields = 'Procurando por imagens de campo...',
+      file_srcdst = '%q -> %q',
       done = 'Pronto!'
     },
     make = {
