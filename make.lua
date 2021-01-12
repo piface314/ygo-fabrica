@@ -1,6 +1,7 @@
 local Logs = require 'lib.logs'
 local Interpreter = require 'lib.interpreter'
 local spec = require 'spec'
+local locale = require 'locale'
 
 
 local IS_WIN = package.config:sub(1, 1) == "\\"
@@ -125,7 +126,7 @@ end
 
 function build.start()
   local steps = build.tree_folder() and build.dependencies() and build.correct_toml()
-  Logs.assert(steps, 1, err)
+  Logs.assert(steps, err)
   Logs.ok("YGOFabrica has been successfully built!")
 end
 
@@ -156,6 +157,7 @@ end
 function install.copy()
   return cp("modules", install.base)
     and cp("lib", install.base)
+    and cp("locale", install.base)
     and cp("res", install.base)
     and cp("scripts", install.base)
     and cp("CHANGELOG.md", install.base, true)
@@ -198,7 +200,7 @@ function install.start(_, base)
   install.set_paths(base)
   local steps = install.base_folder() and install.spec() and install.copy()
     and install.bins()
-  Logs.assert(steps, 1, err)
+  Logs.assert(steps, err)
   Logs.ok("YGOFabrica has been successfully installed!")
 end
 
@@ -206,6 +208,7 @@ function config.write(gamepath)
   local base = config.base
   local content = ([[
 # Global configurations for YGOFabrica
+locale = 'pt'
 
 # Define one or more game directories
 [gamedir.main]
@@ -224,7 +227,7 @@ default = true
 end
 
 function config.start(_, gamepath)
-  Logs.assert(config.write(gamepath), 1, err)
+  Logs.assert(config.write(gamepath), err)
   Logs.ok("YGOFabrica has been successfully configured!")
 end
 
@@ -242,7 +245,7 @@ function fonts.copy(fp)
 end
 
 function fonts.start(_, fp)
-  Logs.assert(fonts.copy(fp), 1, err)
+  Logs.assert(fonts.copy(fp), err)
   Logs.ok("Fonts were successfully installed to YGOFabrica!")
 end
 
@@ -252,7 +255,7 @@ interpreter:add_command('install', install.start)
 interpreter:add_command('config', config.start)
 interpreter:add_command('fonts', fonts.start)
 interpreter:add_command('', function()
-  Logs.assert(false, 1, "Please specify `build`, `install`, `config` or `fonts`")
+  Logs.assert(false, "Please specify `build`, `install`, `config` or `fonts`")
 end)
 local errmsg = interpreter:exec(...)
-Logs.assert(not errmsg, 1, errmsg)
+Logs.assert(not errmsg, errmsg)

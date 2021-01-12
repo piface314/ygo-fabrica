@@ -52,7 +52,7 @@ local function fit_in_ratio(text, opt, h, ft, fs)
 end
 
 local function fit_relaxing_width(text, opt, h, w, i)
-  local scale, t = 1
+  local scale, t = 1, nil
   local initial_wd = opt.width
   repeat
     opt.width = opt.width + i
@@ -67,7 +67,7 @@ local function fit_relaxing_width(text, opt, h, w, i)
 end
 
 local function fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs)
-  local r, scale, t = 1, 1
+  local r, scale, t = 1, 1, nil
   local relax = {
     function() fs = fs - 0.2 end,
     function() opt.width = opt.width + i end

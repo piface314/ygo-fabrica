@@ -6,13 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Internationalization in program interface.
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
+
+### Changed
+- Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
+- Default binaries location changed from `/usr/local/bin` to `$HOME/.local/bin` for Linux, to avoid using `sudo`.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.
 - Warnings for `ygofab compose` correctly display id of a broken card.
 
-## [2.0.0] - Barian Babélico // 
+### Removed
+- `--clean` flag in `ygofab sync`.
+
+## [2.0.0] - Barian Babélico // 2021-??-??
 
 ## [1.0.2] - Artefato Astral // 2020-06-23
 ### Fixed

@@ -3,22 +3,21 @@ local Decoder = require 'scripts.composer.decoder'
 local Assembler = require 'scripts.composer.assembler'
 local Printer = require 'scripts.composer.printer'
 local Logs = require 'lib.logs'
-
+local i18n = require 'lib.i18n'
 
 local Composer = {}
 
-local modes = { anime = true, proxy = true }
+local modes = {anime = true, proxy = true}
 local function check_mode(mode)
   return modes[mode]
 end
 
 local function check_folders(imgfolder, outfolder)
-  Logs.assert(imgfolder ~= outfolder, 1, "Artwork folder cannot be the same as ",
-    "output folder")
+  Logs.assert(imgfolder ~= outfolder, i18n('compose.output_conflict'))
 end
 
 function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
-  Logs.assert(check_mode(mode), 1, "unknown mode \"", mode, '"')
+  Logs.assert(check_mode(mode), i18n('compose.unknown_mode', {mode}))
   check_folders(imgfolder, outfolder)
   local data = DataFetcher.get(imgfolder, cdbfp)
   local metalayers_set, n = {}, 0
@@ -29,7 +28,7 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
       metalayers_set[d.id] = metalayers
       n = n + 1
     else
-      Logs.warning(("Failed at decoding %s: "):format(d.id), msg)
+      Logs.warning(i18n('compose.decode_fail', {d.id}), msg)
     end
   end
   Assembler.configure(mode, options)
@@ -37,14 +36,14 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
   local bar = Logs.bar(n)
   bar:print()
   for id, metalayers in pairs(metalayers_set) do
-    bar:update("Generating " .. id .. "...")
+    bar:update(i18n('compose.generating', {id}))
     local img, field = Assembler.assemble(metalayers)
     Printer.print(id, img)
     if field then
       Printer.print_field(id, field)
     end
   end
-  bar:finish("Done!")
+  bar:finish(i18n('compose.done'))
 end
 
 return Composer

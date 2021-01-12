@@ -3,7 +3,7 @@ local Logs = require 'lib.logs'
 local MetaLayer = require 'scripts.composer.metalayer'
 local Parser = require 'scripts.composer.parser'
 local Transformer = require 'scripts.composer.transformer'
-
+local i18n = require 'lib.i18n'
 
 local Decoder = {}
 
@@ -47,9 +47,9 @@ local name_colors = {
   [types.TRAP] = {"color-trap", white}
 }
 
-local automatons = {}
+local automata = {}
 
-function automatons.anime(data)
+function automata.anime(data)
   local states, inital = {}, 'art'
   local layers = {}
 
@@ -60,7 +60,7 @@ function automatons.anime(data)
     elseif Parser.bcheck(data.type, types.MONSTER) then
       return states.monster()
     else
-      return nil, "Not a monster nor a spell/trap"
+      return nil, i18n 'compose.decoder.no_card_type'
     end
   end
 
@@ -73,7 +73,7 @@ function automatons.anime(data)
   function states.monster()
     local mtype = Parser.match_msb(data.type, monster_types)
     if mtype == 0 then
-      return nil, "Missing monster type"
+      return nil, i18n 'compose.decoder.no_monster_type'
     end
     insert(layers, MetaLayer.new("overlay", typef_ov(mtype)))
     if Parser.bcheck(data.type, types.PENDULUM) then
@@ -138,17 +138,16 @@ function automatons.anime(data)
 
   function states.attribute()
     local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
-    if att == 0 then
-      return nil, "No attribute"
+    if att > 0 then
+      insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     end
-    insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     return layers
   end
 
   return states[inital]()
 end
 
-function automatons.proxy(data)
+function automata.proxy(data)
   local states, inital = {}, 'baseframe'
   local layers = {}
   local transformer = Transformer.new()
@@ -157,7 +156,7 @@ function automatons.proxy(data)
     local is_st = Parser.bcheck(data.type, spellortrap)
     local frame = Parser.match_msb(data.type, is_st and spellortrap or monster_types)
     if frame == 0 then
-      return nil, "Missing card type"
+      return nil, i18n 'compose.decoder.no_card_type'
     end
     insert(layers, MetaLayer.new("overlay", typef_ov(frame)))
     if Parser.bcheck(data.type, types.PENDULUM) then
@@ -299,10 +298,9 @@ function automatons.proxy(data)
 
   function states.attribute()
     local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
-    if att == 0 then
-      return nil, "No attribute"
+    if att > 0 then
+      insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     end
-    insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
     return states.name()
   end
 
@@ -353,8 +351,8 @@ function Decoder.configure(m, opt)
 end
 
 function Decoder.decode(data)
-  local automaton = automatons[mode]
-  Logs.assert(automaton, 1, "Unknown mode \"", mode, '"')
+  local automaton = automata[mode]
+  Logs.assert(automaton, i18n('compose.unknown_mode', {mode}))
   local metalayers, errmsg = automaton(data)
   local field = check_field(data)
   if field then

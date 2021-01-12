@@ -1,40 +1,31 @@
-local path = require 'lib.fs'.path
+local path = require'lib.fs'.path
 local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
 local DataFetcher = require 'scripts.make.data-fetcher'
 local Parser = require 'scripts.make.parser'
 local Encoder = require 'scripts.make.encoder'
 local Writer = require 'scripts.make.writer'
+local i18n = require 'lib.i18n'
 
-
-local insert = table.insert
-
-local function get_expansions(all, expansion)
-  if all then
-    return Config.get_all('expansion')
-  elseif expansion then
-    local exp = Config.get_one('expansion', expansion)
-    Logs.assert(exp, 1, 'Expansion "', expansion, '" is not configured.')
-    return { [expansion] = exp }
-  else
-    return Config.get_defaults('expansion')
-  end
+local function get_expansions(all, id)
+  return Config.groups.from_flag.get_many('expansion', all or id and {id})
 end
 
 local function get_files(recipe)
   local files = {}
-  Logs.assert(type(recipe) == 'table', 1, "Recipe must be a list of filenames")
+  Logs.assert(type(recipe) == 'table', i18n 'make.recipe_not_list')
   for _, file in ipairs(recipe) do
-    insert(files, file)
+    table.insert(files, file)
   end
   return files
 end
 
 return function(flags, exp)
-  local expansions = get_expansions(flags['--all'], exp)
+  local all = flags['--all']
+  local expansions = get_expansions(all, exp)
   for id, expansion in pairs(expansions) do
-    local cdbfp = path.join("expansions", id .. ".cdb")
-    Logs.info('Making "', id, '"...')
+    local cdbfp = path.join('expansions', id .. '.cdb')
+    Logs.info(i18n('make.status', {id}))
     local files = get_files(expansion.recipe)
     local data = DataFetcher.get(files)
     local sets, cards = Parser.parse(data)

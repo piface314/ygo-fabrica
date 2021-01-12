@@ -21,9 +21,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 local fs = require 'lfs'
 local path = require 'path'
-fs.path = setmetatable({}, { __index = path })
+fs.path = setmetatable({}, {__index = path})
 
-local windows = package.config:sub(1,1) == "\\"
+local windows = package.config:sub(1, 1) == '\\'
 
 --- Enforces path separators are forware slashes, `/`.
 --- We make the simplifying assumption in these functions that path separators
@@ -37,7 +37,7 @@ function fs.path.normalize(path)
   -- trailing slash. Thankfully, appending a "." will always work if the
   -- target is a directory; and if it's not, failing on paths with trailing
   -- slashes is consistent with other OSes.
-  return windows and path:gsub("\\", "/"):gsub("/$", "/.") or path
+  return windows and path:gsub('\\', '/'):gsub('/$', '/.') or path
 end
 
 local _attributes = fs.attributes
@@ -50,7 +50,7 @@ end
 --- @param path string
 --- @return boolean
 function fs.exists(path)
-  return fs.attributes(path, "mode") ~= nil
+  return fs.attributes(path, 'mode') ~= nil
 end
 
 --- Gets the name of the parent directory of a path.
@@ -59,8 +59,8 @@ end
 --- @param oldpath string
 --- @return string
 function fs.path.dirname(oldpath)
-  local path = fs.path.normalize(oldpath):gsub("[^/]+/*$", "")
-  if path == "" then
+  local path = fs.path.normalize(oldpath):gsub('[^/]+/*$', '')
+  if path == '' then
     return oldpath
   end
   return path
@@ -82,20 +82,20 @@ function fs.rmkdir(path)
   end
   if fs.path.dirname(path) == path then
     -- We're being asked to create the root directory!
-    return false, "mkdir: unable to create root directory"
+    return false, 'mkdir: unable to create root directory'
   end
   local r, err = fs.rmkdir(fs.path.dirname(path))
   if not r then
-    return false, err .. " (creating " .. path .. ")"
+    return false, err .. ' (creating ' .. path .. ')'
   end
   return fs.mkdir(path)
 end
 
-local program_root = ""
+local program_root = os.getenv('YGOFAB_ROOT')
 --- Sets the program root folder path to `proot`
 --- @param proot string
 function fs.path.setproot(proot)
-  program_root = proot or ""
+  program_root = proot
 end
 
 --- Returns the program root folder path
@@ -107,9 +107,7 @@ end
 --- Joins strings into a path, relative to the **p**rogram **r**oot folder
 --- @return string path
 function fs.path.prjoin(...)
-  return fs.path.join(program_root, ...)
+  return fs.path.join(program_root or '.', ...)
 end
-
-fs.path.setproot(os.getenv('YGOFAB_ROOT'))
 
 return fs

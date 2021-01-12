@@ -1,5 +1,5 @@
 local Codes = require 'scripts.make.codes'
-
+local i18n = require 'lib.i18n'
 
 local Encoder = {}
 
@@ -7,32 +7,32 @@ local insert = table.insert
 
 local generics = {
   number = function(key)
-      return function(entry, card)
+    return function(entry, card)
+      entry[key] = tonumber(card[key]) or 0
+    end
+  end,
+  number_q = function(key)
+    return function(entry, card)
+      if card[key] == '?' then
+        entry[key] = -2
+      else
         entry[key] = tonumber(card[key]) or 0
       end
-    end,
-  number_q = function(key)
-      return function(entry, card)
-        if card[key] == "?" then
-          entry[key] = -2
-        else
-          entry[key] = tonumber(card[key]) or 0
-        end
-      end
-    end,
+    end
+  end,
   combined = function(key)
-      return function(entry, card)
-        local v = card[key]
-        local t = type(v)
-        if t == 'number' then
-          entry[key] = v
-        elseif t == 'string' then
-          entry[key] = Codes.combine(key, v)
-        else
-          entry[key] = 0
-        end
+    return function(entry, card)
+      local v = card[key]
+      local t = type(v)
+      if t == 'number' then
+        entry[key] = v
+      elseif t == 'string' then
+        entry[key] = Codes.combine(key, v)
+      else
+        entry[key] = 0
       end
     end
+  end
 }
 
 local encode = {
@@ -43,22 +43,23 @@ local encode = {
   atk = generics.number_q('atk'),
   race = generics.combined('race'),
   attribute = generics.combined('attribute'),
-  category = generics.combined('category'),
+  category = generics.combined('category')
 }
 
 function encode.name(entry, card)
-  entry.name = card.name or ""
+  entry.name = card.name or ''
 end
 
-local p_text = "[ Pendulum Effect ]\n%s\n-------------------\n[ %s ]\n%s"
+local p_text = '[ %s ]\n%%s\n-------------------\n[ %%s ]\n%%s'
+p_text = p_text:format(i18n 'make.encoder.pendulum_effect')
 function encode.desc(entry, card)
   local p_effect = card['pendulum-effect']
   local effect, flavor_t = card.effect, card['flavor-text']
-  local text, tag = "", ""
+  local text, tag = '', ''
   if effect then
-    text, tag = effect, "Monster Effect"
+    text, tag = effect, i18n 'make.encoder.monster_effect'
   elseif flavor_t then
-    text, tag = flavor_t, "Flavor Text"
+    text, tag = flavor_t, i18n 'make.encoder.flavor_text'
   end
   entry.desc = p_effect and p_text:format(p_effect, tag, text) or text
 end
@@ -66,7 +67,7 @@ end
 function encode.strings(entry, card)
   local strings = card.strings or {}
   for i = 1, 16 do
-    entry['str' .. i] = strings[i] or ""
+    entry['str' .. i] = strings[i] or ''
   end
 end
 
@@ -76,10 +77,10 @@ function encode.setcode(entry, card, sets)
     return
   end
   local setcode = 0
-  local cardset = type(card.set) == 'string' and card.set or ""
-  for setid in cardset:gmatch("[%w-_]+") do
+  local cardset = type(card.set) == 'string' and card.set or ''
+  for setid in cardset:gmatch('[%w-_]+') do
     local set = sets[setid]
-    local code = tonumber(set and set.code or "")
+    local code = tonumber(set and set.code or '')
     if code then
       setcode = setcode * 0x10000 + set.code % 0x10000
     end
@@ -99,7 +100,8 @@ end
 
 function encode.level(entry, card)
   local scales = card['pendulum-scale']
-  local level = tonumber(card['link-rating'] or card.rank or card.level or "") or 0
+  local level =
+    tonumber(card['link-rating'] or card.rank or card.level or '') or 0
   local lsc, rsc = 0, 0
   if tonumber(scales) then
     scales = tonumber(scales)

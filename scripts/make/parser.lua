@@ -1,6 +1,6 @@
 local Stack = require 'scripts.make.stack'
 local Logs = require 'lib.logs'
-
+local i18n = require 'lib.i18n'
 
 local Parser = {}
 
@@ -35,14 +35,14 @@ local function parse(macros, str)
   		end
   	end
 
-    local out, esc = ""
-    local argi, argv, macro, sep = 0, {}
+    local out, esc = "", nil
+    local argi, argv, macro, sep = 0, {}, nil, nil
     while in_bounds() do
       if macro then
   			if char() == "}" then
   				local m = macros[macro]
   				if m then
-  					Logs.assert(not stack:contains(macro), 1, macro, ": cyclic macro")
+  					Logs.assert(not stack:contains(macro), i18n('make.parser.cyclic_macro', {macro}))
   					stack:push(macro)
   					out = out .. parse(macros, apply_macro(m, argv))
   					stack:pop()

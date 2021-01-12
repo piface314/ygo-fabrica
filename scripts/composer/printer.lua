@@ -2,24 +2,23 @@ local fs = require 'lib.fs'
 local path = fs.path
 local Logs = require 'lib.logs'
 
-
 local Printer = {}
 
 local out_folder, extension, width, height, field
-local valid_exts = { jpg = true, png = true, jpeg = true }
+local valid_exts = {jpg = true, png = true, jpeg = true}
 
 local function set_out_folder(dir)
-  out_folder = dir or ""
+  out_folder = dir or ''
   local success, err = fs.rmkdir(out_folder)
-  Logs.assert(success, 1, err)
+  Logs.assert(success, err)
   if field then
-    local success, err = fs.rmkdir(path.join(out_folder, "field"))
-    Logs.assert(success, 1, err)
+    local success, err = fs.rmkdir(path.join(out_folder, 'field'))
+    Logs.assert(success, err)
   end
 end
 
 local function set_size(size)
-  local w, h = (type(size) == 'string' and size or ""):match("(%d*)[Xx](%d*)")
+  local w, h = (type(size) == 'string' and size or ''):match('(%d*)[Xx](%d*)')
   width, height = tonumber(w), tonumber(h)
 end
 
@@ -36,7 +35,7 @@ end
 
 local function resize(img)
   if width and height then
-    return img:resize(width / img:width(), { vscale = height / img:height() })
+    return img:resize(width / img:width(), {vscale = height / img:height()})
   elseif width then
     return img:resize(width / img:width())
   elseif height then
@@ -52,7 +51,7 @@ function Printer.print(name, img)
 end
 
 function Printer.print_field(id, field)
-  local fp = path.join(out_folder, "field", id .. '.' .. extension)
+  local fp = path.join(out_folder, 'field', id .. '.' .. extension)
   field:write_to_file(fp)
 end
 

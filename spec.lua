@@ -2,10 +2,10 @@ return {
   version = "2.0.0",
   version_name = "barian-babelico",
   install_path = {
-    linux = "/usr/local/ygofab",
+    linux = (os.getenv("HOME") or "") .. "/.local/ygofab",
     windows = (os.getenv("LOCALAPPDATA") or "") .. "\\YGOFabrica"
   },
-  bin_path = "/usr/local/bin",
+  bin_path = (os.getenv("HOME") or "") .. "/.local/bin",
   config_path = {
     linux = (os.getenv("HOME") or "") .. "/.config/ygofab",
     windows = (os.getenv("APPDATA") or "") .. "\\YGOFabrica"

@@ -11,7 +11,7 @@ install_luajit() {
 }
 
 install_vips() {
-  if command -v luajit >/dev/null 2>&1; then
+  if command -v vips --version >/dev/null 2>&1; then
     echo "libvips already installed"
     return 0
   fi
@@ -22,7 +22,7 @@ install_vips() {
 }
 
 install_ygofab() {
-  sudo luajit make.lua install || exit 1
+  luajit make.lua install || exit 1
 }
 
 configure_ygofab() {
@@ -35,11 +35,7 @@ install_fonts() {
   fi
 }
 
-if [[ $UID != 0 ]]; then
-  echo "Please install with sudo."
-  exit 1
-fi
-
+export LUA_PATH="./?.lua;./?/?.lua;./?/init.lua"
 install_luajit \
   && install_vips \
   && install_ygofab \
