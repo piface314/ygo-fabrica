@@ -15,13 +15,9 @@ local GLOBAL_FP = path.join(HOME, 'config.toml')
 
 local cache = {}
 local function load_file(fp)
-  if cache[fp] then
-    return cache[fp]
-  end
+  if cache[fp] then return cache[fp] end
   local cfg = io.open(fp, 'r')
-  if not cfg then
-    return nil
-  end
+  if not cfg then return nil end
   local config = toml.parse(cfg:read('*a'))
   cfg:close()
   cache[fp] = Schema.validate(config)
@@ -34,9 +30,15 @@ function Config.load()
   return global_cfg, local_cfg
 end
 
-function Config.get(...)
-  local cfg = table.merge(Config.load())
-  for _, k in ipairs({...}) do
+function Config.get(cfg, ...)
+  local key
+  if type(cfg) == 'table' then
+    key = {...}
+  else
+    key = {cfg, ...}
+    cfg = table.merge(Config.load())
+  end
+  for _, k in ipairs(key) do
     if type(cfg) == 'table' then
       cfg = cfg[k]
     else
@@ -46,9 +48,7 @@ function Config.get(...)
   return cfg
 end
 
-local function key(...)
-  return table.concat({...}, '.')
-end
+local function key(...) return table.concat({...}, '.') end
 
 function Config.groups.get_many(all, default, ...)
   local groups = Config.get(...)
@@ -61,10 +61,16 @@ function Config.groups.get_many(all, default, ...)
   end
 end
 
+local function first_default(gs)
+  return next(table.filter(gs, fun 'g -> g.default'))
+end
+
 function Config.groups.get_one(default, ...)
-  local groups = Config.get(...)
   if default then
-    return next(table.filter(groups, fun 'g -> g.default'))
+    local gc, lc = Config.load()
+    local k, v = first_default(Config.get(lc, ...))
+    if k then return k, v end
+    return first_default(Config.get(gc, ...))
   else
     return select(-1, ...), Config.get(...)
   end

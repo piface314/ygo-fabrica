@@ -6,18 +6,13 @@ local Locale = require 'locale'
 local Config = require 'scripts.config'
 local i18n = require 'lib.i18n'
 
-local function print_header()
-  Logs.info(require 'lib.header')
-end
+local function print_header() Logs.info(require 'lib.header') end
 
 local function display_help(msg)
   local usage = i18n 'ygofab.usage'
-  if msg then
-    Logs.assert(false, msg, '\n', usage)
-  else
-    print_header()
-    Logs.info(usage)
-  end
+  Logs.assert(not msg, msg, '\n', usage)
+  print_header()
+  Logs.info(usage)
 end
 
 local function add_project_warning()
@@ -73,16 +68,13 @@ interpreter:add_command('compose', cmd_compose, '-p', 1, '-Pall', 0, '-e', 1,
                         '-Eall', 0)
 interpreter:add_command('config', cmd_config)
 interpreter:add_command('export', cmd_export, '-p', 1, '-Pall', 0, '-o', 1,
-                        '-e', 1, '-Eall', 0, '-v', 0, '--verbose', 0)
+                        '-e', 1, '-Eall', 0, '--verbose', 0)
 interpreter:add_command('make', cmd_make, '--clean', 0, '--all', 0)
 interpreter:add_command('new', cmd_new)
 interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,
-                        '--clean', 0, '--no-script', 0, '--no-pics', 0,
-                        '--no-exp', 0, '--no-string', 0)
+                        '--no-string', 0, '--verbose', 0)
 interpreter:add_command('', cmd_version, '--version', 0, '-v', 0)
 
 Locale.set(Config.get('locale'))
 local errmsg = interpreter:exec(...)
-if errmsg then
-  display_help(errmsg)
-end
+if errmsg then display_help(errmsg) end

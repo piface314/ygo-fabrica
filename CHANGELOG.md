@@ -8,20 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Internationalization in program interface.
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
-- Warning when user seems to be outside a project folder.4
-- Verbose flag to multiple commands
+- Warning when user seems to be outside a project folder.
+- Verbose flag to multiple commands.
+- Support for custom counters in `ygofab sync`.
 
 ### Changed
 - Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
 - Default binaries location changed from `/usr/local/bin` to `$HOME/.local/bin` for Linux, to avoid using `sudo`.
 - More detailed output in `ygofab config`.
+- `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
+- Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.
 - Warnings for `ygofab compose` correctly display id of a broken card.
 
 ### Removed
-- `--clean` flag in `ygofab sync`.
+- `--clean`, `--no-pics`, `--no-script`, `--no-exp` flags in `ygofab sync`.
 
 ## [2.0.0] - Barian Babélico // 2021-??-??
 

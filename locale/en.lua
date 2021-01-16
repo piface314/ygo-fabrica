@@ -32,7 +32,10 @@ return {
     export = {
       status = 'Exporting %q with %q...',
       zip_create_error = 'while creating .zip:',
-      zip_add_error = 'while adding file to .zip:',
+      zip_add_error = {
+        one = 'This files was not zipped:',
+        other = '%{count} files were not zipped:'
+      },
       scan_scripts = 'Looking for scripts...',
       scan_pics = 'Looking for card pics...',
       scan_fields = 'Looking for field backgrounds...',
@@ -65,6 +68,7 @@ return {
     },
     sync = {
       status = 'Syncing %q and %q to %q...',
+      writing_string = 'Writing strings.conf...',
       done = 'Done!'
     },
     ygofab = {

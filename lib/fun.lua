@@ -3,17 +3,17 @@
 local Fun = {}
 Fun.__index = Fun
 
---- Returns an empty Fun
---- @return Fun
-local function new()
-  return setmetatable({}, Fun)
-end
-
 --- Binds a table to a Fun object
 --- @param t table
 --- @return Fun
 local function bind(t)
   return setmetatable(t, Fun)
+end
+
+--- Returns an empty Fun
+--- @return Fun
+local function new()
+  return bind({})
 end
 
 --- Returns the array itself, without the metatable
@@ -40,7 +40,7 @@ end
 --- @return Fun
 function Fun:map(f)
   local out = new()
-  for i, v in ipairs(self) do
+  for i, v in pairs(self) do
     out[i] = f(v, i)
   end
   return out
@@ -52,9 +52,10 @@ end
 --- @return Fun
 function Fun:filter(f)
   local out = new()
-  for i, v in ipairs(self) do
+  local is_array = self[1] ~= nil
+  for i, v in pairs(self) do
     if f(v, i) then
-      out[#out + 1] = v
+      out[is_array and (#out + 1) or i] = v
     end
   end
   return out
@@ -66,17 +67,16 @@ end
 --- @param f function
 --- @return any
 function Fun:reduce(st, f)
-  local out = st
-  for _, v in ipairs(self) do
-    out = f(out, v)
+  for _, v in pairs(self) do
+    st = f(st, v)
   end
-  return out
+  return st
 end
 
 --- Executes function `fn` on each element of the array
 --- @param fn function
 function Fun:foreach(fn)
-  for i, v in ipairs(self) do
+  for i, v in pairs(self) do
     fn(v, i)
   end
 end
