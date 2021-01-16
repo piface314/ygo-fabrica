@@ -1,4 +1,4 @@
---- Adds functional style support for tables that represent lists/arrays
+--- Adds functional style support to tables
 --- @class Fun
 local Fun = {}
 Fun.__index = Fun
@@ -6,35 +6,56 @@ Fun.__index = Fun
 --- Binds a table to a Fun object
 --- @param t table
 --- @return Fun
-local function bind(t)
-  return setmetatable(t, Fun)
-end
+local function bind(t) return setmetatable(t, Fun) end
 
 --- Returns an empty Fun
 --- @return Fun
-local function new()
-  return bind({})
-end
+local function new() return bind({}) end
 
---- Returns the array itself, without the metatable
---- @return table
-function Fun:get()
-  return setmetatable(self, nil)
-end
-
---- Parses a string into a function. If the generated function contains an error, that
---- error will be thrown.
+local FS_TEMPLATE = [[
+local __UP = {...}
+return function(%s) return %s end]]
+--- Parses a string into a one line function returning the given expression.
+--- Upvalues can be passed as additional parameters, and are referenced in
+--- the string with `$`. Like: `$1` means the first upvalue.
+--- If the generated function contains an error, that error will be thrown.
 --- @param s string
 --- @return function
-local function strfn(s)
-  local params, ret = s:match('%s*%(?(.-)%)?%s*%->%s*(.+)')
-  local fs = ('return function(%s) return %s end'):format(params, ret)
+local function strfn(s, ...)
+  local params, ret = s:match('^%s*%(?(.-)%)?%s*%->%s*(.+)$')
+  assert(params, 'fun: malformed function')
+  local exp = ret:gsub('$(%d+)', function(i) return '(__UP['..i..'])' end)
+  local fs = FS_TEMPLATE:format(params, exp)
   local f, err = load(fs)
-  assert(f, err)
-  return f()
+  assert(f, 'fun: ' .. (err or ''))
+  return f(...)
 end
 
---- Maps each value in the array with function `f` into a new array.
+--- Returns a shallow copy of the table
+--- @return Fun
+function Fun:copy()
+  local out = new()
+  for i, v in pairs(self) do out[i] = v end
+  return out
+end
+
+--- Returns a deep copy of the table. Internal metatables are preserved.
+--- @return Fun
+function Fun:deepcopy()
+  local function copy(t)
+    if type(t) ~= 'table' then
+      return t
+    end
+    local nt = setmetatable({}, getmetatable(t))
+    for k, v in pairs(t) do
+      nt[k] = copy(v)
+    end
+    return nt
+  end
+  return copy(self)
+end
+
+--- Maps each value in the table with function `f` into a new table.
 --- `f` receives each value as the first argument, and each index as the second.
 --- @param f function
 --- @return Fun
@@ -46,23 +67,27 @@ function Fun:map(f)
   return out
 end
 
---- Filters and array into a new one containing only values that make `f` return `true`.
+--- Filters and table into a new one containing only values that make `f` return `true`.
 --- `f` receives each value as the first argument, and each index as the second.
+--- If parameter `as_array` is provided, the table will be treated as an array if `true`,
+--- or treated as a hash if `false`. If not provided, the table will be inferred as an
+--- array if it contains an element at index `1`.
 --- @param f function
+--- @param as_array boolean
 --- @return Fun
-function Fun:filter(f)
+function Fun:filter(f, as_array)
   local out = new()
-  local is_array = self[1] ~= nil
+  if as_array == nil then as_array = self[1] ~= nil end
   for i, v in pairs(self) do
     if f(v, i) then
-      out[is_array and (#out + 1) or i] = v
+      out[as_array and (#out + 1) or i] = v
     end
   end
   return out
 end
 
---- Reduces an array to a single value, according to a starting value `st`, and to a function `f`,
---- that receives an accumulator value and the first parameter and the current value as the second.
+--- Reduces an table to a single value, according to a starting value `st`, and to a function `f`,
+--- that receives an accumulator value and the first parameter and the current value as the second
 --- @param st any
 --- @param f function
 --- @return any
@@ -73,7 +98,7 @@ function Fun:reduce(st, f)
   return st
 end
 
---- Executes function `fn` on each element of the array
+--- Executes function `fn` on each element of the table
 --- @param fn function
 function Fun:foreach(fn)
   for i, v in pairs(self) do
@@ -81,22 +106,88 @@ function Fun:foreach(fn)
   end
 end
 
---- Inserts element `v` at the end of the array
+--- Inserts element `v` at the end of the table/array.
+--- Note that this operation mutates the table and returns itself.
 --- @param v any
+--- @return Fun
 function Fun:push(v)
-  table.insert(self, v)
+  self[#self+1] = v
+  return self
 end
 
---- Returns a string representation of the array
+--- Merges current table with any number of tables.
+--- Latest tables take precedence. Internal metatables are not preserved
+--- @return Fun
+function Fun:merge(...)
+  local function merge(dst, src)
+    for k, v in pairs(src) do
+      if type(v) == 'table' then
+        dst[k] = type(dst[k]) == 'table' and dst[k] or {}
+        merge(dst[k], v)
+      else
+        dst[k] = v
+      end
+    end
+    return dst
+  end
+  return bind {self, ...}:reduce(bind {}, merge)
+end
+
+--- Sorts the table/array.
+--- @return Fun
+function Fun:sort()
+  local a = self:copy()
+  table.sort(a)
+  return a
+end
+
+--- Returns an array with the table keys.
+--- @return Fun
+function Fun:keys()
+  local keys = new()
+  for k in pairs(self) do
+    keys[#keys + 1] = k
+  end
+  return keys
+end
+
+--- Returns an array with the table values.
+--- @return Fun
+function Fun:vals()
+  local vals = new()
+  for _, v in pairs(self) do
+    vals[#vals + 1] = v
+  end
+  return vals
+end
+
+--- Returns a string representation of the table as an array
 --- @return string
-function Fun:__tostring()
+function Fun:array_tostring()
   local function str(v)
     return type(v) == 'string' and '"' .. v .. '"' or tostring(v)
   end
   return '[' .. table.concat(self:map(str), ', ') .. ']'
 end
 
---- Concatenates two arrays into a new one (Values can be either plain tables or `Fun` objects)
+--- Returns a string representation of the table as a hash
+--- @return string
+function Fun:hash_tostring()
+  local function str(v, k)
+    return k .. ' = ' .. (type(v) == 'string' and '"' .. v .. '"' or tostring(v))
+  end
+  local s = self:map(str):reduce('', strfn 'a,b -> a..", "..b'):sub(3)
+  return '{' .. s .. '}'
+end
+
+--- Returns a string representation of the table, inferring if it's an array or hash
+--- @return string
+function Fun:__tostring()
+  return self[1] == nil and self:hash_tostring() or self:array_tostring()
+end
+
+--- Concatenates two arrays into a new one (Values can be either plain tables or `Fun` objects).
+--- Only works on arrays.
 --- @param a Fun|table
 --- @param b Fun|table
 --- @return Fun
@@ -114,9 +205,9 @@ end
 --- If `p` is a table, makes `p` an instance of `Fun`
 ---@param p string|table
 ---@return Fun
-return function(p)
+return function(p, ...)
   if type(p) == 'string' then
-    return strfn(p)
+    return strfn(p, ...)
   else
     return bind(p)
   end
