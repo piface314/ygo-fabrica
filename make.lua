@@ -1,8 +1,8 @@
 package.path = './?/init.lua;' .. package.path
 local Logs = require 'lib.logs'
 local Interpreter = require 'lib.interpreter'
-local spec = require 'spec'
-local locale = require 'locale'
+local Spec = require 'spec'
+local Locale = require 'locale'
 
 local IS_WIN = package.config:sub(1, 1) == "\\"
 local function exec(command)
@@ -70,17 +70,17 @@ local config = {}
 local fonts = {}
 
 if IS_WIN then
-  install.base = spec.install_path.windows
-  config.base = spec.config_path.windows
+  install.base = Spec.install_path.windows
+  config.base = Spec.config_path.windows
 else
-  install.base = spec.install_path.linux
-  config.base = spec.config_path.linux
+  install.base = Spec.install_path.linux
+  config.base = Spec.config_path.linux
 end
 
 function build.tree_folder() return create_folder(build.tree) end
 
 function build.dependencies()
-  for _, dep in ipairs(spec.dependencies) do
+  for _, dep in ipairs(Spec.dependencies) do
     local ok = exec(("luarocks install %s --tree=%s"):format(dep, build.tree))
     if not ok then
       err = "Failed to install dependency " .. dep
@@ -132,7 +132,7 @@ end
 
 function install.set_paths(base)
   install.base = base or install.base
-  install.bin = IS_WIN and install.base or spec.bin_path
+  install.bin = IS_WIN and install.base or Spec.bin_path
 end
 
 function install.base_folder()
@@ -143,8 +143,8 @@ function install.spec()
   local info = read_file("lib/version.lua")
   if not info then return false end
   local data = {
-    number = spec.version,
-    name = spec.version_name
+    number = Spec.version,
+    name = Spec.version_name
   }
   info = info:gsub([[([_%w]+)%s*=%s*(['"]).-%2]], function(key)
     local v = data[key]

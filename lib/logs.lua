@@ -16,7 +16,7 @@ end
 --- @param v any
 function Logs.assert(v, ...)
   if not v then
-    io.stderr:write(colors.FG_RED, colors.BOLD, '[', i18n('logs.err'), '] ', colors.RESET, ...)
+    io.stderr:write(colors.FG_RED, colors.BOLD, '[', i18n 'logs.err', '] ', colors.RESET, ...)
     io.stderr:write('\n')
     for _, cb in ipairs(err_cb) do cb() end
     os.exit(1)
@@ -26,7 +26,7 @@ end
 --- Shows a success message and writes any number of strings to the standard output,
 --- adding a newline at the end.
 function Logs.ok(...)
-  io.write(colors.FG_GREEN, colors.BOLD, '[', i18n('logs.ok'), '] ', colors.RESET, ...)
+  io.write(colors.FG_GREEN, colors.BOLD, '[', i18n 'logs.ok', '] ', colors.RESET, ...)
   io.write('\n')
 end
 

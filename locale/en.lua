@@ -71,6 +71,10 @@ return {
       create_folder = 'Creating %q folder...',
       create_cdb = 'Creating card database...',
       create_config = 'Creating config.toml...',
+      config_comment = [[
+# Use this to define local configurations for your project.
+# Any configuration defined here will override its global counterpart.
+# Global configurations are located in `%s`.]],
       done = 'Project %q successfully created!'
     },
     sync = {

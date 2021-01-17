@@ -13,7 +13,7 @@ local function check_mode(mode)
 end
 
 local function check_folders(imgfolder, outfolder)
-  Logs.assert(imgfolder ~= outfolder, i18n('compose.output_conflict'))
+  Logs.assert(imgfolder ~= outfolder, i18n 'compose.output_conflict')
 end
 
 function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
@@ -43,7 +43,7 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
       Printer.print_field(id, field)
     end
   end
-  bar:finish(i18n('compose.done'))
+  bar:finish(i18n 'compose.done')
 end
 
 return Composer

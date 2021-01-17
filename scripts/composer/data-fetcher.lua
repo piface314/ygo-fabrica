@@ -1,5 +1,4 @@
-local fs = require 'lib.fs'
-local path = fs.path
+local path = require 'lib.path'
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
@@ -13,15 +12,12 @@ local function is_valid_ext(ext)
 end
 
 local function get_images(fp)
-  Logs.assert(fp and fp ~= '', i18n('compose.data_fetcher.no_img_folder'))
-  local imgs = {}
-  for entry in fs.dir(fp) do
-    local name, ext = entry:match('^(%d*)%.(.-)$')
-    if is_valid_ext(ext) then
-      imgs[name] = path.join(fp, entry)
-    end
-  end
-  return imgs
+  Logs.assert(fp and fp ~= '', i18n 'compose.data_fetcher.no_img_folder')
+  return fun(path.each(fp .. path.DIR_SEP))
+    :hashmap(function(f)
+      local name, ext = path.basename(f):match('^(%d*)%.(.-)$')
+      return is_valid_ext(ext) and name or nil, f
+    end)
 end
 
 local function open_cdb(cdbfp)
@@ -29,7 +25,7 @@ local function open_cdb(cdbfp)
 end
 
 local function read_cdb(cdb, imgs)
-  Logs.assert(cdb and cdb:isopen(), i18n('compose.data_fetcher.closed_db'))
+  Logs.assert(cdb and cdb:isopen(), i18n 'compose.data_fetcher.closed_db')
   local ids = table.concat(fun(imgs):keys(), ',')
   local sql = ([[SELECT t.id, name, desc, type, atk, def, level, race, attribute
   FROM texts AS t JOIN datas AS d ON t.id = d.id
@@ -50,7 +46,7 @@ local function read_cdb(cdb, imgs)
     })
     return 0
   end)
-  Logs.assert(code == 0, i18n('compose.data_fetcher.read_db_fail'))
+  Logs.assert(code == 0, i18n 'compose.data_fetcher.read_db_fail')
   return data
 end
 

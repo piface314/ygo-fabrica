@@ -15,7 +15,6 @@ return {
     "lsqlite3complete",
     "lua-toml",
     "lua-zlib",
-    "luafilesystem",
     "struct",
     "zipwriter",
     "lua-vips"

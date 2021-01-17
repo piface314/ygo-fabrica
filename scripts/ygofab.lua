@@ -1,7 +1,7 @@
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
 local Version = require 'lib.version'
-local fs = require 'lib.fs'
+local path = require 'lib.path'
 local Locale = require 'locale'
 local Config = require 'scripts.config'
 local i18n = require 'lib.i18n'
@@ -17,7 +17,7 @@ end
 
 local function add_project_warning()
   Logs.add_post_error_cb(function()
-    if not fs.exists('config.toml') then
+    if not path.exists('config.toml') then
       Logs.info('---------')
       Logs.warning(i18n 'ygofab.not_in_project')
     end

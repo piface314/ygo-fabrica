@@ -79,11 +79,11 @@ end
 
 return function(global_cfg, local_cfg)
   local fglobal_cfg = format(global_cfg)
-  Logs.info(colors.FG_MAGENTA, colors.BOLD, i18n('config.globals'), '\n',
+  Logs.info(colors.FG_MAGENTA, colors.BOLD, i18n 'config.globals', '\n',
             colors.RESET, fglobal_cfg)
   if local_cfg then
     local flocal_cfg = format(local_cfg)
-    Logs.info(colors.FG_MAGENTA, colors.BOLD, i18n('config.locals'), '\n\n',
+    Logs.info(colors.FG_MAGENTA, colors.BOLD, i18n 'config.locals', '\n\n',
               colors.RESET, flocal_cfg)
   end
 end

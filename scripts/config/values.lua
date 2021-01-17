@@ -1,4 +1,4 @@
-local path = require'lib.fs'.path
+local path = require 'lib.path'
 local toml = require 'toml'
 local fun = require 'lib.fun'
 local Schema = require 'scripts.config.schema'
@@ -7,10 +7,10 @@ local i18n = require 'lib.i18n'
 
 local Config = {groups = {from_flag = {}}}
 
-local IS_WIN = package.config:sub(1, 1) == '\\'
-local HOME = IS_WIN and path.join(os.getenv('APPDATA'), 'YGOFabrica') or
-               path.join(os.getenv('HOME'), '.config', 'ygofab')
-local GLOBAL_FP = path.join(HOME, 'config.toml')
+local HOME =
+  path.IS_WINDOWS and path.join(os.getenv('APPDATA'), 'YGOFabrica') or
+    path.join(os.getenv('HOME'), '.config', 'ygofab')
+Config.GLOBAL_FP = path.join(HOME, 'config.toml')
 
 local cache = {}
 local function load_file(fp)
@@ -25,7 +25,7 @@ end
 
 function Config.load()
   local local_cfg = load_file('./config.toml')
-  local global_cfg = load_file(GLOBAL_FP) or Schema.validate({})
+  local global_cfg = load_file(Config.GLOBAL_FP) or Schema.validate({})
   return global_cfg, local_cfg
 end
 
@@ -81,9 +81,7 @@ function Config.groups.from_flag.get_many(gkey, flag)
   local selected = Config.groups.get_many(all, not id, gkey, id)
   local has_any, full_key = next(selected) ~= nil, {key(gkey, id)}
   Logs.assert(not id or has_any, i18n('config.missing', full_key))
-  if not has_any then
-    Logs.warning(i18n('config.none', full_key))
-  end
+  if not has_any then Logs.warning(i18n('config.none', full_key)) end
   return selected
 end
 

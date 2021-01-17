@@ -1,7 +1,7 @@
-local fs = require 'lib.fs'
-local path = fs.path
-local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
+local Config = require 'scripts.config'
+local path = require 'lib.path'
+local sqlite = require 'lsqlite3complete'
 local i18n = require 'lib.i18n'
 
 local GENFP = path.prjoin('res', 'new')
@@ -13,7 +13,7 @@ end
 
 local function create_folder(folder)
   Logs.info(i18n('new.create_folder', {folder}))
-  local success, msg = fs.mkdir(folder)
+  local success, msg = path.mkdir(folder)
   Logs.assert(success, ('%q - %s'):format(folder, msg))
 end
 
@@ -47,7 +47,8 @@ local function create_config(pack_name)
   Logs.info(i18n 'new.create_config')
   local cgen = read_file(path.join(GENFP, 'config.gen.toml'))
   local dst = path.join(pack_name, 'config.toml')
-  write_file(dst, cgen:gsub('$EXPANSION', pack_name))
+  local comment = i18n('new.config_comment', {Config.GLOBAL_FP})
+  write_file(dst, comment .. cgen:gsub('$EXPANSION', pack_name))
 end
 
 return function(proj_name)
@@ -59,5 +60,5 @@ return function(proj_name)
   create_folder(path.join(proj_name, 'expansions'))
   create_cdb(proj_name)
   create_config(proj_name)
-  Logs.ok(i18n('new.done', proj_name))
+  Logs.ok(i18n('new.done', {proj_name}))
 end

@@ -1,4 +1,4 @@
-local path = require'lib.fs'.path
+local path = require'lib.path'
 local Composer = require 'scripts.composer.composer'
 local Config = require 'scripts.config'
 local Logs = require 'lib.logs'

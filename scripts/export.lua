@@ -1,5 +1,4 @@
-local fs = require 'lib.fs'
-local path = fs.path
+local path = require 'lib.path'
 local Zip = require 'lib.zip'
 local Config = require 'scripts.config'
 local Logs = require 'lib.logs'
@@ -22,13 +21,9 @@ local function get_output(outdir, exp, picset)
 end
 
 local function scan_dir(dir, pattern, out)
-  local files = fun {}
-  for entry in fs.dir(dir) do
-    if entry:match(pattern) then
-      files:push({path.join(dir, entry), path.join(out, entry)})
-    end
-  end
-  return files
+  return fun(path.each(dir .. path.DIR_SEP))
+    :filter(function(fp) return path.basename(fp):match(pattern) end)
+    :map(function(fp) return {fp, path.join(out, path.basename(fp))} end)
 end
 
 local function scan_scripts()

@@ -1,7 +1,7 @@
 local i18n = require 'lib.i18n'
-local s, fs = pcall(require, 'lib.fs')
+local s, path = pcall(require, 'lib.path')
 
-local LOCALE_ROOTFP = s and fs.path.prjoin('locale') or './locale'
+local LOCALE_ROOTFP = s and path.prjoin('locale') or './locale'
 local locales = {en = true, pt = true}
 
 for locale in pairs(locales) do

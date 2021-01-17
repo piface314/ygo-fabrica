@@ -1,5 +1,4 @@
-local fs = require 'lib.fs'
-local path = fs.path
+local path = require 'lib.path'
 local Logs = require 'lib.logs'
 
 local Printer = {}
@@ -9,10 +8,10 @@ local valid_exts = {jpg = true, png = true, jpeg = true}
 
 local function set_out_folder(dir)
   out_folder = dir or ''
-  local success, err = fs.rmkdir(out_folder)
+  local success, err = path.mkdir(out_folder)
   Logs.assert(success, err)
   if field then
-    local success, err = fs.rmkdir(path.join(out_folder, 'field'))
+    success, err = path.mkdir(path.join(out_folder, 'field'))
     Logs.assert(success, err)
   end
 end

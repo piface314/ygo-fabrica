@@ -1,4 +1,4 @@
-local path = require'lib.fs'.path
+local path = require'lib.path'
 local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
 local DataFetcher = require 'scripts.make.data-fetcher'

@@ -71,6 +71,10 @@ return {
       create_folder = 'Criando pasta %q...',
       create_cdb = 'Criando database das cartas...',
       create_config = 'Criando config.toml...',
+      config_comment = [[
+# Use este arquivo para definir configurações locais para seu projeto.
+# Qualquer configuração definida aqui vai tomar precedência sobre as globais.
+# As configurações globais podem ser encontradas em `%s`.]],
       done = 'Projeto %q criado com sucesso!'
     },
     sync = {

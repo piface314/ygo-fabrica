@@ -2,7 +2,7 @@ local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
 local Export = require 'scripts.export'
 local MakeWriter = require 'scripts.make.writer'
-local path = require 'lib.fs'.path
+local path = require 'lib.path'
 local i18n = require 'lib.i18n'
 
 local function copy_strings(eid, gid, gpath)

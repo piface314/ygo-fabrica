@@ -1,5 +1,4 @@
-local fs = require 'lib.fs'
-local path = fs.path
+local path = require 'lib.path'
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local GameConst = require 'scripts.game-const'
@@ -93,7 +92,7 @@ end
 local function write_scripts(entries)
   fun(entries):map(function(e)
     return {e, path.join('script', ('c%d.lua'):format(e.id))}
-  end):filter(function(t) return not fs.exists(t[2]) end)
+  end):filter(function(t) return not path.exists(t[2]) end)
   :foreach(function(t)
     local entry, fp, script = t[1], t[2], nil
     if is_effect_monster(entry.type) then

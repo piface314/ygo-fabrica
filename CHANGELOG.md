@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - `--clean`, `--no-pics`, `--no-script`, `--no-exp` flags in `ygofab sync`.
+- `luafilesystem` dependency.
 
 ## [2.0.0] - Barian Babélico // 2021-??-??
 

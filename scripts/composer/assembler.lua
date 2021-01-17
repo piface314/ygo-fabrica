@@ -1,5 +1,5 @@
 local vips = require 'vips'
-local path = require 'lib.fs'.path
+local path = require 'lib.path'
 local Layouts = require 'scripts.composer.layouts'
 local Fitter = require 'scripts.composer.fitter'
 local TypeWriter = require 'scripts.composer.type-writer'
