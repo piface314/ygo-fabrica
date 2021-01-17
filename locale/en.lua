@@ -45,6 +45,9 @@ return {
     make = {
       recipe_not_list = '"recipe" must be a list of file names',
       status = 'Making %q card database...',
+      data_fetcher = {
+        toml_error = 'while parsing .toml:'
+      },
       encoder = {
         pendulum_effect = 'Pendulum Effect',
         monster_effect = 'Monster Effect',
@@ -54,6 +57,7 @@ return {
         cyclic_macro = '%q: cyclic macro',
       },
       writer = {
+        create_error = 'error code %s while creating .cdb',
         write_error = 'error code %s while writing .cdb',
         clean_error = 'error code %s while cleaning .cdb'
       }

@@ -3,7 +3,7 @@ local path = fs.path
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
-require 'lib.table'
+local fun = require 'lib.fun'
 
 local DataFetcher = {}
 
@@ -30,7 +30,7 @@ end
 
 local function read_cdb(cdb, imgs)
   Logs.assert(cdb and cdb:isopen(), i18n('compose.data_fetcher.closed_db'))
-  local ids = table.concat(table.keys(imgs), ',')
+  local ids = table.concat(fun(imgs):keys(), ',')
   local sql = ([[SELECT t.id, name, desc, type, atk, def, level, race, attribute
   FROM texts AS t JOIN datas AS d ON t.id = d.id
   WHERE t.id IN (%s);]]):format(ids)

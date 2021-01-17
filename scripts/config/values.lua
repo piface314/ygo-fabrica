@@ -4,7 +4,6 @@ local fun = require 'lib.fun'
 local Schema = require 'scripts.config.schema'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
-require 'lib.table'
 
 local Config = {groups = {from_flag = {}}}
 
@@ -36,7 +35,7 @@ function Config.get(cfg, ...)
     key = {...}
   else
     key = {cfg, ...}
-    cfg = table.merge(Config.load())
+    cfg = fun {}:merge(Config.load())
   end
   for _, k in ipairs(key) do
     if type(cfg) == 'table' then
@@ -53,7 +52,7 @@ local function key(...) return table.concat({...}, '.') end
 function Config.groups.get_many(all, default, ...)
   local groups = Config.get(...)
   if default then
-    return table.filter(groups, fun 'g -> g.default')
+    return fun(groups):filter(fun 'g -> g.default')
   elseif all then
     return groups
   else
@@ -62,7 +61,7 @@ function Config.groups.get_many(all, default, ...)
 end
 
 local function first_default(gs)
-  return next(table.filter(gs, fun 'g -> g.default'))
+  return next(fun(gs):filter(fun 'g -> g.default'))
 end
 
 function Config.groups.get_one(default, ...)

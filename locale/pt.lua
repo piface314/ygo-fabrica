@@ -45,6 +45,9 @@ return {
     make = {
       recipe_not_list = '"recipe" deve ser uma lista de nomes de arquivos',
       status = 'Criando a database para %q...',
+      data_fetcher = {
+        toml_error = 'ao processar .toml:'
+      },
       encoder = {
         pendulum_effect = 'Efeito de Pêndulo',
         monster_effect = 'Efeito de Monstro',
@@ -54,6 +57,7 @@ return {
         cyclic_macro = '%q: macro cíclico',
       },
       writer = {
+        create_error = 'código de erro %s ao criar .cdb',
         write_error = 'código de erro %s ao escrever .cdb',
         clean_error = 'código de erro %s ao limpar .cdb'
       }

@@ -2,6 +2,7 @@ local i18n = require 'lib.i18n'
 
 
 --- @class Interpreter
+--- @field commands table
 --- Parses and runs commands, as given in `arg`, allowing flags
 --- to be configured
 local Interpreter = {}

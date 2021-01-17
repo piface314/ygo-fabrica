@@ -20,9 +20,9 @@ end
 ---@param key string
 ---@return Fun
 local function get_schema_struct_keys(key)
-  local struct = table.copy(Schema.default.items[key].items.items)
+  local struct = fun(Schema.default.items[key].items.items):deepcopy()
   struct.default = nil
-  return fun(table.sorted_keys(struct))
+  return struct:keys():sort()
 end
 
 local function format_entry(st_keys, m, mk)
@@ -40,7 +40,7 @@ end
 local function format_map(key, m)
   local fmt_map = '%s=== %s ===%s\n'
   local struct_keys = get_schema_struct_keys(key)
-  local entries = fun(table.sorted_keys(m))
+  local entries = fun(m):keys():sort()
   fmt_map = fmt_map:format(colors.FG_MAGENTA, key, colors.RESET)
 
   if #entries == 0 then

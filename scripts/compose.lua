@@ -3,7 +3,6 @@ local Composer = require 'scripts.composer.composer'
 local Config = require 'scripts.config'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
-require 'lib.table'
 
 return function(flags)
   local imgfolder = path.join('artwork')

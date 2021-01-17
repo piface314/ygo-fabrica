@@ -12,6 +12,18 @@ local function bind(t) return setmetatable(t, Fun) end
 --- @return Fun
 local function new() return bind({}) end
 
+--- Runs a function until it returns `nil`, saving its return values.
+--- Similar to turning an iterator into a list in Python.
+local function gen(f)
+  local out = new()
+  while true do
+    local i = {f()}
+    if i[1] == nil then break end
+    out:push(#i > 1 and i or i[1])
+  end
+  return out
+end
+
 local FS_TEMPLATE = [[
 local __UP = {...}
 return function(%s) return %s end]]
@@ -170,7 +182,9 @@ function Fun:hashmap(f)
   local hash = new()
   for k, v in pairs(self) do
     local nk, nv = f(v, k)
-    hash[nk] = nv
+    if nk ~= nil then
+      hash[nk] = nv
+    end
   end 
   return hash
 end
@@ -208,7 +222,7 @@ end
 function Fun.__concat(a, b)
   local a_t, b_t = type(a), type(b)
   assert(a_t == 'table' and a_t == b_t,
-         'attempt to concat a `Fun` value with a non-table value')
+         'fun: attempt to concat a `Fun` value with a non-table value')
   local t = {}
   for _, v in ipairs(a) do t[#t + 1] = v end
   for _, v in ipairs(b) do t[#t + 1] = v end
@@ -216,13 +230,18 @@ function Fun.__concat(a, b)
 end
 
 --- If `p` is a string, parses that string into a function defined by that string.
---- If `p` is a table, makes `p` an instance of `Fun`
+--- If `p` is a table, makes `p` an instance of `Fun`.
+--- If `p` is a function, that function is treated as a generator for values that are placed in an array.
 ---@param p string|table
 ---@return Fun
 return function(p, ...)
-  if type(p) == 'string' then
+  local t = type(p)
+  if t == 'string' then
     return strfn(p, ...)
-  else
+  elseif t == 'function' then
+    return gen(p)
+  elseif t == 'table' then
     return bind(p)
   end
+  error('fun: unknown type, expected `string`, `table` or `function`')
 end

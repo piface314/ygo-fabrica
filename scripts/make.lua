@@ -6,31 +6,37 @@ local Parser = require 'scripts.make.parser'
 local Encoder = require 'scripts.make.encoder'
 local Writer = require 'scripts.make.writer'
 local i18n = require 'lib.i18n'
+local fun = require 'lib.fun'
 
 local function get_expansions(all, id)
   return Config.groups.from_flag.get_many('expansion', all or id and {id})
 end
 
+---@param recipe table
+---@return Fun
 local function get_files(recipe)
-  local files = {}
   Logs.assert(type(recipe) == 'table', i18n 'make.recipe_not_list')
-  for _, file in ipairs(recipe) do
-    table.insert(files, file)
-  end
-  return files
+  return fun(recipe):copy()
 end
+
+local key_to_string = {counter = 'counter', set = 'setname'}
 
 return function(flags, exp)
   local all = flags['--all']
+  local overwrite = flags['--overwrite'] or flags['-ow']
   local expansions = get_expansions(all, exp)
   for id, expansion in pairs(expansions) do
     local cdbfp = path.join('expansions', id .. '.cdb')
+    local strfp = path.join('expansions', id .. '-strings.conf')
     Logs.info(i18n('make.status', {id}))
     local files = get_files(expansion.recipe)
     local data = DataFetcher.get(files)
-    local sets, cards = Parser.parse(data)
-    local entries = Encoder.encode(sets, cards)
-    Writer.write_sets(sets)
-    Writer.write_entries(cdbfp, entries, flags['--clean'])
+    local cards = Parser.parse(data, 'card')
+    local strings = fun {'set', 'counter'}:hashmap(function(key)
+      return key_to_string[key], Parser.parse(data, key)
+    end)
+    local entries = Encoder.encode(strings.setname, cards)
+    Writer.write_strings(strfp, strings, overwrite)
+    Writer.write_entries(cdbfp, entries, overwrite)
   end
 end

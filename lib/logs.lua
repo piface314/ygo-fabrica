@@ -64,7 +64,7 @@ function Logs.bar(n)
                                 fill, miss, colors.RESET, progress, n,
                                 label or '')
     prelabel = prelabel and prelabel .. '\n' or ''
-    io.write('\r', prelabel, SPACE:rep(prev_s), s)
+    io.write('\r', SPACE:rep(prev_s), '\r', prelabel, s)
     io.flush()
     prev_s = #s - FMT_WD
   end

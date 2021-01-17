@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
 - Warning when user seems to be outside a project folder.
 - Verbose flag to multiple commands.
-- Support for custom counters in `ygofab sync`.
+- Support for custom counters in `ygofab sync` and `ygofab make`.
 
 ### Changed
 - Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More detailed output in `ygofab config`.
 - `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
+- Flag `--clean` in `ygofab make` renamed to `--overwrite` or `-ow`.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.

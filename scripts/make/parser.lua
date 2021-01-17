@@ -96,11 +96,10 @@ local function scan(macros, group)
   end
 end
 
-function Parser.parse(data)
-  local macros, cards, sets = data.macro or {}, data.card or {}, data.set or {}
-  scan(macros, sets)
-  scan(macros, cards)
-  return sets, cards
+function Parser.parse(data, key)
+  local macros, v = data.macro or {}, data[key] or {}
+  scan(macros, v)
+  return v
 end
 
 return Parser

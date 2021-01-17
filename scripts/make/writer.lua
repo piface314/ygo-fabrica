@@ -4,12 +4,41 @@ local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local GameConst = require 'scripts.game-const'
 local i18n = require 'lib.i18n'
+local fun = require 'lib.fun'
 
 local Writer = {}
 
-local insert, concat = table.insert, table.concat
+local cols = fun {
+  texts = fun {
+    'id', 'name', 'desc', 'str1', 'str2', 'str3', 'str4', 'str5', 'str6',
+    'str7', 'str8', 'str9', 'str10', 'str11', 'str12', 'str13', 'str14',
+    'str15', 'str16'
+  },
+  datas = fun {
+    'id', 'ot', 'alias', 'setcode', 'type', 'atk', 'def', 'level', 'race',
+    'attribute', 'category'
+  }
+}
 
-local tables = {'texts', 'datas'}
+local val_fmt = cols:map(fun [[cs -> '(' .. ('"%s",'):rep(#cs):sub(1, -2) .. ')']])
+local delete_sql = [[DELETE FROM %s WHERE id NOT IN (%s)]]
+local replace_sqls = cols:map(function(cs, t)
+  return ([[REPLACE INTO %s (%s) VALUES %%s]]):format(t, table.concat(cs, ','))
+end)
+
+local function get_tuple(table, entry)
+  return cols[table]:map(function(k)
+    local v = entry[k]
+    return type(v) == 'string' and v:gsub('"', '""') or v
+  end)
+end
+
+local function get_replace_cmd(t, entries)
+  local tuples = entries:map(function(entry)
+    return val_fmt[t]:format(unpack(get_tuple(t, entry)))
+  end)
+  return replace_sqls[t]:format(table.concat(tuples, ','))
+end
 
 local function open_cdb(cdbfp)
   local db, _, msg = sqlite.open(cdbfp)
@@ -17,162 +46,144 @@ local function open_cdb(cdbfp)
   local sqlf = io.open(path.prjoin('res', 'new', 'create-cdb.sql'), 'r')
   local create_sql = sqlf:read('*a')
   sqlf:close()
-  db:exec(create_sql)
+  local err = db:exec(create_sql)
+  Logs.assert(err == sqlite.OK, i18n('make.writer.create_error', {err}))
   return db
 end
 
-local cols = {
-  texts = {
-    'id', 'name', 'desc', 'str1', 'str2', 'str3', 'str4', 'str5', 'str6',
-    'str7', 'str8', 'str9', 'str10', 'str11', 'str12', 'str13', 'str14',
-    'str15', 'str16'
-  },
-  datas = {
-    'id', 'ot', 'alias', 'setcode', 'type', 'atk', 'def', 'level', 'race',
-    'attribute', 'category'
-  }
-}
-
-local function get_val_fmt(n)
-  return '(' .. ('"%s",'):rep(n):sub(1, -2) .. ')'
-end
-
-local delete_sql = [[DELETE FROM %s WHERE id NOT IN (%s)]]
-local replace_template = [[REPLACE INTO %s (%s) VALUES %%s]]
-local replace_sqls, val_fmt = {}, {}
-for t, cs in pairs(cols) do
-  replace_sqls[t] = replace_template:format(t, concat(cs, ','))
-  val_fmt[t] = get_val_fmt(#cs)
-end
-
-local function get_tuple(table, entry)
-  local tuple = {}
-  for _, k in ipairs(cols[table]) do
-    local v = entry[k]
-    if type(v) == 'string' then
-      v = v:gsub('"', '""')
-    end
-    insert(tuple, v)
-  end
-  return tuple
-end
-
-local function get_cmd_and_ids(table, entries)
-  local tuples, ids = {}, {}
-  for _, entry in pairs(entries) do
-    insert(tuples, val_fmt[table]:format(unpack(get_tuple(table, entry))))
-    insert(ids, entry.id)
-  end
-  return replace_sqls[table]:format(concat(tuples, ',')), ids
-end
-
-local function clean_cdb(cdb, table, ids)
-  local del = delete_sql:format(table, concat(ids, ','))
+local function clean_cdb(cdb, t, entries)
+  local ids = entries:map(fun 'e -> e.id')
+  local del = delete_sql:format(t, table.concat(ids, ','))
   local err = cdb:exec(del)
   if err ~= sqlite.OK then
     Logs.warning(i18n('make.writer.clean_error', {err}))
   end
 end
 
-local function write_cdb(cdbfp, entries, clean)
+local function write_cdb(cdbfp, entries, overwrite)
   local cdb = open_cdb(cdbfp)
-  for _, table in ipairs(tables) do
-    local command, ids = get_cmd_and_ids(table, entries)
-    local err = cdb:exec(command)
+  for t in pairs(cols) do
+    local err = cdb:exec(get_replace_cmd(t, entries))
     if err ~= sqlite.OK then
       Logs.warning(i18n('make.writer.write_error', {err}))
-    elseif clean then
-      clean_cdb(cdb, table, ids)
+    elseif overwrite then
+      clean_cdb(cdb, t, entries)
     end
   end
   cdb:close()
 end
 
-local script_template = '-- %s\
-local s, id = GetID()\
-function s.initial_effect(c)\
-  %s\
-end\
-'
-local st_activate = '-- activate\
-  local e1 = Effect.CreateEffect(c)\
-  e1:SetType(EFFECT_TYPE_ACTIVATE)\
-  e1:SetCode(EVENT_FREE_CHAIN)\
-  c:RegisterEffect(e1)'
+local script_template = [[-- %s
+local s, id = GetID()
+function s.initial_effect(c)
+  %s
+end]]
+local st_activate = [[-- activate
+  local e1 = Effect.CreateEffect(c)
+  e1:SetType(EFFECT_TYPE_ACTIVATE)
+  e1:SetCode(EVENT_FREE_CHAIN)
+  c:RegisterEffect(e1)]]
+local types = GameConst.code.type
+local function is_effect_monster(t)
+  return bit.band(t, types.EFFECT + types.PENDULUM) ~= 0
+end
+local function is_spell_trap(t)
+  return bit.band(t, types.SPELL + types.TRAP) ~= 0
+end
 local function write_scripts(entries)
-  for _, entry in pairs(entries) do
-    local t, types = entry.type, GameConst.code.type
-    local script
-    if bit.band(t, types.MONSTER) ~= 0 and bit.band(t, types.NORMAL) == 0 then
+  fun(entries):map(function(e)
+    return {e, path.join('script', ('c%d.lua'):format(e.id))}
+  end):filter(function(t) return not fs.exists(t[2]) end)
+  :foreach(function(t)
+    local entry, fp, script = t[1], t[2], nil
+    if is_effect_monster(entry.type) then
       script = script_template:format(entry.name, '-- effects')
-    elseif bit.band(t, types.SPELL + types.TRAP) ~= 0 then
+    elseif is_spell_trap(entry.type) then
       script = script_template:format(entry.name, st_activate)
+    else return end
+    local f = io.open(fp, 'w')
+    if f then
+      f:write(script, '\n')
+      f:close()
     end
-    local fp = path.join('script', ('c%d.lua'):format(entry.id))
-    if script and not fs.exists(fp) then
-      local f = io.open(fp, 'w')
-      if f then
-        f:write(script)
-        f:close()
-      end
-    end
-  end
+  end)
 end
 
-local function sets_to_code(sets)
-  local setcodes = {}
-  for id, set in pairs(sets) do
-    local code, name = tonumber(set.code or ''), set.name
-    if code and name then
-      setcodes[code] = name
+local STRING_KEYS = fun {setname = true, counter = true}
+local function get_string_lines_from_file(fp)
+  local src = io.open(fp)
+  if not src then return end
+  local lines = STRING_KEYS:map(fun '_ -> {}')
+  for line in src:lines() do
+    local key, code, val = line:match('^%s*!(%w+)%s+(0x%x+)%s*(.-)%s*$')
+    code = tonumber(code)
+    if STRING_KEYS[key] and code and val then
+      lines[key][code] = val
     end
   end
-  return setcodes
-end
-
-local function gsub_sets(f, setcodes)
-  local unwritten = {}
-  for code, name in pairs(setcodes) do
-    unwritten[code] = name
-  end
-  local lines = ''
-  if f then
-    for line in f:lines() do
-      local code = tonumber(line:match('^%s*!setname%s+(0x%x+).*$') or '')
-      local name = setcodes[code]
-      if name then
-        unwritten[code] = nil
-        lines = lines .. ('!setname 0x%04x %s\n'):format(code, name)
-      else
-        lines = lines .. line .. '\n'
-      end
-    end
-    f:close()
-  end
-  for code, name in pairs(unwritten) do
-    lines = lines .. ('!setname 0x%04x %s\n'):format(code, name)
-  end
+  src:close()
   return lines
 end
 
-function Writer.write_sets(sets)
-  local setcodes = sets_to_code(sets)
-  if not next(setcodes) then
-    return
+local fmt_line = fun '... -> ("!%s 0x%04x %s\\n"):format(...)'
+local function fmt_lines(rlines)
+  local wlines = fun {}
+  for key, t in pairs(rlines) do
+    for code, val in pairs(t) do
+      wlines:push(fmt_line(key, code, val))
+    end
   end
-  local fp = path.join('expansions', 'strings.conf')
-  local f = io.open(fp, 'r')
-  local text = gsub_sets(f, setcodes)
-  local f = io.open(fp, 'w')
-  if not f then
-    return
-  end
-  f:write(text)
-  f:close()
+  return wlines:reduce('', fun 'a, s -> a .. s')
 end
 
-function Writer.write_entries(cdbfp, entries, clean)
-  write_cdb(cdbfp, entries, clean)
+local function merge_lines_with_file(fp, rlines)
+  local f, wlines = io.open(fp), ''
+  if f then
+    wlines = fun(f:lines())
+      :map(fun 'l -> {l, l:match("^%s*!(%w+)%s+(0x%x+).*$")}')
+      :map(function(t)
+        local line, key, code = t[1], t[2], tonumber(t[3] or nil)
+        local val = rlines[key] and rlines[key][code]
+        if val then
+          rlines[key][code] = nil
+          return fmt_line(key, code, val)
+        else
+          return line .. '\n'
+        end
+      end):reduce('', fun 'a, s -> a .. s')
+    f:close()
+  end
+  return wlines .. fmt_lines(rlines)
+end
+
+local function get_string_lines(strings)
+  return strings:map(function(entries)
+    return fun(entries):hashmap(fun 'e -> tonumber(e.code or nil), e.name')
+  end):filter(fun 'g -> next(g) ~= nil')
+end
+
+function Writer.merge_strings(src_fp, dst_fp)
+  local rlines = get_string_lines_from_file(src_fp)
+  if not rlines then return false end
+  local wlines = merge_lines_with_file(dst_fp, rlines)
+  local dst = io.open(dst_fp, 'w')
+  if not dst then return false end
+  dst:write(wlines)
+  dst:close()
+  return true
+end
+
+function Writer.write_strings(fp, strings, ow)
+  local rlines = get_string_lines(strings)
+  if not next(rlines) then return end
+  local wlines = ow and fmt_lines(rlines) or merge_lines_with_file(fp, rlines)
+  local dst = io.open(fp, 'w')
+  dst:write(wlines)
+  dst:close()
+end
+
+function Writer.write_entries(cdbfp, entries, overwrite)
+  write_cdb(cdbfp, fun(entries), overwrite)
   write_scripts(entries)
 end
 

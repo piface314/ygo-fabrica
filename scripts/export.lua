@@ -5,7 +5,6 @@ local Config = require 'scripts.config'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
 local fun = require 'lib.fun'
-require 'lib.table'
 
 local Export = {}
 
