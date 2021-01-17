@@ -35,7 +35,6 @@ install_fonts() {
   fi
 }
 
-export LUA_PATH="./?.lua;./?/?.lua;./?/init.lua"
 install_luajit \
   && install_vips \
   && install_ygofab \

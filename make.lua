@@ -1,8 +1,8 @@
+package.path = './?/init.lua;' .. package.path
 local Logs = require 'lib.logs'
 local Interpreter = require 'lib.interpreter'
 local spec = require 'spec'
 local locale = require 'locale'
-
 
 local IS_WIN = package.config:sub(1, 1) == "\\"
 local function exec(command)
