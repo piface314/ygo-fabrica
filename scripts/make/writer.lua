@@ -178,6 +178,10 @@ function Writer.write_strings(fp, strings, ow)
   if not next(rlines) then return end
   local wlines = ow and fmt_lines(rlines) or merge_lines_with_file(fp, rlines)
   local dst = io.open(fp, 'w')
+  if not dst then
+    return Logs.warning(i18n 'make.writer.strings_fail')
+  end
+  Logs.info(i18n 'make.writer.strings')
   dst:write(wlines)
   dst:close()
 end

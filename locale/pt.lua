@@ -45,6 +45,7 @@ return {
     make = {
       recipe_not_list = '"recipe" deve ser uma lista de nomes de arquivos',
       status = 'Criando a database para %q...',
+      done = 'Pronto!',
       data_fetcher = {
         toml_error = 'ao processar .toml:'
       },
@@ -59,7 +60,9 @@ return {
       writer = {
         create_error = 'código de erro %s ao criar .cdb',
         write_error = 'código de erro %s ao escrever .cdb',
-        clean_error = 'código de erro %s ao limpar .cdb'
+        clean_error = 'código de erro %s ao limpar .cdb',
+        strings = 'Escrevendo strings.conf...',
+        strings_fail = 'falha ao escrever strings.conf'
       }
     },
     new = {

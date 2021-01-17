@@ -45,6 +45,7 @@ return {
     make = {
       recipe_not_list = '"recipe" must be a list of file names',
       status = 'Making %q card database...',
+      done = 'Done!',
       data_fetcher = {
         toml_error = 'while parsing .toml:'
       },
@@ -59,7 +60,9 @@ return {
       writer = {
         create_error = 'error code %s while creating .cdb',
         write_error = 'error code %s while writing .cdb',
-        clean_error = 'error code %s while cleaning .cdb'
+        clean_error = 'error code %s while cleaning .cdb',
+        strings = 'Writing strings.conf...',
+        strings_fail = 'failed writing strings.conf'
       }
     },
     new = {
