@@ -84,13 +84,9 @@ function Parser.get_sumtype(data)
   return GameConst.name.type[sumtype]
 end
 
-local abilities = types.FLIP + types.GEMINI + types.SPIRIT + types.TOON + types.UNION
-function Parser.get_ability(data)
-  local abs = {}
-  for b in Parser.bits(bit.band(data.type, abilities)) do
-    table.insert(abs, GameConst.name.type[b])
-  end
-  return table.concat(abs, "/")
+function Parser.get_desc_label(data, t)
+  local label = GameConst.name.type[t]
+  return Parser.bcheck(data.type, t) and label or nil
 end
 
 return Parser

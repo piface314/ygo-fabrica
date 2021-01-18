@@ -46,17 +46,13 @@ return {
       recipe_not_list = '"recipe" deve ser uma lista de nomes de arquivos',
       status = 'Criando a database para %q...',
       done = 'Pronto!',
-      data_fetcher = {
-        toml_error = 'ao processar .toml:'
-      },
+      data_fetcher = {toml_error = 'ao processar .toml:'},
       encoder = {
         pendulum_effect = 'Efeito de Pêndulo',
         monster_effect = 'Efeito de Monstro',
         flavor_text = 'Texto'
       },
-      parser = {
-        cyclic_macro = '%q: macro cíclico',
-      },
+      parser = {cyclic_macro = '%q: macro cíclico'},
       writer = {
         create_error = 'código de erro %s ao criar .cdb',
         write_error = 'código de erro %s ao escrever .cdb',
@@ -94,7 +90,7 @@ Comandos disponíveis:\
   new    \tCria um novo projeto\
   sync   \tCopia os arquivos do projeto para o jogo',
       not_in_project = 'Parece que você não está na pasta de um projeto...',
-      invalid_command = 'comando inválido',
+      invalid_command = 'comando inválido'
     },
     ygopic = {
       usage = 'Uso:\
@@ -137,10 +133,10 @@ Opções disponíveis:\
                     \tdeve ser uma string em formato hexadecimal.\
                     \tEx.: `--color-effect "#ffffff"` define a cor do nome\
                     \tdos Monstros de Efeito como branco.',
-      missing_mode = "por favor especifique <modo>",
-      missing_imgfolder = "por favor especifique <pasta-artes>",
-      missing_cdbfp = "por favor especifique <database>",
-      missing_outfolder = "por favor especifique <pasta-saída>"
+      missing_mode = 'por favor especifique <modo>',
+      missing_imgfolder = 'por favor especifique <pasta-artes>',
+      missing_cdbfp = 'por favor especifique <database>',
+      missing_outfolder = 'por favor especifique <pasta-saída>'
     }
   }
 }

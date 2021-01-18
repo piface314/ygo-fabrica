@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
 - `--clean` flags in `ygofab make` renamed to `--overwrite` or `-ow`.
+- Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.

@@ -46,17 +46,13 @@ return {
       recipe_not_list = '"recipe" must be a list of file names',
       status = 'Making %q card database...',
       done = 'Done!',
-      data_fetcher = {
-        toml_error = 'while parsing .toml:'
-      },
+      data_fetcher = {toml_error = 'while parsing .toml:'},
       encoder = {
         pendulum_effect = 'Pendulum Effect',
         monster_effect = 'Monster Effect',
         flavor_text = 'Flavor Text'
       },
-      parser = {
-        cyclic_macro = '%q: cyclic macro',
-      },
+      parser = {cyclic_macro = '%q: cyclic macro'},
       writer = {
         create_error = 'error code %s while creating .cdb',
         write_error = 'error code %s while writing .cdb',
@@ -94,10 +90,10 @@ Available commands:\
   new    \tCreates a new project, given a name\
   sync   \tCopies your project files to YGOPro game',
       not_in_project = 'It looks like you\'re not in a project folder...',
-      invalid_command = 'not a valid command',
+      invalid_command = 'not a valid command'
     },
     ygopic = {
-      usage = "Usage:\
+      usage = 'Usage:\
 \
   $ ygopic <mode> <art-folder> <card-database> <output-folder> [options]\
 \
@@ -134,12 +130,12 @@ Available options:\
   --color-* <color> \tChanges the color used for card names in `proxy`\
                     \tmode, according to the card type (*). <color>\
                     \tmust be a color string in hex format.\
-                    \tE.g., `--color-effect \"#ffffff\"` specifies white\
-                    \tfor Effect Monsters card name.",
-      missing_mode = "please specify <mode>",
-      missing_imgfolder = "please specify <art-folder>",
-      missing_cdbfp = "please specify <card-database>",
-      missing_outfolder = "please specify <output-folder>"
+                    \tE.g., `--color-effect "#ffffff"` specifies white\
+                    \tfor Effect Monsters card name.',
+      missing_mode = 'please specify <mode>',
+      missing_imgfolder = 'please specify <art-folder>',
+      missing_cdbfp = 'please specify <card-database>',
+      missing_outfolder = 'please specify <output-folder>'
     }
   }
 }

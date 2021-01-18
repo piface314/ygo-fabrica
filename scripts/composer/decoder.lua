@@ -4,6 +4,7 @@ local MetaLayer = require 'scripts.composer.metalayer'
 local Parser = require 'scripts.composer.parser'
 local Transformer = require 'scripts.composer.transformer'
 local i18n = require 'lib.i18n'
+local fun = require 'lib.fun'
 
 local Decoder = {}
 
@@ -273,14 +274,17 @@ function automata.proxy(data)
   end
 
   function states.monster_desc()
-    local race = Parser.get_race(data)
-    local sumtype = Parser.get_sumtype(data); sumtype = sumtype and "/" .. sumtype or ""
-    local pend = Parser.bcheck(data.type, types.PENDULUM) and "/Pendulum" or ""
-    local ability = Parser.get_ability(data); ability = ability and "/" .. ability or ""
-    local tuner = Parser.bcheck(data.type, types.TUNER) and "/Tuner" or ""
-    local effnorm = (Parser.bcheck(data.type, types.EFFECT) and "/Effect")
-      or (Parser.bcheck(data.type, types.NORMAL) and "/Normal") or ""
-    local desc = ("%s%s%s%s%s%s"):format(race, sumtype, pend, ability, tuner, effnorm)
+    local desc = fun {
+      Parser.get_race(data),
+      Parser.get_sumtype(data)
+    }:vals() .. fun {
+      types.PENDULUM, types.FLIP, types.GEMINI, types.GEMINI,
+      types.SPIRIT, types.TOON, types.UNION, types.TUNER,
+      types.EFFECT, types.NORMAL
+    }:hashmap(function(t, i)
+      return i, Parser.get_desc_label(data, t)
+    end):vals()
+    desc = table.concat(desc, '/')
     insert(layers, MetaLayer.new("monster_desc", desc))
     return states.monster_text()
   end

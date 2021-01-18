@@ -20,22 +20,22 @@ function Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
   Logs.assert(check_mode(mode), i18n('compose.unknown_mode', {mode}))
   check_folders(imgfolder, outfolder)
   local data = DataFetcher.get(imgfolder, cdbfp)
-  local metalayers_set, n = {}, 0
+  local metalayers_set = {}
   Decoder.configure(mode, options)
   for _, d in ipairs(data) do
     local metalayers, msg = Decoder.decode(d)
     if metalayers then
-      metalayers_set[d.id] = metalayers
-      n = n + 1
+      table.insert(metalayers_set, {d.id, metalayers})
     else
       Logs.warning(i18n('compose.decode_fail', {d.id}), msg)
     end
   end
   Assembler.configure(mode, options)
   Printer.configure(outfolder, options)
-  local bar = Logs.bar(n)
+  local bar = Logs.bar(#metalayers_set)
   bar:print()
-  for id, metalayers in pairs(metalayers_set) do
+  for _, t in ipairs(metalayers_set) do
+    local id, metalayers = unpack(t)
     bar:update(i18n('compose.generating', {id}))
     local img, field = Assembler.assemble(metalayers)
     Printer.print(id, img)
