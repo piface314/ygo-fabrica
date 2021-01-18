@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Ritual Spells no longer have a blue frame.
 - Warnings for `ygofab compose` correctly display id of a broken card.
+- `&`, `<`, `>` are correctly escaped and rendered in card pics.
 
 ### Removed
 - `--clean`, `--no-pics`, `--no-script`, `--no-exp` flags in `ygofab sync`.

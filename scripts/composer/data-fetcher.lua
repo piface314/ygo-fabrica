@@ -6,9 +6,13 @@ local fun = require 'lib.fun'
 
 local DataFetcher = {}
 
-local valid_exts = {jpg = true, png = true, jpeg = true}
+local ESC_REPL = fun {['<'] = '&lt;', ['>'] = '&gt;', ['&'] = '&amp;'}
+local ESC_CHAR = '[' .. table.concat(ESC_REPL:keys()) .. ']'
+local function escape(text) return (text:gsub(ESC_CHAR, ESC_REPL)) end
+
+local VALID_EXT = {jpg = true, png = true, jpeg = true}
 local function is_valid_ext(ext)
-  return ext and valid_exts[ext:lower()]
+  return ext and VALID_EXT[ext:lower()]
 end
 
 local function get_images(fp)
@@ -35,8 +39,8 @@ local function read_cdb(cdb, imgs)
     table.insert(data, {
       img = imgs[vals[1]],
       id = vals[1],
-      name = vals[2] or '',
-      desc = vals[3] or '',
+      name = escape(vals[2] or ''),
+      desc = escape(vals[3] or ''),
       type = tonumber(vals[4]) or 0,
       atk = tonumber(vals[5]) or 0,
       def = tonumber(vals[6]) or 0,
