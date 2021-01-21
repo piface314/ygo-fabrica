@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Internationalization in program interface.
+- Internationalization in program interface, `ygofab make` and `ygofab compose`.
+- `locale` general configuration.
+- `locale` configuration in `expansion`.
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
-- Warning when user seems to be outside a project folder.
-- `--verbose` flag to `ygofab export` and `ygofab sync`.
 - Support for custom counters in `ygofab sync` and `ygofab make`.
+- `--verbose` flag to `ygofab export` and `ygofab sync`.
+- Warning when user seems to be outside a project folder.
 
 ### Changed
 - Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
 - `--clean` flags in `ygofab make` renamed to `--overwrite` or `-ow`.
 - Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
+- Correct ot codes and categories for EDOPro.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.

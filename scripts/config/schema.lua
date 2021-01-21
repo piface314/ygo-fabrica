@@ -10,8 +10,9 @@ local EXPANSION_SCHEMA = {
   type = 'struct',
   required = {'recipe'},
   items = {
+    default = {type = 'boolean'},
     recipe = {type = 'list', items = {type = 'string'}},
-    default = {type = 'boolean'}
+    locale = {type = 'string'}
   }
 }
 

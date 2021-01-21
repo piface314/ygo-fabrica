@@ -1,41 +1,36 @@
 local Codes = require 'scripts.make.codes'
 local i18n = require 'lib.i18n'
+local fun = require 'lib.fun'
 
 local Encoder = {}
 
-local insert = table.insert
+local expansion_locale = 'en'
 
 local generics = {
   number = function(key)
-    return function(entry, card)
-      entry[key] = tonumber(card[key]) or 0
-    end
+    return function(card) return tonumber(card[key]) or 0 end
   end,
   number_q = function(key)
-    return function(entry, card)
-      if card[key] == '?' then
-        entry[key] = -2
-      else
-        entry[key] = tonumber(card[key]) or 0
-      end
+    return function(card)
+      return card[key] == '?' and -2 or tonumber(card[key]) or 0
     end
   end,
   combined = function(key)
-    return function(entry, card)
+    return function(card)
       local v = card[key]
       local t = type(v)
       if t == 'number' then
-        entry[key] = v
+        return v
       elseif t == 'string' then
-        entry[key] = Codes.combine(key, v)
+        return Codes.combine(key, v)
       else
-        entry[key] = 0
+        return 0
       end
     end
   end
 }
 
-local encode = {
+local encode = fun {
   id = generics.number('id'),
   ot = generics.combined('ot'),
   alias = generics.number('alias'),
@@ -46,59 +41,57 @@ local encode = {
   category = generics.combined('category')
 }
 
-function encode.name(entry, card)
-  entry.name = card.name or ''
+for i = 1, 16 do
+  encode['str' .. i] = function(card)
+    local strings = card.strings
+    return strings and strings[i] or ''
+  end
 end
 
-local p_text = '[ %s ]\n%%s\n-------------------\n[ %%s ]\n%%s'
-p_text = p_text:format(i18n 'make.encoder.pendulum_effect')
-function encode.desc(entry, card)
+function encode.name(card)
+  return card.name or ''
+end
+
+local PEND_TEMPLATE = '[ %s ]\n%%s\n-------------------\n[ %%s ]\n%%s'
+function encode.desc(card)
   local p_effect = card['pendulum-effect']
   local effect, flavor_t = card.effect, card['flavor-text']
   local text, tag = '', ''
+  local general_locale = i18n.getLocale()
+  i18n.setLocale(expansion_locale)
+  local p_text = PEND_TEMPLATE:format(i18n 'make.encoder.pendulum_effect')
   if effect then
     text, tag = effect, i18n 'make.encoder.monster_effect'
   elseif flavor_t then
     text, tag = flavor_t, i18n 'make.encoder.flavor_text'
   end
-  entry.desc = p_effect and p_text:format(p_effect, tag, text) or text
+  i18n.setLocale(general_locale)
+  return p_effect and p_text:format(p_effect, tag, text) or text
 end
 
-function encode.strings(entry, card)
-  local strings = card.strings or {}
-  for i = 1, 16 do
-    entry['str' .. i] = strings[i] or ''
-  end
-end
-
-function encode.setcode(entry, card, sets)
-  if tonumber(card.setcode) then
-    entry.setcode = tonumber(card.setcode)
-    return
-  end
+function encode.setcode(card, sets)
+  if tonumber(card.setcode) then return tonumber(card.setcode) end
   local setcode = 0
   local cardset = type(card.set) == 'string' and card.set or ''
   for setid in cardset:gmatch('[%w-_]+') do
     local set = sets[setid]
     local code = tonumber(set and set.code or '')
-    if code then
-      setcode = setcode * 0x10000 + set.code % 0x10000
-    end
+    if code then setcode = setcode * 0x10000 + set.code % 0x10000 end
   end
-  entry.setcode = setcode
+  return setcode
 end
 
 local generic_def = generics.number_q('def')
-function encode.def(entry, card)
+function encode.def(card)
   local arrows = card['link-arrows']
   if type(arrows) == 'string' then
-    entry.def = Codes.combine('link', arrows)
+    return Codes.combine('link', arrows)
   else
-    generic_def(entry, card)
+    return generic_def(card)
   end
 end
 
-function encode.level(entry, card)
+function encode.level(card)
   local scales = card['pendulum-scale']
   local level =
     tonumber(card['link-rating'] or card.rank or card.level or '') or 0
@@ -110,19 +103,17 @@ function encode.level(entry, card)
     lsc = tonumber(scales[1]) or 0
     rsc = tonumber(scales[2]) or 0
   end
-  entry.level = bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
+  return bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
 end
 
-function Encoder.encode(sets, cards)
-  local entries = {}
-  for _, card in pairs(cards) do
-    local entry = {}
-    for _, f in pairs(encode) do
-      f(entry, card, sets)
-    end
-    insert(entries, entry)
-  end
-  return entries
+function Encoder.set_locale(locale)
+  expansion_locale = locale
+end
+
+function Encoder.encode(cards, sets)
+  return fun(cards):vals():map(function(card)
+    return encode:map(function(e) return e(card, sets) end)
+  end)
 end
 
 return Encoder

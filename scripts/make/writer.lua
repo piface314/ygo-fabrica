@@ -90,7 +90,7 @@ local function is_spell_trap(t)
   return bit.band(t, types.SPELL + types.TRAP) ~= 0
 end
 local function write_scripts(entries)
-  fun(entries):map(function(e)
+  entries:map(function(e)
     return {e, path.join('script', ('c%d.lua'):format(e.id))}
   end):filter(function(t) return not path.exists(t[2]) end)
   :foreach(function(t)
@@ -186,7 +186,7 @@ function Writer.write_strings(fp, strings, ow)
 end
 
 function Writer.write_entries(cdbfp, entries, overwrite)
-  write_cdb(cdbfp, fun(entries), overwrite)
+  write_cdb(cdbfp, entries, overwrite)
   write_scripts(entries)
 end
 
