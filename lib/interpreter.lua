@@ -58,6 +58,7 @@ end
 --- many arguments that flag needs
 --- @param command string
 --- @param fn function
+--- @vararg string|number
 function Interpreter:add_command(command, fn, ...)
   local node = self:create_node(command)
   local flags, node_flags = {...}, {}
@@ -71,6 +72,7 @@ function Interpreter:add_command(command, fn, ...)
 end
 
 --- Executes a configured command, given a list of tokens
+--- @vararg string
 --- @return string|nil errmsg
 function Interpreter:exec(...)
   local tokens, i = {...}, 1

@@ -24,7 +24,7 @@ local function add_project_warning()
   end)
 end
 
-local function cmd_version(flags, ...)
+local function cmd_version(flags)
   if flags['--version'] or flags['-v'] then
     Logs.info(Version.formatted())
   elseif #arg > 0 then
@@ -65,7 +65,7 @@ end
 
 local interpreter = Interpreter.new()
 interpreter:add_command('compose', cmd_compose, '-p', 1, '-Pall', 0, '-e', 1,
-                        '-Eall', 0)
+                        '-Eall', 0, '--verbose', 0)
 interpreter:add_command('config', cmd_config)
 interpreter:add_command('export', cmd_export, '-p', 1, '-Pall', 0, '-o', 1,
                         '-e', 1, '-Eall', 0, '--verbose', 0)
@@ -75,6 +75,6 @@ interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,
                         '--no-string', 0, '--verbose', 0)
 interpreter:add_command('', cmd_version, '--version', 0, '-v', 0)
 
-Locale.set(Config.get('locale'))
+Locale.set(Config.get('locale') or i18n.getFallbackLocale())
 local errmsg = interpreter:exec(...)
 if errmsg then display_help(errmsg) end

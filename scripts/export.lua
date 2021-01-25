@@ -95,5 +95,5 @@ function Export.run(flags)
   end
 end
 
-setmetatable(Export, {__call = Export.run})
+setmetatable(Export, {__call = function(_, ...) return _.run(...) end})
 return Export

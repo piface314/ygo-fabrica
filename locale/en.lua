@@ -1,11 +1,84 @@
 return {
   en = {
+    bad_argument = 'bad argument `%{arg}` to %{caller} (%{exp} expected, got %{got})',
+    bad_argument_i = 'bad argument #%{arg} to %{caller} (%{exp} expected, got %{got})',
+    nil_argument = 'bad argument `%{arg}` to %{caller} (value expected)',
+    nil_argument_i = 'bad argument #%{arg} to %{caller} (value expected)',
     interpreter = {
       invalid_command = 'invalid command %q',
       invalid_flag = 'invalid flag %q',
       missing_flag_args = 'not enough arguments for %q flag'
     },
     logs = {err = 'ERROR', ok = 'OK'},
+    codes = {
+      attribute = {
+        EARTH = 'EARTH',
+        WATER = 'WATER',
+        FIRE = 'FIRE',
+        WIND = 'WIND',
+        LIGHT = 'LIGHT',
+        DARK = 'DARK',
+        DIVINE = 'DIVINE'
+      },
+      race = {
+        WARRIOR = 'Warrior',
+        SPELLCASTER = 'Spellcaster',
+        FAIRY = 'Fairy',
+        FIEND = 'Fiend',
+        ZOMBIE = 'Zombie',
+        MACHINE = 'Machine',
+        AQUA = 'Aqua',
+        PYRO = 'Pyro',
+        ROCK = 'Rock',
+        WINGED_BEAST = 'Winged Beast',
+        PLANT = 'Plant',
+        INSECT = 'Insect',
+        THUNDER = 'Thunder',
+        DRAGON = 'Dragon',
+        BEAST = 'Beast',
+        BEAST_WARRIOR = 'Beast-Warrior',
+        DINOSAUR = 'Dinosaur',
+        FISH = 'Fish',
+        SEA_SERPENT = 'Sea Serpent',
+        REPTILE = 'Reptile',
+        PSYCHIC = 'Psychic',
+        DIVINE_BEAST = 'Divine-Beast',
+        CREATOR_GOD = 'Creator God',
+        WYRM = 'Wyrm',
+        CYBERSE = 'Cyberse'
+      },
+      type = {
+        SPELL = {
+          attribute = 'SPELL',
+          label = {
+            normal = '<t=2><r=2>[</> Spell Card <r=2>]</></>',
+            other = '<t=2><r=2>[</> Spell Card    <r=2>]</></>'
+          }
+        },
+        TRAP = {
+          attribute = 'TRAP',
+          label = {
+            normal = '<t=2><r=2>[</> Trap Card <r=2>]</></>',
+            other = '<t=2><r=2>[</> Trap Card    <r=2>]</></>'
+          }
+        },
+        NORMAL = 'Normal',
+        EFFECT = 'Effect',
+        FUSION = 'Fusion',
+        RITUAL = 'Ritual',
+        SPIRIT = 'Spirit',
+        UNION = 'Union',
+        GEMINI = 'Gemini',
+        TUNER = 'Tuner',
+        SYNCHRO = 'Synchro',
+        TOKEN = 'Token',
+        FLIP = 'Flip',
+        TOON = 'Toon',
+        XYZ = 'Xyz',
+        PENDULUM = 'Pendulum',
+        LINK = 'Link'
+      }
+    },
     config = {
       globals = 'Global configurations:',
       locals = 'Local configurations:',
@@ -17,7 +90,9 @@ return {
       output_conflict = 'output folder cannot be the same as artwork folder',
       unknown_mode = 'unknown mode %q',
       decode_fail = 'failed at decoding %q: ',
-      generating = 'Generating %q...',
+      decoding = 'Decoding %q...',
+      rendering = 'Rendering %q...',
+      printing = 'Printing %q...',
       done = 'Done!',
       data_fetcher = {
         no_img_folder = 'missing image folder',
@@ -25,8 +100,19 @@ return {
         read_db_fail = 'failed to read card database'
       },
       decoder = {
+        state_key_err = '%s not found in states',
+        not_layer = 'bad return value #%d (expected Layer, got %s)',
         no_monster_type = 'missing monster type',
         no_card_type = 'missing card type'
+      },
+      modes = {
+        proxy = {
+          copyright = '<t=2><s=5>©</>%{year}</> %{author}',
+          default_author = 'KAZUKI TAKAHASHI',
+          typedesc = '<t=2><r=2>[</>%s<r=2>]</></>',
+          edition = '1<r=7.2 s=3>st</> Edition',
+          forbidden = '<t=3>This card cannot be in a Deck.</>'
+        }
       }
     },
     export = {

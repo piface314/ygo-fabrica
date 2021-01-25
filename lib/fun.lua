@@ -1,7 +1,17 @@
 --- Adds functional style support to tables
 --- @class Fun
 local Fun = {}
-Fun.__index = Fun
+function Fun:__index(key)
+  local m = Fun[key]
+  return m or self(key)
+end
+
+--- Shortcut to rawget(self, key)
+--- @param key any
+--- @return any
+function Fun:__call(key)
+  return rawget(self, key)
+end
 
 --- Binds a table to a Fun object
 --- @param t table
@@ -14,12 +24,14 @@ local function new() return bind({}) end
 
 --- Runs a function until it returns `nil`, saving its return values.
 --- Similar to turning an iterator into a list in Python.
+--- @param f fun(): any
+--- @return Fun
 local function gen(f)
   local out = new()
   while true do
-    local i = {f()}
-    if i[1] == nil then break end
-    out:push(#i > 1 and i or i[1])
+    local vals = {f()}
+    if vals[1] == nil then break end
+    out:push(#vals > 1 and vals or vals[1])
   end
   return out
 end
@@ -69,12 +81,12 @@ end
 
 --- Maps each value in the table with function `f` into a new table.
 --- `f` receives each value as the first argument, and each index as the second.
---- @param f function
+--- @param f fun(val: any, key: any): any
 --- @return Fun
 function Fun:map(f)
   local out = new()
-  for i, v in pairs(self) do
-    out[i] = f(v, i)
+  for k, v in pairs(self) do
+    out[k] = f(v, k)
   end
   return out
 end
@@ -84,15 +96,15 @@ end
 --- If parameter `as_array` is provided, the table will be treated as an array if `true`,
 --- or treated as a hash if `false`. If not provided, the table will be inferred as an
 --- array if it contains an element at index `1`.
---- @param f function
+--- @param f fun(val: any, key: any): boolean
 --- @param as_array boolean
 --- @return Fun
 function Fun:filter(f, as_array)
   local out = new()
   if as_array == nil then as_array = self[1] ~= nil end
-  for i, v in pairs(self) do
-    if f(v, i) then
-      out[as_array and (#out + 1) or i] = v
+  for k, v in pairs(self) do
+    if f(v, k) then
+      out[as_array and #out + 1 or k] = v
     end
   end
   return out
@@ -100,9 +112,10 @@ end
 
 --- Reduces an table to a single value, according to a starting value `st`, and to a function `f`,
 --- that receives an accumulator value and the first parameter and the current value as the second
---- @param st any
---- @param f function
---- @return any
+--- @generic A
+--- @param st A
+--- @param f fun(acc: A, val: any): A
+--- @return A
 function Fun:reduce(st, f)
   for _, v in pairs(self) do
     st = f(st, v)
@@ -111,10 +124,10 @@ function Fun:reduce(st, f)
 end
 
 --- Executes function `fn` on each element of the table
---- @param fn function
+--- @param fn fun(val: any, key: any)
 function Fun:foreach(fn)
-  for i, v in pairs(self) do
-    fn(v, i)
+  for k, v in pairs(self) do
+    fn(v, k)
   end
 end
 
@@ -129,8 +142,9 @@ end
 
 --- Merges current table with any number of tables.
 --- Latest tables take precedence. Internal metatables are not preserved
+--- @vararg table
 --- @return Fun
-function Fun:merge(...)
+function Fun.merge(...)
   local function merge(dst, src)
     for k, v in pairs(src) do
       if type(v) == 'table' then
@@ -142,7 +156,7 @@ function Fun:merge(...)
     end
     return dst
   end
-  return bind {self, ...}:reduce(bind {}, merge)
+  return bind(bind {...}:reduce({}, merge))
 end
 
 --- Sorts the table/array.
@@ -176,7 +190,7 @@ end
 --- Maps each value in the table with function `f` into a new hash.
 --- `f` receives each value as the first argument, and each key as the second.
 --- The first value returned by `f` is used as the key, and the second and the value
---- @param f function
+--- @param f fun(val: any, key: any): any, any
 --- @return Fun
 function Fun:hashmap(f)
   local hash = new()
@@ -185,7 +199,7 @@ function Fun:hashmap(f)
     if nk ~= nil then
       hash[nk] = nv
     end
-  end 
+  end
   return hash
 end
 
@@ -232,8 +246,8 @@ end
 --- If `p` is a string, parses that string into a function defined by that string.
 --- If `p` is a table, makes `p` an instance of `Fun`.
 --- If `p` is a function, that function is treated as a generator for values that are placed in an array.
----@param p string|table
----@return Fun
+--- @param p string|table
+--- @return Fun
 return function(p, ...)
   local t = type(p)
   if t == 'string' then
@@ -243,5 +257,5 @@ return function(p, ...)
   elseif t == 'table' then
     return bind(p)
   end
-  error('fun: unknown type, expected `string`, `table` or `function`')
+  error(('fun: bad argument #1 (expected string|table|function, got %s)'):format(t))
 end

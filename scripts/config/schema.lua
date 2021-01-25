@@ -28,6 +28,7 @@ local PICSET_SCHEMA = {
     year = {type = 'number'},
     author = {type = 'string'},
     field = {type = 'boolean'},
+    holo = {type = 'boolean'},
     ['color-normal'] = {type = 'string'},
     ['color-effect'] = {type = 'string'},
     ['color-spell'] = {type = 'string'},

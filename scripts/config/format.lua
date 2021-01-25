@@ -16,9 +16,9 @@ local function format_value(v)
   return v
 end
 
----Returns the keys from a config schema
----@param key string
----@return Fun
+--- Returns the keys from a config schema
+--- @param key string
+--- @return Fun
 local function get_schema_struct_keys(key)
   local struct = fun(Schema.default.items[key].items.items):deepcopy()
   struct.default = nil
@@ -26,29 +26,28 @@ local function get_schema_struct_keys(key)
 end
 
 local function format_entry(st_keys, m, mk)
-  local e = m[mk]
-  local fmt_e = ('  %s%s:\n'):format(mk, e.default and ' (default)' or '')
-  local function fmt(stk)
-    return ('    %s: %s\n'):format(stk, format_value(e[stk]))
-  end
-  local fmt_es = st_keys:filter(function(stk)
-    return e[stk] ~= nil
-  end):map(fmt)
-  return fmt_e .. table.concat(fmt_es)
+  local e = m(mk)
+  local header = ('  %s%s:\n'):format(mk, e.default and ' (default)' or '')
+  local fmt_es = st_keys
+    :filter(function(stk) return e[stk] ~= nil end)
+    :map(function(stk)
+      return ('    %s: %s\n'):format(stk, format_value(e[stk]))
+    end)
+  return header .. table.concat(fmt_es)
 end
 
 local function format_map(key, m)
   local fmt_map = '%s=== %s ===%s\n'
   local struct_keys = get_schema_struct_keys(key)
-  local entries = fun(m):keys():sort()
+  local entry_keys = fun(m):keys():sort()
   fmt_map = fmt_map:format(colors.FG_MAGENTA, key, colors.RESET)
 
-  if #entries == 0 then
+  if #entry_keys == 0 then
     local warn = colors.FG_YELLOW .. '[!] ' .. colors.RESET
     return fmt_map .. '  ' .. warn .. i18n('config.none', {key}) .. '\n'
   end
 
-  local fmt_entries = entries:map(function(mk)
+  local fmt_entries = entry_keys:map(function(mk)
     return format_entry(struct_keys, m, mk)
   end)
 

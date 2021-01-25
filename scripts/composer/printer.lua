@@ -44,14 +44,15 @@ local function resize(img)
   end
 end
 
-function Printer.print(name, img)
-  local fp = path.join(out_folder, name .. '.' .. extension)
+function Printer.print(id, img)
+  local fp = path.join(out_folder, id .. '.' .. extension)
   resize(img):write_to_file(fp)
 end
 
-function Printer.print_field(id, field)
+function Printer.print_field(id, pic)
+  if not pic then return end
   local fp = path.join(out_folder, 'field', id .. '.' .. extension)
-  field:write_to_file(fp)
+  pic:write_to_file(fp)
 end
 
 return Printer

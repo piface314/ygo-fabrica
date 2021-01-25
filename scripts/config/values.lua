@@ -12,6 +12,8 @@ local HOME =
     path.join(os.getenv('HOME'), '.config', 'ygofab')
 Config.GLOBAL_FP = path.join(HOME, 'config.toml')
 
+local function un_mt(t) return setmetatable(t, nil) end
+
 local cache = {}
 local function load_file(fp)
   if cache[fp] then return cache[fp] end
@@ -29,13 +31,21 @@ function Config.load()
   return global_cfg, local_cfg
 end
 
+--- Looks for configuration values in table, according to a
+--- sequence of keys in the variable arguments.
+--- If `cfg` is a table, then `Config.get` looks up in that table.
+--- Otherwise, it loads global and local configs, merges them, and
+--- looks up that resulting table, and `cfg` is treated as the first key.
+--- @param cfg table|string
+--- @vararg string
+--- @return any
 function Config.get(cfg, ...)
   local key
   if type(cfg) == 'table' then
     key = {...}
   else
     key = {cfg, ...}
-    cfg = fun {}:merge(Config.load())
+    cfg = un_mt(fun {}:merge(Config.load()))
   end
   for _, k in ipairs(key) do
     if type(cfg) == 'table' then
@@ -49,10 +59,21 @@ end
 
 local function key(...) return table.concat({...}, '.') end
 
+--- Gets many configuration values. If `default` is `true`, then
+--- every default value is returned. If `all` is `true`, all values
+--- are returned. Otherwise, returns the configuration specified in
+--- a table, indexed by the last key:
+--- E.g. `get_many(true, false, 'gamedir')` -> `{main={default=true}}`
+--- E.g. `get_many(false, true, 'gamedir')` -> `{main={default=true}, alt={}}`
+--- E.g. `get_many(false, false, 'gamedir', 'alt')` -> `{alt={}}`
+--- @param all boolean
+--- @param default boolean
+--- @vararg string
+--- @return table configs
 function Config.groups.get_many(all, default, ...)
   local groups = Config.get(...)
   if default then
-    return fun(groups):filter(fun 'g -> g.default')
+    return un_mt(fun(groups):filter(fun 'g -> g.default'))
   elseif all then
     return groups
   else
@@ -64,6 +85,12 @@ local function first_default(gs)
   return next(fun(gs):filter(fun 'g -> g.default'))
 end
 
+--- Gets one specific configuration, or looks for a default one,
+--- if `default` is `true`
+---@param default boolean
+---@vararg string
+---@return string config_id
+---@return table config
 function Config.groups.get_one(default, ...)
   if default then
     local gc, lc = Config.load()
@@ -75,6 +102,13 @@ function Config.groups.get_one(default, ...)
   end
 end
 
+--- Gets multiple configurations according to a flag. If the flag specifies
+--- an id and that configuration exists, it is returned in a table. If the flag
+--- specifies `all`, then all configurations in that group are returned.
+--- Otherwise, default configurations are selected
+---@param gkey string
+---@param flag table
+---@return table configs
 function Config.groups.from_flag.get_many(gkey, flag)
   local all = flag and not flag[1]
   local id = flag and flag[1]
@@ -85,6 +119,12 @@ function Config.groups.from_flag.get_many(gkey, flag)
   return selected
 end
 
+--- Gets a single configuration according to a flag. If none is specified,
+--- a default configuration is selected. If none is found, an error is raised.
+--- @param gkey string
+--- @param flag table
+--- @return string config_id
+--- @return table config
 function Config.groups.from_flag.get_one(gkey, flag)
   local id = flag and flag[1]
   local selid, sel = Config.groups.get_one(not id, gkey, id)

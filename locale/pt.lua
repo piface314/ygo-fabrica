@@ -1,11 +1,84 @@
 return {
   pt = {
+    bad_argument = 'argumento inválido `%{arg}` para %{caller} (%{exp} era esperado, %{got} foi recebido)',
+    bad_argument_i = 'argumento inválido #%{arg} para %{caller} (%{exp} era esperado, %{got} foi recebido)',
+    nil_argument = 'argumento inválido `%{arg}` para %{caller} (um valor era esperado)',
+    nil_argument_i = 'argumento inválido #%{arg} para %{caller} (um valor era esperado)',
     interpreter = {
       invalid_command = 'comando %q inválido',
       invalid_flag = 'opção %q inválida',
       missing_flag_args = 'argumentos insuficientes para opção %q'
     },
     logs = {err = 'ERRO', ok = 'OK'},
+    codes = {
+      attribute = {
+        EARTH = 'TERRA',
+        WATER = 'ÁGUA',
+        FIRE = 'FOGO',
+        WIND = 'VENTO',
+        LIGHT = 'LUZ',
+        DARK = 'TREVAS',
+        DIVINE = 'DIVINO'
+      },
+      race = {
+        WARRIOR = 'Guerreiro',
+        SPELLCASTER = 'Mago',
+        FAIRY = 'Fada',
+        FIEND = 'Demônio',
+        ZOMBIE = 'Zumbi',
+        MACHINE = 'Máquina',
+        AQUA = 'Aqua',
+        PYRO = 'Piro',
+        ROCK = 'Rocha',
+        WINGED_BEAST = 'Besta Alada',
+        PLANT = 'Planta',
+        INSECT = 'Inseto',
+        THUNDER = 'Trovão',
+        DRAGON = 'Dragão',
+        BEAST = 'Besta',
+        BEAST_WARRIOR = 'Besta-Guerreira',
+        DINOSAUR = 'Dinossauro',
+        FISH = 'Peixe',
+        SEA_SERPENT = 'Serpente Marinha',
+        REPTILE = 'Réptil',
+        PSYCHIC = 'Psíquico',
+        DIVINE_BEAST = 'Besta Divina',
+        CREATOR_GOD = 'Deus Criador',
+        WYRM = 'Wyrm',
+        CYBERSE = 'Ciberso',
+      },
+      type = {
+        SPELL = {
+          attribute = 'MAGIA',
+          label = {
+            normal = '<t=2><r=2>[</> Card de Magia <r=2>]</></>',
+            other = '<t=2><r=2>[</> Card de Magia    <r=2>]</></>'
+          }
+        },
+        TRAP = {
+          attribute = 'ARMADILHA',
+          label = {
+            normal = '<t=2><r=2>[</> Card de Armadilha <r=2>]</></>',
+            other = '<t=2><r=2>[</> Card de Armadilha    <r=2>]</></>'
+          }
+        },
+        NORMAL = 'Normal',
+        EFFECT = 'Efeito',
+        FUSION = 'Fusão',
+        RITUAL = 'Ritual',
+        SPIRIT = 'Espírito',
+        UNION = 'União',
+        GEMINI = 'Gêmeos',
+        TUNER = 'Regulador',
+        SYNCHRO = 'Sincro',
+        TOKEN = 'Ficha',
+        FLIP = 'Virar',
+        TOON = 'Toon',
+        XYZ = 'Xyz',
+        PENDULUM = 'Pêndulo',
+        LINK = 'Link'
+      }
+    },
     config = {
       globals = 'Configurações globais:',
       locals = 'Configurações locais:',
@@ -17,7 +90,9 @@ return {
       output_conflict = 'a pasta de saída não pode ser a mesma que a pasta das artes',
       unknown_mode = 'modo %q desconhecido',
       decode_fail = 'falha ao decodificar %q: ',
-      generating = 'Gerando %q...',
+      decoding = 'Decodificando %q...',
+      rendering = 'Renderizando %q...',
+      printing = 'Imprimindo %q...',
       done = 'Pronto!',
       data_fetcher = {
         no_img_folder = 'está faltando a pasta das imagens',
@@ -25,8 +100,19 @@ return {
         read_db_fail = 'falha ao ler a database das cartas'
       },
       decoder = {
+        state_key_err = '%s não encontrado nos estados',
+        not_layer = 'valor retornado inválido #%d (Layer era esperado, %s foi recebido)',
         no_monster_type = 'falta o tipo de monstro',
-        no_card_type = 'falta o tipo da carta'
+        no_card_type = 'falta o tipo da carta',
+      },
+      modes = {
+        proxy = {
+          copyright = '<t=2><s=5>©</>%{year}</> %{author}',
+          default_author = 'KAZUKI TAKAHASHI',
+          typedesc = '<t=2><r=2>[</>%s<r=2>]</></>',
+          edition = '1<r=7.2 s=3.6>a</> Edição',
+          forbidden = '<t=3>Este card não pode ser colocado no Deck.</>'
+        }
       }
     },
     export = {

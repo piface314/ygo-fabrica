@@ -4,7 +4,8 @@ local Interpreter = require 'lib.interpreter'
 local Spec = require 'spec'
 local Locale = require 'locale'
 
-local IS_WIN = package.config:sub(1, 1) == "\\"
+local SEP = package.config:sub(1, 1)
+local IS_WIN = SEP == "\\"
 local function exec(command)
   if IS_WIN then
     local code1, _, code2 = os.execute(command)
@@ -25,7 +26,6 @@ end
 local function cp(src, dst, file)
   err = ("Failed to copy %q to %q"):format(src, dst)
   if IS_WIN then
-    src, dst = src:gsub("/+", "\\"), dst:gsub("/+", "\\")
     if file then
       local src_file = src:match(".*\\(.-)$") or src
       return exec(("copy /y %q %q"):format(src, dst .. "\\" .. src_file))
@@ -232,16 +232,8 @@ function config.start(_, gamepath)
 end
 
 function fonts.copy(fp)
-  local Fonts = require 'scripts.composer.fonts'
-  local target = install.base .. "/" .. Fonts.path
-  fp = fp or "fonts"
-  for _, file in ipairs(Fonts.list()) do
-    if not cp(fp .. "/" .. file, target, true) then
-      err = ("Could not find font %q"):format(file)
-      return false
-    end
-  end
-  return true
+  local target = table.concat({install.base, 'res', 'composer', 'fonts'}, SEP)
+  return cp(fp or 'fonts', target)
 end
 
 function fonts.start(_, fp)
@@ -255,7 +247,7 @@ interpreter:add_command('install', install.start)
 interpreter:add_command('config', config.start)
 interpreter:add_command('fonts', fonts.start)
 interpreter:add_command('', function()
-  Logs.assert(false, "Please specify `build`, `install`, `config` or `fonts`")
+  Logs.error("Please specify `build`, `install`, `config` or `fonts`")
 end)
 local errmsg = interpreter:exec(...)
 Logs.assert(not errmsg, errmsg)

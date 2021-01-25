@@ -1,368 +1,119 @@
-local GameConst = require 'scripts.game-const'
+local Layer = require 'scripts.composer.layer'
 local Logs = require 'lib.logs'
-local MetaLayer = require 'scripts.composer.metalayer'
-local Parser = require 'scripts.composer.parser'
-local Transformer = require 'scripts.composer.transformer'
-local i18n = require 'lib.i18n'
 local fun = require 'lib.fun'
+local i18n = require 'lib.i18n'
+local vips = require 'vips'
 
+--- @alias State fun(card: CardData, opts: table): any, Layer
+
+--- A `Decoder` defines a new mode for YGOFabrica Composer module.
+--- It works as an automaton that takes as input card data extracted
+--- from a database and outputs a list of `Layer`s, that will be
+--- transformed into a final card image.
+--- @class Decoder
+--- @field mode string
+--- @field states table<string, State>
+--- @field initial string
+--- @field base Image
 local Decoder = {}
+Decoder.__index = Decoder
 
-local insert = table.insert
-local mode, options = 'proxy', {}
-
-local types = GameConst.code.type
-local monster_types = types.NORMAL + types.EFFECT + types.FUSION + types.RITUAL
-  + types.SYNCHRO + types.TOKEN + types.XYZ + types.LINK
-local spellortrap = types.SPELL + types.TRAP
-local spelltrap_types = types.CONTINUOUS + types.COUNTER + types.EQUIP
-  + types.FIELD + types.QUICKPLAY + types.RITUAL
-local frame_types = monster_types + spellortrap
-
-local function typef_ov(n, sfx) return ("type%u%s.png"):format(n, sfx or "") end
-local function st_ov(n, sfx) return ("st%u%s.png"):format(n, sfx or "") end
-local function linka_ov(n, sfx) return ("lka%u%s.png"):format(n, sfx or "") end
-local function rank_ov(n) return ("r%u.png"):format(n) end
-local function level_ov(n) return ("l%u.png"):format(n) end
-local function attr_ov(n) return ("att%u.png"):format(n) end
-
-local min, max, ceil = math.min, math.max, math.ceil
-local function clamp(v) return min(max(ceil(tonumber(v, 16)), 0), 255) end
-local function color_clamp(color)
-  if type(color) ~= 'string' then return nil end
-  local r, g, b = color:match("^#(%x%x)(%x%x)(%x%x)$")
-  if not r then return nil end
-  return { clamp(r), clamp(g), clamp(b) }
-end
-local black, white = { 0, 0, 0 }, { 255, 255, 255 }
-local name_colors = {
-  [types.NORMAL] = {"color-normal", black},
-  [types.EFFECT] = {"color-effect", black},
-  [types.FUSION] = {"color-fusion", white},
-  [types.RITUAL] = {"color-ritual", white},
-  [types.SYNCHRO] = {"color-synchro", black},
-  [types.TOKEN] = {"color-token", black},
-  [types.XYZ] = {"color-xyz", white},
-  [types.LINK] = {"color-link", white},
-  [types.SPELL] = {"color-spell", white},
-  [types.TRAP] = {"color-trap", white}
-}
-
-local automata = {}
-
-function automata.anime(data)
-  local states, inital = {}, 'art'
-  local layers = {}
-
-  function states.art()
-    insert(layers, MetaLayer.new("art", data.img))
-    if Parser.bcheck(data.type, spellortrap) then
-      return states.spelltrap()
-    elseif Parser.bcheck(data.type, types.MONSTER) then
-      return states.monster()
-    else
-      return nil, i18n 'compose.decoder.no_card_type'
-    end
+local bad_mode = fun 't -> {arg="mode",caller="Decoder.new",exp="string",got=t}'
+local bad_states = fun 't -> {arg="states",caller="Decoder.new",exp="table",got=t}'
+local bad_state = fun 't -> {arg="state",caller="Decoder.add_state",exp="function",got=t}'
+local bad_base = fun 't -> {arg="base",caller="Decoder.set_base",exp="Image",got=t}'
+local nil_state_id = i18n('nil_argument', {arg = 'state_id', caller = 'Decoder.add_state'})
+local function check_layer(i, layer)
+  if type(layer) == 'table' and getmetatable(layer) == Layer then
+    return layer
+  elseif type(layer) == 'string' then
+    return nil, layer
   end
-
-  function states.spelltrap()
-    local st = Parser.match_lsb(data.type, spellortrap)
-    insert(layers, MetaLayer.new("overlay", typef_ov(st)))
-    return layers
-  end
-
-  function states.monster()
-    local mtype = Parser.match_msb(data.type, monster_types)
-    if mtype == 0 then
-      return nil, i18n 'compose.decoder.no_monster_type'
-    end
-    insert(layers, MetaLayer.new("overlay", typef_ov(mtype)))
-    if Parser.bcheck(data.type, types.PENDULUM) then
-      return states.pendulum()
-    elseif Parser.bcheck(data.type, types.LINK) then
-      return states.link()
-    elseif Parser.bcheck(data.type, types.XYZ) then
-      return states.rank()
-    else
-      return states.level()
-    end
-  end
-
-  function states.pendulum()
-    local lsc, rsc = Parser.get_scales(data)
-    insert(layers, MetaLayer.new("overlay", typef_ov(types.PENDULUM)))
-    insert(layers, MetaLayer.new("scales", lsc, rsc))
-    if Parser.bcheck(data.type, types.LINK) then
-      return states.link()
-    elseif Parser.bcheck(data.type, types.XYZ) then
-      return states.rank()
-    else
-      return states.level()
-    end
-  end
-
-  function states.link()
-    insert(layers, MetaLayer.new("overlay", "lka-base.png"))
-    for b in Parser.bits(Parser.get_link_arrows(data)) do
-      insert(layers, MetaLayer.new("overlay", linka_ov(b)))
-    end
-    insert(layers, MetaLayer.new("overlay", "link.png"))
-    insert(layers, MetaLayer.new("link_rating", Parser.get_link_rating(data)))
-    return states.atk()
-  end
-
-  function states.rank()
-    local rank = Parser.get_levelrank(data)
-    if rank then
-      insert(layers, MetaLayer.new("overlay", rank_ov(rank)))
-    end
-    return states.def()
-  end
-
-  function states.level()
-    local level = Parser.get_levelrank(data)
-    if level then
-      insert(layers, MetaLayer.new("overlay", level_ov(level)))
-    end
-    return states.def()
-  end
-
-  function states.def()
-    insert(layers, MetaLayer.new("def", data.def))
-    return states.atk()
-  end
-
-  function states.atk()
-    insert(layers, MetaLayer.new("atk", data.atk))
-    return states.attribute()
-  end
-
-  function states.attribute()
-    local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
-    if att > 0 then
-      insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
-    end
-    return layers
-  end
-
-  return states[inital]()
+  return nil, layer and i18n('compose.decoder.not_layer', {i, type(layer)})
 end
 
-function automata.proxy(data)
-  local states, inital = {}, 'baseframe'
-  local layers = {}
-  local transformer = Transformer.new()
-
-  function states.baseframe()
-    local is_st = Parser.bcheck(data.type, spellortrap)
-    local frame = Parser.match_msb(data.type, is_st and spellortrap or monster_types)
-    if frame == 0 then
-      return nil, i18n 'compose.decoder.no_card_type'
-    end
-    insert(layers, MetaLayer.new("overlay", typef_ov(frame)))
-    if Parser.bcheck(data.type, types.PENDULUM) then
-      return states.pendulum()
-    else
-      return states.art()
+--- Creates a new `Decoder` that defines `mode`
+--- @param mode string
+--- @param base? Image
+--- @param initial_state? string
+--- @param states? table<string, State>
+--- @return Decoder
+function Decoder.new(mode, base, initial_state, states)
+  local t_mode, t_states = type(mode), type(states)
+  Logs.assert(t_mode == 'string', i18n('bad_argument', bad_mode(t_mode)))
+  local d = setmetatable({mode = mode, states = {}}, Decoder)
+  if states then
+    Logs.assert(t_states == 'table', i18n('bad_argument', bad_states(t_states)))
+    for state_id, state in pairs(states) do
+      d:add_state(state_id, state)
     end
   end
-
-  local monster_effect
-  function states.pendulum()
-    local p_frame_ml = MetaLayer.new("pendulum_frame", data.img,
-      typef_ov(types.PENDULUM, "%s%s"))
-    local p_scales_ml = MetaLayer.new("pendulum_scales", Parser.get_scales(data))
-    p_frame_ml:add_transformation("pendulum")
-    p_scales_ml:add_transformation("pendulum")
-    insert(layers, p_frame_ml)
-    insert(layers, p_scales_ml)
-    local me, pe = Parser.get_effects(data)
-    monster_effect = me
-    transformer:add_value("pendulum", Transformer.pendulum_size(pe))
-    if pe then
-      local pe_ml = MetaLayer.new("pendulum_effect", pe)
-      pe_ml:add_transformation("pendulum")
-      insert(layers, pe_ml)
-    end
-    if Parser.bcheck(data.type, types.LINK) then
-      return states.pendulum_link()
-    elseif Parser.bcheck(data.type, types.XYZ) then
-      return states.rank()
-    else
-      return states.level()
-    end
-  end
-
-  function states.pendulum_link()
-    local function p1(self, t) self:set_value(1, self:get_value(1):format(t)) end
-    local lka_base_ml = MetaLayer.new("overlay", "lka-basep%s.png")
-    lka_base_ml:add_transformation("pendulum", p1)
-    insert(layers, lka_base_ml)
-    for b in Parser.bits(Parser.get_link_arrows(data)) do
-      local lka_ml = MetaLayer.new("overlay", linka_ov(b, "p%s"))
-      lka_ml:add_transformation("pendulum", p1)
-      insert(layers, lka_ml)
-    end
-    return states.link_rating()
-  end
-
-  function states.art()
-    insert(layers, MetaLayer.new("art", data.img))
-    if Parser.bcheck(data.type, spellortrap) then
-      return states.spelltrap()
-    elseif Parser.bcheck(data.type, types.LINK) then
-      return states.link_arrows()
-    elseif Parser.bcheck(data.type, types.XYZ) then
-      return states.rank()
-    else
-      return states.level()
-    end
-  end
-
-  function states.spelltrap()
-    local st_type = Parser.match_lsb(data.type, spelltrap_types)
-    if st_type == 0 then
-      insert(layers, MetaLayer.new("overlay", st_ov(data.type)))
-    else
-      local st = Parser.match_lsb(data.type, spellortrap)
-      insert(layers, MetaLayer.new("overlay", st_ov(st, "p")))
-      insert(layers, MetaLayer.new("overlay", st_ov(st_type)))
-    end
-    insert(layers, MetaLayer.new("spelltrap_effect", data.desc))
-    return states.name()
-  end
-
-  function states.link_arrows()
-    insert(layers, MetaLayer.new("overlay", "lka-base.png"))
-    for b in Parser.bits(Parser.get_link_arrows(data)) do
-      insert(layers, MetaLayer.new("overlay", linka_ov(b)))
-    end
-    return states.link_rating()
-  end
-
-  function states.link_rating()
-    insert(layers, MetaLayer.new("overlay", "link.png"))
-    local link_rating = Parser.get_link_rating(data)
-    insert(layers, MetaLayer.new("link_rating", link_rating))
-    return states.atk()
-  end
-
-  function states.rank()
-    local rank = Parser.get_levelrank(data)
-    if rank then
-      insert(layers, MetaLayer.new("overlay", rank_ov(rank)))
-    end
-    return states.def()
-  end
-
-  function states.level()
-    local level = Parser.get_levelrank(data)
-    if level then
-      insert(layers, MetaLayer.new("overlay", level_ov(level)))
-    end
-    return states.def()
-  end
-
-  function states.def()
-    insert(layers, MetaLayer.new("def", data.def))
-    return states.atk()
-  end
-
-  function states.atk()
-    insert(layers, MetaLayer.new("atk", data.atk))
-    return states.monster_desc()
-  end
-
-  function states.monster_desc()
-    local desc = fun {
-      Parser.get_race(data),
-      Parser.get_sumtype(data)
-    }:vals() .. fun {
-      types.PENDULUM, types.FLIP, types.GEMINI, types.GEMINI,
-      types.SPIRIT, types.TOON, types.UNION, types.TUNER,
-      types.EFFECT, types.NORMAL
-    }:hashmap(function(t, i)
-      return i, Parser.get_desc_label(data, t)
-    end):vals()
-    desc = table.concat(desc, '/')
-    insert(layers, MetaLayer.new("monster_desc", desc))
-    return states.monster_text()
-  end
-
-  function states.monster_text()
-    local me = monster_effect or Parser.get_effects(data)
-    if Parser.bcheck(data.type, types.NORMAL)
-      and not Parser.bcheck(data.type, types.TOKEN) then
-      insert(layers, MetaLayer.new("flavor_text", me))
-    else
-      insert(layers, MetaLayer.new("monster_effect", me))
-    end
-    return states.attribute()
-  end
-
-  function states.attribute()
-    local att = Parser.match_lsb(data.attribute, GameConst.code.attribute.ALL)
-    if att > 0 then
-      insert(layers, MetaLayer.new("overlay", attr_ov(data.attribute)))
-    end
-    return states.name()
-  end
-
-  function states.name()
-    local frame = Parser.match_msb(data.type, frame_types)
-    local conf, default_color = unpack(name_colors[frame])
-    local color = color_clamp(options[conf])
-    insert(layers, MetaLayer.new("name", data.name, color or default_color))
-    if Parser.bcheck(data.type, types.TOKEN) then
-      return states.finishing()
-    else
-      return states.serial_code()
-    end
-  end
-
-  function states.serial_code()
-    local darkbg = Parser.bcheck(data.type, types.XYZ)
-      and not Parser.bcheck(data.type, types.PENDULUM)
-    insert(layers, MetaLayer.new("serial_code", data.id, darkbg and { 255, 255, 255 }))
-    return states.finishing()
-  end
-
-  function states.finishing()
-    local darkbg = Parser.bcheck(data.type, types.XYZ)
-      and not Parser.bcheck(data.type, types.PENDULUM)
-    insert(layers, MetaLayer.new("copyright", darkbg and { 255, 255, 255 }))
-    insert(layers, MetaLayer.new("overlay", "bevel.png"))
-    insert(layers, MetaLayer.new("overlay", "holo.png"))
-    return layers
-  end
-
-  local metalayers, err = states[inital]()
-  if not metalayers then
-    return nil, err
-  end
-  transformer:transform(metalayers)
-  return metalayers
+  if base then d:set_base(base) end
+  if initial_state then d:set_inital(initial_state) end
+  return d
 end
 
-local function check_field(data)
-  if options.field and Parser.bcheck(data.type, types.FIELD) then
-    return MetaLayer.new("field", data.img)
-  end
+function Decoder:__tostring()
+  return ('%s@Decoder'):format(self.mode)
 end
 
-function Decoder.configure(m, opt)
-  mode, options = m, opt
+--- Sets a base Image that will be placed below `Layer`s
+--- @param base Image
+function Decoder:set_base(base)
+  Logs.assert(vips.Image.is_Image(base), i18n('bad_argument', bad_base(type(base))))
+  self.base = base
 end
 
-function Decoder.decode(data)
-  local automaton = automata[mode]
-  Logs.assert(automaton, i18n('compose.unknown_mode', {mode}))
-  local metalayers, errmsg = automaton(data)
-  local field = check_field(data)
-  if field then
-    insert(metalayers, field)
-  end
-  return metalayers, errmsg
+--- Adds a new state to the `Decoder`. Each state is identified by
+--- its `state_id` and it is defined by a function that takes a single
+--- parameter - a table containing arbitrary card data - and whose
+--- return values must be:
+--- 1. the next state id;
+--- 2. any number of `Layer`s;
+--- @param state_id any
+--- @param state State
+function Decoder:add_state(state_id, state)
+  local t_state = type(state)
+  Logs.assert(state_id ~= nil, nil_state_id)
+  Logs.assert(t_state == 'function', i18n('bad_argument', bad_state(t_state)))
+  self.states[state_id] = state
 end
+
+--- Sets which state is the initial state
+--- @param state_id any
+function Decoder:set_inital(state_id)
+  Logs.assert(self.states[state_id], i18n('compose.decoder.state_key_err', {state_id}))
+  self.initial = state_id
+end
+
+--- Turns a `card` into a list of `Layer`s
+--- @param card CardData
+--- @return Fun
+function Decoder:decode(card, options)
+  local current_state = self.states[self.initial]
+  local layers = fun {}
+  while current_state do
+    local transition, i = {current_state(card, options)}, 2
+    while transition[i] do
+      local layer, errmsg = check_layer(i, transition[i])
+      if not layer then return nil, errmsg end
+      layers:push(layer)
+      i = i + 1
+    end
+    current_state = self.states[transition[1]]
+  end
+  return #layers > 0 and layers
+end
+
+--- Reduces a list of `Layer`s into a single card image
+--- @param layers Fun
+--- @return Image
+function Decoder:render(layers)
+  return layers:reduce(self.base, function (img, layer)
+    return img:composite(layer:render(), 'over')
+  end)
+end
+
+setmetatable(Decoder, {__call = function(_, ...) return _.new(...) end})
 
 return Decoder

@@ -5,22 +5,29 @@ local Logs = {}
 
 local err_cb = {}
 
+-- TODO: provide a function that fits strings into a tabular form,
+-- wrapping long strings and keeping columns organized.
+
 --- Registers a callback `cb` to be run after an error occurs
 --- @param cb function
 function Logs.add_post_error_cb(cb)
   table.insert(err_cb, cb)
 end
 
---- Checks if `v` is a true value. If it's not, displays an error message and
---- exits the program.
+--- Checks if `v` is a true value. If it's not, calls Logs.error
 --- @param v any
 function Logs.assert(v, ...)
   if not v then
-    io.stderr:write(colors.FG_RED, colors.BOLD, '[', i18n 'logs.err', '] ', colors.RESET, ...)
-    io.stderr:write('\n')
-    for _, cb in ipairs(err_cb) do cb() end
-    os.exit(1)
+    Logs.error(...)
   end
+end
+
+--- Displays an error message and exits the program with error code 1
+function Logs.error(...)
+  io.stderr:write(colors.FG_RED, colors.BOLD, '[', i18n 'logs.err', '] ', colors.RESET, ...)
+  io.stderr:write('\n')
+  for _, cb in ipairs(err_cb) do cb() end
+  os.exit(1)
 end
 
 --- Shows a success message and writes any number of strings to the standard output,
