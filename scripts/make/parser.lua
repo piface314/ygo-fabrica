@@ -1,4 +1,3 @@
-local Stack = require 'scripts.make.stack'
 local Logs = require 'lib.logs'
 local i18n = require 'lib.i18n'
 
@@ -10,72 +9,57 @@ local function apply_macro(macro, argv)
   local s = macro:gsub('($+)(%d+)', function(esc, i)
     local v = argv[tonumber(i)] or ''
     if esc:len() % 2 == 1 then return esc:sub(1, -2) .. v end
-	end)
-	for i in ipairs(argv) do argv[i] = nil end
-	return s
-			end
+  end)
+  for i in ipairs(argv) do argv[i] = nil end
+  return s
+end
 
 local function parse(macros, str)
   local unresolved = {}
   local function parse(macros, str, cursor, up_sep)
     local cursor, len = cursor or 1, str:len()
-
-    local function char(i)
-  		i = i or 0
-  		return str:sub(cursor + i, cursor + i)
-  	end
-
+    local function char() return str:sub(cursor, cursor) end
     local function step(n) cursor = cursor + (n or 1) end
 
-    local function in_bounds()
-  		if up_sep then
-  			return cursor <= len and char() ~= up_sep
-  		else
-  			return cursor <= len
-  		end
-  	end
-
     local out, esc = '', nil
-    local argi, argv, macro, sep = 0, {}, nil, nil
-    while in_bounds() do
+    local argv, macro, sep = {}, nil, nil
+    while cursor <= len and char() ~= up_sep do
       if macro then
         if char() == '}' then
-  				local m = macros[macro]
-  				if m then
-            Logs.assert(not unresolved[macro],
-              i18n('make.parser.cyclic_macro', {macro}))
+          local m = macros[macro]
+          if m then
+            Logs.assert(not unresolved[macro], i18n('make.parser.cyclic_macro', {macro}))
             unresolved[macro] = true
-  					out = out .. parse(macros, apply_macro(m, argv))
+            out = out .. parse(macros, apply_macro(m, argv))
             unresolved[macro] = nil
-  				else
+          else
             out = out .. ('${%s%s%s}'):format(macro, sep or '', concat(argv, sep))
-  				end
+          end
           macro = nil
         elseif char():match('[%w_-]') then
           macro = macro .. char()
         elseif char():match('[${]') then
           out = out .. '${' .. macro
-  				macro = nil
-  				step(-1)
+          macro = nil
+          step(-1)
         elseif not sep or char() == sep then
-          argi = argi + 1
-  				sep = sep or char()
-  				step()
-  				argv[argi], cursor = parse(macros, str, cursor, sep)
-  				step(-1)
-  			end
-  		elseif esc then
+          sep = sep or char()
+          step()
+          argv[#argv + 1], cursor = parse(macros, str, cursor, sep)
+          step(-1)
+        end
+      elseif esc then
         if char() == '{' then
           macro = ''
-  			else
+        else
           out = out .. (up_sep and '$' or '') .. char()
-  			end
-  			esc = false
+        end
+        esc = false
       elseif char() == '$' then
         esc = true
       elseif up_sep and char() == '}' then
-  			break
-  		else
+        break
+      else
         out = out .. char()
       end
       step()
