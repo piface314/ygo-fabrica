@@ -139,11 +139,13 @@ local norm_index = fun(Codes.const):map(function(group)
     return fun(group):hashmap(function(v, k) return normalize(k), v end)
   end)
 
+--- @alias CodeGroupKey "'attribute'"|"'category'"|"'link'"|"'ot'"|"'race'"|"'type'"
+
 --- Returns internationalized string from a `code`. Additional sub keys
 --- can be specified after `code` with `sub`.
 --- E.g. if locale is `en`, `Codes.i18n('type', 0x10)` -> `'Normal'`,
 --- `Codes.i18n('type', 0x2, 'attribute'')` -> `'SPELL'`
---- @param group_key string
+--- @param group_key CodeGroupKey
 --- @param code number
 --- @param sub? string
 --- @return string|nil
@@ -158,7 +160,7 @@ end
 
 --- Combines keys from a group into a single value, doing a
 --- bitwise or among them.
---- @param group_key string
+--- @param group_key CodeGroupKey
 --- @param keys string
 --- @return number
 function Codes.combine(group_key, keys)

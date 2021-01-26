@@ -7,16 +7,16 @@ local Parser = {}
 local concat = table.concat
 
 local function apply_macro(macro, argv)
-	return (macro:gsub("($+)(%d+)", function(esc, i)
-			local v = argv[tonumber(i)] or ""
-			if esc:len() % 2 == 1 then
-				return esc:sub(1, -2) .. v
+  local s = macro:gsub('($+)(%d+)', function(esc, i)
+    local v = argv[tonumber(i)] or ''
+    if esc:len() % 2 == 1 then return esc:sub(1, -2) .. v end
+	end)
+	for i in ipairs(argv) do argv[i] = nil end
+	return s
 			end
-		end))
-end
 
 local function parse(macros, str)
-  local stack = Stack.new()
+  local unresolved = {}
   local function parse(macros, str, cursor, up_sep)
     local cursor, len = cursor or 1, str:len()
 
@@ -35,25 +35,26 @@ local function parse(macros, str)
   		end
   	end
 
-    local out, esc = "", nil
+    local out, esc = '', nil
     local argi, argv, macro, sep = 0, {}, nil, nil
     while in_bounds() do
       if macro then
-  			if char() == "}" then
+        if char() == '}' then
   				local m = macros[macro]
   				if m then
-  					Logs.assert(not stack:contains(macro), i18n('make.parser.cyclic_macro', {macro}))
-  					stack:push(macro)
+            Logs.assert(not unresolved[macro],
+              i18n('make.parser.cyclic_macro', {macro}))
+            unresolved[macro] = true
   					out = out .. parse(macros, apply_macro(m, argv))
-  					stack:pop()
+            unresolved[macro] = nil
   				else
-  					out = out .. ("${%s%s%s}"):format(macro, sep or "", concat(argv, sep))
+            out = out .. ('${%s%s%s}'):format(macro, sep or '', concat(argv, sep))
   				end
           macro = nil
-        elseif char():match("[%w_-]") then
+        elseif char():match('[%w_-]') then
           macro = macro .. char()
-        elseif char():match("[${]") then
-          out = out .. "${" .. macro
+        elseif char():match('[${]') then
+          out = out .. '${' .. macro
   				macro = nil
   				step(-1)
         elseif not sep or char() == sep then
@@ -64,15 +65,15 @@ local function parse(macros, str)
   				step(-1)
   			end
   		elseif esc then
-  			if char() == "{" then
-  				macro = ""
+        if char() == '{' then
+          macro = ''
   			else
-  				out = out .. (up_sep and "$" or "") .. char()
+          out = out .. (up_sep and '$' or '') .. char()
   			end
   			esc = false
-      elseif char() == "$" then
+      elseif char() == '$' then
         esc = true
-      elseif up_sep and char() == "}" then
+      elseif up_sep and char() == '}' then
   			break
   		else
         out = out .. char()
@@ -82,7 +83,6 @@ local function parse(macros, str)
     return out, cursor
   end
   local out = parse(macros, str)
-  stack:clear()
   return out
 end
 
