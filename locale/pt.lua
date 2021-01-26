@@ -101,12 +101,16 @@ return {
       },
       decoder = {
         state_key_err = '%s não encontrado nos estados',
-        not_layer = 'valor retornado inválido #%d (Layer era esperado, %s foi recebido)',
-        no_monster_type = 'falta o tipo de monstro',
-        no_card_type = 'falta o tipo da carta',
+        unknown_error = 'erro desconhecido no estado %q',
+        error = 'erro no estado %q: ',
+        not_layer = 'valor retornado inválido #%{arg} (Layer era esperado, %{got} foi recebido)'
       },
       modes = {
+        anime = {
+          no_card_type = 'falta o tipo da carta',
+        },
         proxy = {
+          no_card_type = 'falta o tipo da carta',
           copyright = '<t=2><s=5>©</>%{year}</> %{author}',
           default_author = 'KAZUKI TAKAHASHI',
           typedesc = '<t=2><r=2>[</>%s<r=2>]</></>',

@@ -87,10 +87,10 @@ end
 
 --- Gets one specific configuration, or looks for a default one,
 --- if `default` is `true`
----@param default boolean
----@vararg string
----@return string config_id
----@return table config
+--- @param default boolean
+--- @vararg string
+--- @return string config_id
+--- @return table config
 function Config.groups.get_one(default, ...)
   if default then
     local gc, lc = Config.load()
@@ -106,9 +106,9 @@ end
 --- an id and that configuration exists, it is returned in a table. If the flag
 --- specifies `all`, then all configurations in that group are returned.
 --- Otherwise, default configurations are selected
----@param gkey string
----@param flag table
----@return table configs
+--- @param gkey string
+--- @param flag table
+--- @return table configs
 function Config.groups.from_flag.get_many(gkey, flag)
   local all = flag and not flag[1]
   local id = flag and flag[1]

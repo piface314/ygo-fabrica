@@ -3,15 +3,15 @@ local Logs = require 'lib.logs'
 
 local Printer = {}
 
-local out_folder, extension, width, height, field
+local out, extension, width, height, field
 local valid_exts = {jpg = true, png = true, jpeg = true}
 
 local function set_out_folder(dir)
-  out_folder = dir or ''
-  local success, err = path.mkdir(out_folder)
+  out = dir or ''
+  local success, err = path.mkdir(out)
   Logs.assert(success, err)
   if field then
-    success, err = path.mkdir(path.join(out_folder, 'field'))
+    success, err = path.mkdir(path.join(out, 'field'))
     Logs.assert(success, err)
   end
 end
@@ -25,11 +25,14 @@ local function set_extension(ext)
   extension = ext and valid_exts[ext] and ext or 'jpg'
 end
 
-function Printer.configure(out_folder, opt)
-  field = opt.field
+--- Configures how card pics should be printed
+--- @param out_folder string
+--- @param options table
+function Printer.configure(out_folder, options)
+  field = options.field
   set_out_folder(out_folder)
-  set_size(opt.size)
-  set_extension(opt.ext)
+  set_size(options.size)
+  set_extension(options.ext)
 end
 
 local function resize(img)
@@ -44,14 +47,20 @@ local function resize(img)
   end
 end
 
-function Printer.print(id, img)
-  local fp = path.join(out_folder, id .. '.' .. extension)
-  resize(img):write_to_file(fp)
+--- Prints a card pic
+--- @param id string
+--- @param pic Image
+function Printer.print(id, pic)
+  local fp = path.join(out, id .. '.' .. extension)
+  resize(pic):write_to_file(fp)
 end
 
+--- Prints a card field backgound (for Field Spell Cards)
+--- @param id string
+--- @param pic Image
 function Printer.print_field(id, pic)
   if not pic then return end
-  local fp = path.join(out_folder, 'field', id .. '.' .. extension)
+  local fp = path.join(out, 'field', id .. '.' .. extension)
   pic:write_to_file(fp)
 end
 

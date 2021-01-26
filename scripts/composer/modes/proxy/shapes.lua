@@ -47,27 +47,22 @@ return {
   NAME = Shape('card-name', function(name, color)
     return TypeWriter.print(name, base, Layout.name, color)
   end),
-  ATTRIBUTE = Shape('attribute', function(att, st, locale)
-    local old_locale = i18n.getLocale()
-    i18n.setLocale(locale)
+  ATTRIBUTE = Shape('attribute', function(att, st)
     local icon = ov('att', st and 'st' or '', att)
     local label = st and Codes.i18n('type', att, 'attribute')
       or Codes.i18n('attribute', att)
     label = '<t=-1>' .. label .. '</>'
-    i18n.setLocale(old_locale)
     return TypeWriter.print(label, icon, Layout.attribute, '#ffffff')
   end),
-  ST_LABEL = Shape('spelltrap-label', function(st, st_type, locale)
-    local old_locale, lbase, label = i18n.getLocale(), base, nil
-    i18n.setLocale(locale)
+  ST_LABEL = Shape('spelltrap-label', function(st, st_type)
     if st_type > 0 then
-      lbase = ov('st', st_type)
-      label = Codes.i18n('type', st, 'label.other')
+      local icon = ov('st', st_type)
+      local label = Codes.i18n('type', st, 'label.other')
+      return TypeWriter.print(label, icon, Layout.spelltrap_label)
     else
-      label = Codes.i18n('type', st, 'label.normal')
+      local label = Codes.i18n('type', st, 'label.normal')
+      return TypeWriter.print(label, base, Layout.spelltrap_label)
     end
-    i18n.setLocale(old_locale)
-    return TypeWriter.print(label, lbase, Layout.spelltrap_label)
   end),
   ART = Shape('art', function(fp, artsize)
     local art = vips.Image.new_from_file(fp)
@@ -134,33 +129,24 @@ return {
   LINK_RATING = Shape('link-rating', function(lkr)
     return TypeWriter.print(lkr, ov('link'), Layout.link_rating)
   end),
-  EDITION = Shape('edition', function(pos, color, locale)
-    local old_locale = i18n.getLocale()
-    i18n.setLocale(locale)
+  EDITION = Shape('edition', function(pos, color)
     local edition = i18n 'compose.modes.proxy.edition'
-    i18n.setLocale(old_locale)
     return TypeWriter.print(edition, base, Layout.edition[pos], color)
   end),
   SERIAL_CODE = Shape('serial-code', function(id, color)
     local code = ('<t=2>%08u</>'):format(id)
     return TypeWriter.print(code, base, Layout.serial_code, color)
   end),
-  FORBIDDEN = Shape('forbidden', function(locale)
-    local old_locale = i18n.getLocale()
-    i18n.setLocale(locale)
+  FORBIDDEN = Shape('forbidden', function()
     local label = i18n 'compose.modes.proxy.forbidden'
-    i18n.setLocale(old_locale)
     return TypeWriter.print(label, base, Layout.forbidden)
   end),
-  COPYRIGHT = Shape('copyright', function(year, author, color, locale)
-    local old_locale = i18n.getLocale()
-    i18n.setLocale(locale)
+  COPYRIGHT = Shape('copyright', function(color, year, author)
     local vals = {
       year = year or 1996,
       author = author or i18n 'compose.modes.proxy.default_author'
     }
     local text = i18n('compose.modes.proxy.copyright', vals)
-    i18n.setLocale(old_locale)
     return TypeWriter.print(text, base, Layout.copyright, color)
   end)
 }

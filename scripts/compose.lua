@@ -18,7 +18,7 @@ return function(flags)
       local cdbfp = path.join('expansions', eid .. '.cdb')
       local options = setmetatable(fun(pscfg):copy(), nil)
       options.holo = options.holo == false and 0 or 1
-      options.locale = exp.locale or i18n.getLocale() or 'en'
+      options.locale = options.locale or exp.locale
       Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, options)
     end
   end

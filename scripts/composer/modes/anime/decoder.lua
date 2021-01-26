@@ -3,7 +3,6 @@ local Decoder = require 'scripts.composer.decoder'
 local Layer = require 'scripts.composer.layer'
 local Parser = require 'scripts.composer.parser'
 local Codes = require 'lib.codes'
-local i18n = require 'lib.i18n'
 
 local types = Codes.const.type
 local agtypes = {
@@ -20,7 +19,7 @@ return Decoder('anime', Shapes.BASE, 'art', {
     elseif Parser.bcheck(card.type, types.MONSTER) then
       return 'monster', layer
     else
-      return nil, i18n 'compose.decoder.no_card_type'
+      return nil, 'compose.modes.anime.no_card_type'
     end
   end,
   spelltrap = function(card)
@@ -29,7 +28,7 @@ return Decoder('anime', Shapes.BASE, 'art', {
   end,
   monster = function(card)
     local mt = Parser.match_msb(card.type, agtypes.MONSTER)
-    if mt == 0 then return nil, i18n 'compose.decoder.no_monster_type' end
+    if mt == 0 then return nil, 'compose.modes.anime.no_card_type' end
     local layer = Layer(Shapes.OVERLAY, 'type', mt)
     if Parser.bcheck(card.type, types.PENDULUM) then
       return 'pendulum', layer

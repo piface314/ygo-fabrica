@@ -1,5 +1,6 @@
 local vips = require 'vips'
 
+--- Provides text printing functions.
 local TypeWriter = {}
 
 local DPI = 300
@@ -14,7 +15,9 @@ local function color_clamp(color)
   return {byte_clamp(r), byte_clamp(g), byte_clamp(b)}
 end
 
-local function is_empty(text) return text:match('^%s*$') end
+local function is_empty(text)
+  return text:gsub('%b<>', ''):match('^%s*$')
+end
 
 local markup = {
   r = function(v) return ('rise="%d"'):format(v * 1000) end,
@@ -88,6 +91,17 @@ local function fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs)
 end
 
 local align = {left = 'low', center = 'centre', right = 'high'}
+--- Prints formatted `text` in an area to a background image (`base`).
+--- This function supports word wrapping and tries to fit the text in
+--- the specified area as best as possible.
+--- `args` specify multiple layout parameters.
+--- `color` must be a string in hex format (e.g. '#ffffff' -> white).
+--- If none is specified, black ('#000000') is used to print that text.
+--- @param text string
+--- @param base Image
+--- @param args table
+--- @param color? string
+--- @return any
 function TypeWriter.printf(text, base, args, color)
   text = prepare_text(text)
   color = color_clamp(color)
@@ -101,6 +115,15 @@ function TypeWriter.printf(text, base, args, color)
   return t and paint_insert(t, base, color, x, y) or base
 end
 
+--- Prints `text` in a single line to a background image (`base`).
+--- `args` specify multiple layout parameters.
+--- `color` must be a string in hex format (e.g. '#ffffff' -> white).
+--- If none is specified, black ('#000000') is used to print that text.
+--- @param text string
+--- @param base Image
+--- @param args table
+--- @param color? string
+--- @return any
 function TypeWriter.print(text, base, args, color)
   text = prepare_text(text)
   color = color_clamp(color)

@@ -50,6 +50,24 @@ function Logs.warning(...)
   io.write('\n')
 end
 
+--- Returns a string formatted like an error
+function Logs.error_s(...)
+  local s = {colors.FG_RED, colors.BOLD, '[', i18n 'logs.err', '] ', colors.RESET, ...}
+  return table.concat(s)
+end
+
+--- Returns a string formatted like a warning
+function Logs.warning_s(...)
+  local s = {colors.FG_YELLOW, colors.BOLD, '[!] ', colors.RESET, ...}
+  return table.concat(s)
+end
+
+--- Returns a string formatted like a success message
+function Logs.ok_s(...)
+  local s = {colors.FG_GREEN, colors.BOLD, '[', i18n 'logs.ok', '] ', colors.RESET, ...}
+  return table.concat(s)
+end
+
 local BAR_WIDTH = 32
 local round = math.ceil
 local CHAR, SPACE = '#', ' '
@@ -79,8 +97,8 @@ function Logs.bar(n)
     progress = math.min(progress + (i or 1), n)
     self:print(label, prelabel)
   end
-  function bar:finish(label)
-    self:print(label)
+  function bar:finish(label, prelabel)
+    self:print(label, prelabel)
     print()
   end
   return bar

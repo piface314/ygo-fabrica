@@ -23,10 +23,17 @@ function Layer:__tostring()
   return ('%s(%s)'):format(self.shape, s)
 end
 
----Renders the `Layer` into a vips Image
----@return Image
+--- Renders the `Layer` into a vips Image
+--- @return Image
 function Layer:render()
   return self.shape(unpack(self.values))
+end
+
+--- Checks if the given value is a Layer
+--- @param v any
+--- @return boolean
+function Layer.is_layer(v)
+  return type(v) == 'table' and getmetatable(v) == Layer
 end
 
 setmetatable(Layer, {__call = function(_, ...) return _.new(...) end})

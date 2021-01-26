@@ -11,10 +11,10 @@ end
 i18n.setFallbackLocale('en')
 
 return {
+  get = i18n.getLocale,
   set = function(locale)
     if locales[locale] then
       i18n.setLocale(locale)
     end
-  end,
-  list = locales
+  end
 }

@@ -24,8 +24,7 @@ local function run(flags, mode, imgfolder, cdbfp, outfolder)
   end
   local holo = flags['--holo'] and flags['--holo'][1]
   options.holo = (holo == 'false' or holo == '0') and 0 or 1
-  options.locale = options.locale or i18n.getLocale()
-  Composer.compose(mode or '', imgfolder, cdbfp, outfolder, options)
+  Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
 end
 
 local interpreter = Interpreter.new()
@@ -35,7 +34,7 @@ interpreter:add_command('', run, '--size', 1, '--ext', 1, '--artsize', 1, '--yea
   '--color-xyz', 1, '--color-link', 1, '--color-spell', 1, '--color-trap', 1,
   '--holo', 1, '--locale', 1, '--version', 0, '-v', 0, '--verbose', 0)
 
-Locale.set(Config.get('locale') or i18n.getFallbackLocale())
+Locale.set(Config.get('locale'))
 local errmsg = interpreter:exec(...)
 assert_help(not errmsg, errmsg)
 

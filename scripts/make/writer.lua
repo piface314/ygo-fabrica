@@ -90,7 +90,7 @@ local function is_spell_trap(t)
   return bit.band(t, types.SPELL + types.TRAP) ~= 0
 end
 --- Writes script file templates if a script file doesn't exist already
----@param entries Fun
+--- @param entries Fun
 local function write_scripts(entries)
   entries:map(function(e)
     return {e, path.join('script', ('c%d.lua'):format(e.id))}
@@ -171,8 +171,8 @@ end
 
 --- Converts string data obtained from .toml files into an appropriate
 --- table format
----@param strings Fun
----@return Fun
+--- @param strings Fun
+--- @return Fun
 local function get_string_lines(strings)
   return strings:map(function(entries)
       return fun(entries):hashmap(fun 'e -> tonumber(e.code), e.name')
@@ -181,9 +181,9 @@ end
 
 --- Merges the strings found in a source `strings.conf` file into a destination
 --- `strings.conf` file
----@param src_fp string
----@param dst_fp string
----@return boolean
+--- @param src_fp string
+--- @param dst_fp string
+--- @return boolean
 function Writer.merge_strings(src_fp, dst_fp)
   local rlines = get_string_lines_from_file(src_fp)
   if not rlines then return false end
@@ -214,10 +214,10 @@ function Writer.write_strings(fp, strings, ow)
   dst:close()
 end
 
----Writes card entries to a card database
----@param cdbfp string
----@param entries Fun
----@param overwrite boolean
+--- Writes card entries to a card database
+--- @param cdbfp string
+--- @param entries Fun
+--- @param overwrite boolean
 function Writer.write_entries(cdbfp, entries, overwrite)
   write_cdb(cdbfp, entries, overwrite)
   write_scripts(entries)

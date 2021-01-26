@@ -1,5 +1,6 @@
 local Layer = require 'scripts.composer.layer'
 local Logs = require 'lib.logs'
+local Locale = require 'locale'
 local fun = require 'lib.fun'
 local i18n = require 'lib.i18n'
 local vips = require 'vips'
@@ -15,6 +16,7 @@ local vips = require 'vips'
 --- @field states table<string, State>
 --- @field initial string
 --- @field base Image
+--- @field locale string
 local Decoder = {}
 Decoder.__index = Decoder
 
@@ -23,16 +25,24 @@ local bad_states = fun 't -> {arg="states",caller="Decoder.new",exp="table",got=
 local bad_state = fun 't -> {arg="state",caller="Decoder.add_state",exp="function",got=t}'
 local bad_base = fun 't -> {arg="base",caller="Decoder.set_base",exp="Image",got=t}'
 local nil_state_id = i18n('nil_argument', {arg = 'state_id', caller = 'Decoder.add_state'})
-local function check_layer(i, layer)
-  if type(layer) == 'table' and getmetatable(layer) == Layer then
-    return layer
-  elseif type(layer) == 'string' then
-    return nil, layer
+
+local function check_transition(state, transition)
+  if transition[1] or type(transition[2]) ~= 'string' then
+    return true
   end
-  return nil, layer and i18n('compose.decoder.not_layer', {i, type(layer)})
+  local ok, errmsg = pcall(i18n, transition[2], transition[3])
+  errmsg = ok and i18n('compose.decoder.error', {state}) .. errmsg
+    or i18n('compose.decoder.unknown_error', {state})
+  return false, errmsg
 end
 
---- Creates a new `Decoder` that defines `mode`
+local function check_layer(state, i, layer)
+  if Layer.is_layer(layer) then return layer end
+  return nil, i18n('compose.decoder.not_layer',
+    {arg = i, state = state, got = type(layer)})
+end
+
+--- Creates a new `Decoder` that defines a `mode`
 --- @param mode string
 --- @param base? Image
 --- @param initial_state? string
@@ -86,21 +96,33 @@ function Decoder:set_inital(state_id)
   self.initial = state_id
 end
 
+--- Sets which locale should be used when decoding and rendering cards
+--- @param locale string
+function Decoder:set_locale(locale)
+  self.locale = locale
+end
+
 --- Turns a `card` into a list of `Layer`s
 --- @param card CardData
+--- @param options table
 --- @return Fun
 function Decoder:decode(card, options)
-  local current_state = self.states[self.initial]
-  local layers = fun {}
-  while current_state do
-    local transition, i = {current_state(card, options)}, 2
-    while transition[i] do
-      local layer, errmsg = check_layer(i, transition[i])
+  local locale = Locale.get()
+  local state_id = self.initial
+  local state, layers = self.states[state_id], fun {}
+  while state do
+    Locale.set(self.locale)
+    local transition = {state(card, options)}
+    Locale.set(locale)
+    local ok, errmsg = check_transition(state_id, transition)
+    if not ok then return nil, errmsg end
+    for i = 2, #transition do
+      local layer, errmsg = check_layer(state_id, i, transition[i])
       if not layer then return nil, errmsg end
       layers:push(layer)
-      i = i + 1
     end
-    current_state = self.states[transition[1]]
+    state_id = transition[1]
+    state = self.states[state_id]
   end
   return #layers > 0 and layers
 end
@@ -109,9 +131,13 @@ end
 --- @param layers Fun
 --- @return Image
 function Decoder:render(layers)
-  return layers:reduce(self.base, function (img, layer)
+  local locale = Locale.get()
+  Locale.set(self.locale)
+  local image = layers:reduce(self.base, function (img, layer)
     return img:composite(layer:render(), 'over')
   end)
+  Locale.set(locale)
+  return image
 end
 
 setmetatable(Decoder, {__call = function(_, ...) return _.new(...) end})

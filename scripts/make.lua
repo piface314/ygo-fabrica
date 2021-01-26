@@ -12,8 +12,8 @@ local function get_expansions(all, id)
   return Config.groups.from_flag.get_many('expansion', all or id and {id})
 end
 
----@param recipe table
----@return Fun
+--- @param recipe table
+--- @return Fun
 local function get_files(recipe)
   Logs.assert(type(recipe) == 'table', i18n 'make.recipe_not_list')
   return fun(recipe):copy()
