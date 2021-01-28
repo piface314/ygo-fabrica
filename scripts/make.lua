@@ -39,6 +39,7 @@ return function(flags, exp)
     local entries = Encoder.encode(cards, strings.setname)
     Writer.write_strings(strfp, strings, overwrite)
     Writer.write_entries(cdbfp, entries, overwrite)
+    Writer.write_scripts(entries)
     Logs.ok(i18n 'make.done')
   end
 end

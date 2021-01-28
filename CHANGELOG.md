@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Internationalization in program interface, `ygofab make` and `ygofab compose`.
 - `locale` general configuration.
-- `locale` configuration in `expansion`.
-- Support for multiple monster abilities (Spirit, Union, Flip, etc.) in proxies.
+- `locale` configuration in `picset` and `expansion`.
+- Support for multiple monster abilities (Spirit, Union, Flip, etc.) in `proxy` mode.
 - Support for custom counters in `ygofab sync` and `ygofab make`.
 - `--verbose` flag to `ygofab export` and `ygofab sync`.
 - Warning when user seems to be outside a project folder.
+- Support for custom data when reading card database with `ygofab compose`/`ygopic` or writing them with `ygofab make`. Currently supported columns are `holo`, `setnumber`, `year`, `author`, placed in a table called `custom`.
+- `--holo`, `--locale` and `--verbose` flags to `ygopic`.
+- `-o` flag in `ygofab export` can now also specify an output _pattern_.
 
 ### Changed
 - Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
@@ -20,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More detailed output in `ygofab config`.
 - `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
-- `--clean` flags in `ygofab make` renamed to `--overwrite` or `-ow`.
+- `--clean` flag in `ygofab make` renamed to `--overwrite` or `-ow`.
 - Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
 - Correct ot codes and categories for EDOPro.
 
@@ -31,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug in which if a macro was applied with less arguments than a previous macro, the argument from the previous one would be used in the next. Now they correctly use only their respective arguments.
 
 ### Removed
-- `--clean`, `--no-pics`, `--no-script`, `--no-exp` flags in `ygofab sync`.
+- `--clean`, `--no-pics`, `--no-script` and `--no-exp` flags from `ygofab sync`.
 - `luafilesystem` dependency.
 
 ## [2.0.0] - Barian Babélico // 2021-??-??

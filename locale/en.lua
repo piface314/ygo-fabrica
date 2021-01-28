@@ -142,11 +142,12 @@ return {
         monster_effect = 'Monster Effect',
         flavor_text = 'Flavor Text'
       },
-      parser = {cyclic_macro = '%q: cyclic macro'},
+      parser = {cyclic_macro = '%q: cyclic macro, unable to resolve its value'},
       writer = {
-        create_error = 'error code %s while creating .cdb',
-        write_error = 'error code %s while writing .cdb',
-        clean_error = 'error code %s while cleaning .cdb',
+        create_error = 'error while creating .cdb: ',
+        write_error = 'error while writing .cdb: ',
+        custom_error = 'error while writing custom table to .cdb: ',
+        clean_error = 'error while cleaning .cdb: ',
         strings = 'Writing strings.conf...',
         strings_fail = 'failed writing strings.conf'
       }
