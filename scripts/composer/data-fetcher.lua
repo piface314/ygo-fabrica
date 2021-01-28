@@ -39,8 +39,8 @@ end
 
 local function get_custom_cols(cdb)
   local cols = {}
-  for row in cdb:nrows 'PRAGMA table_info(custom)' do
-    cols[row.name] = true
+  for col in cdb:nrows 'PRAGMA table_info(custom)' do
+    cols[col.name] = true
   end
   return cols
 end

@@ -1,4 +1,4 @@
-local Codes = require 'scripts.make.codes'
+local Codes = require 'lib.codes'
 local i18n = require 'lib.i18n'
 local fun = require 'lib.fun'
 
@@ -103,6 +103,22 @@ function encode.level(card)
     rsc = tonumber(scales[2]) or 0
   end
   return bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
+end
+
+function encode.holo(card)
+  if card.holo ~= nil then return card.holo and 1 or 0 end
+end
+
+function encode.setnumber(card)
+  if card.setnumber then return tostring(card.setnumber) end
+end
+
+function encode.author(card)
+  if card.author then return tostring(card.author) end
+end
+
+function encode.year(card)
+  return tonumber(card.year)
 end
 
 function Encoder.set_locale(locale)
