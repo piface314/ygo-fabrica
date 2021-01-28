@@ -2,6 +2,18 @@ local Fonts = require 'res.composer.fonts'
 
 return {
   art = {x = 13, y = 14, w = 544, h = 582, blur = 4},
+  att = {
+    x = 490, y = 642, w = 58,
+    f = Fonts.get_family('monster_desc', 2.5),
+    ff = Fonts.get_file('monster_desc'),
+    a = 'center'
+  },
+  st_icon = {
+    x = 285, y = 697, w = 58,
+    f = Fonts.get_family('monster_desc', 2.5),
+    ff = Fonts.get_file('monster_desc'),
+    a = 'center'
+  },
   atk = {
     x = 234, y = 725, w = 157, h = 48,
     f = Fonts.get_family('values', 18.7),

@@ -24,7 +24,9 @@ return Decoder('anime', Shapes.BASE, 'art', {
   end,
   spelltrap = function(card)
     local st = Parser.match_lsb(card.type, agtypes.SPELLTRAP)
-    return nil, Layer(Shapes.OVERLAY, 'type', st)
+    local frame = Layer(Shapes.OVERLAY, 'type', st)
+    local icon = Layer(Shapes.ST_ICON, st)
+    return nil, frame, icon
   end,
   monster = function(card)
     local mt = Parser.match_msb(card.type, agtypes.MONSTER)
@@ -58,12 +60,14 @@ return Decoder('anime', Shapes.BASE, 'art', {
     return 'atk', arrows, rating
   end,
   rank = function(card)
-    local rank = Parser.get_level(card)
-    return 'def', Layer(Shapes.OVERLAY, 'r', rank)
+    local r = Parser.get_level(card)
+    local layer = r > 0 and r <= 13 and Layer(Shapes.OVERLAY, 'r', r)
+    return 'def', layer or nil
   end,
   level = function(card)
-    local level = Parser.get_level(card)
-    return 'def', Layer(Shapes.OVERLAY, 'l', level)
+    local lvl = Parser.get_level(card)
+    local layer = lvl > 0 and lvl <= 12 and Layer(Shapes.OVERLAY, 'l', lvl)
+    return 'def', layer or nil
   end,
   def = function(card)
     return 'atk', Layer(Shapes.DEF, card.def)
@@ -74,7 +78,7 @@ return Decoder('anime', Shapes.BASE, 'art', {
   attribute = function(card)
     local att = Parser.match_lsb(card.attribute, Codes.const.attribute.ALL)
     if att > 0 then
-      return nil, Layer(Shapes.OVERLAY, 'att', att)
+      return nil, Layer(Shapes.ATT, att)
     end
   end
 })

@@ -2,6 +2,7 @@ local Layout = require 'scripts.composer.modes.anime.layout'
 local Shape = require 'scripts.composer.shape'
 local Fitter = require 'scripts.composer.fitter'
 local TypeWriter = require 'scripts.composer.type-writer'
+local Codes = require 'lib.codes'
 local vips = require 'vips'
 local path = require 'lib.path'
 
@@ -29,6 +30,18 @@ return {
   SCALES = Shape('pendulum-scale', function(lsc, rsc)
     local lt = TypeWriter.print(tostring(lsc), base, Layout.lsc)
     return TypeWriter.print(tostring(rsc), lt, Layout.rsc)
+  end),
+  ATT = Shape('attribute', function (att)
+    local icon = ov('att', att)
+    local label = Codes.i18n('attribute', att)
+    label = '<t=-1>' .. label .. '</>'
+    return TypeWriter.print(label, icon, Layout.att, '#ffffff')
+  end),
+  ST_ICON = Shape('attribute', function(st)
+    local icon = ov('st', st)
+    local label = Codes.i18n('type', st, 'attribute')
+    label = '<t=-1>' .. label .. '</>'
+    return TypeWriter.print(label, icon, Layout.st_icon, '#ffffff')
   end),
   LINK_RATING = Shape('link-rating', function(lkr)
     return TypeWriter.print(tostring(lkr), ov('link'), Layout.lkr)

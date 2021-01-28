@@ -79,7 +79,7 @@ local function read_cdb(cdbfp, imgs)
   end
   local s, cards = pcall(read)
   Logs.assert(s, i18n 'compose.data_fetcher.read_db_fail', s and '' or cards)
-  return fun(cards):vals()
+  return fun(cards):vals():sort(fun 'a, b -> a.id < b.id')
 end
 
 --- @alias CardData table<string, string|number>

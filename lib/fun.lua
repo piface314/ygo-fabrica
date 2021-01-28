@@ -160,10 +160,11 @@ function Fun.merge(...)
 end
 
 --- Sorts the table/array.
+--- @param comp function
 --- @return Fun
-function Fun:sort()
+function Fun:sort(comp)
   local a = self:copy()
-  table.sort(a)
+  table.sort(a, comp)
   return a
 end
 
