@@ -37,32 +37,49 @@ local function get_images(fp)
     end)
 end
 
-local SELECT_TEMPLATE = [[SELECT *
-  FROM texts AS t JOIN datas AS d ON t.id = d.id
-  WHERE t.id IN (%s)]]
+local function get_custom_cols(cdb)
+  local cols = {}
+  for row in cdb:nrows 'PRAGMA table_info(custom)' do
+    cols[row.name] = true
+  end
+  return cols
+end
+
+local SELECT_TEMPLATE = 'SELECT * FROM %s WHERE id IN (%s)'
 --- Reads data from a card database (.cdb file), looking for ids
 --- that match those of the images found previously on a folder.
---- @param cdb Database
+--- @param cdbfp string path to a .cdb file
 --- @param imgs Fun
 --- @return Fun cards
-local function read_cdb(cdb, imgs)
+local function read_cdb(cdbfp, imgs)
+  local cdb = sqlite.open(cdbfp)
   Logs.assert(cdb and cdb:isopen(), i18n 'compose.data_fetcher.closed_db')
   local ids = table.concat(imgs:keys(), ',')
-  local sql = SELECT_TEMPLATE:format(ids)
+  local sql = SELECT_TEMPLATE:format('texts NATURAL JOIN datas', ids)
   local function read()
-    local rows = fun {}
+    local custom_cols = get_custom_cols(cdb)
+    local cards = {}
     for row in cdb:nrows(sql) do
       row.id = tostring(row.id)
       row.art = imgs[row.id]
       row.name = escape(row.name or '')
       row.desc = escape(row.desc or '')
-      rows:push(row)
+      cards[row.id] = row
     end
-    return rows
+    if next(custom_cols) then
+      for row in cdb:nrows(SELECT_TEMPLATE:format('custom', ids)) do
+        for col in pairs(custom_cols) do
+          local id, v = tostring(row.id), row[col]
+          cards[id][col] = type(v) == 'string' and escape(v) or v
+        end
+      end
+    end
+    cdb:close()
+    return cards
   end
   local s, cards = pcall(read)
   Logs.assert(s, i18n 'compose.data_fetcher.read_db_fail', s and '' or cards)
-  return cards
+  return fun(cards):vals()
 end
 
 --- @alias CardData table<string, string|number>
@@ -73,8 +90,7 @@ end
 --- @return Fun cards
 function DataFetcher.get(imgfolder, cdbfp)
   local imgs = get_images(imgfolder)
-  local cdb = sqlite.open(cdbfp)
-  local cards = read_cdb(cdb, imgs)
+  local cards = read_cdb(cdbfp, imgs)
   return cards
 end
 
