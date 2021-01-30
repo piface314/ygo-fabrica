@@ -2,7 +2,7 @@ local Logs = require 'lib.logs'
 local Config = require 'scripts.config'
 local path = require 'lib.path'
 local sqlite = require 'lsqlite3complete'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 
 local GENFP = path.prjoin('res', 'new')
 

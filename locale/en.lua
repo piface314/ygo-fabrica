@@ -106,9 +106,7 @@ return {
         not_layer = 'bad return value #%{arg} (expected Layer, got %{got})'
       },
       modes = {
-        anime = {
-          no_card_type = 'missing card type'
-        },
+        anime = {no_card_type = 'missing card type'},
         proxy = {
           no_card_type = 'missing card type',
           copyright = '<t=2><s=5>©</>%{year}</> %{author}',
@@ -170,59 +168,72 @@ return {
       done = 'Done!'
     },
     ygofab = {
-      usage = 'Usage:\
-  $ ygofab <command> [options]\
-\
-Available commands:\
-  compose\tGenerates card pics\
-  config \tShows current configurations\
-  export \tExports your project to a .zip file\
-  make   \tConverts card description in .toml into a .cdb\
-  new    \tCreates a new project, given a name\
-  sync   \tCopies your project files to YGOPro game',
+      usage = {
+        header = 'Usage:',
+        cmd = '$ ygofab <command> [options]',
+        commands = {
+          header = 'Available commands:',
+          cmd1 = {id = 'compose', desc = [[Generates card pics.]]},
+          cmd2 = {id = 'config', desc = [[Shows current configurations.]]},
+          cmd3 = {id = 'export', desc = [[Exports your project to a .zip file.]]},
+          cmd4 = {id = 'make', desc = [[Converts card description in .toml into a .cdb.]]},
+          cmd5 = {id = 'new', desc = [[Creates a new project, given a name.]]},
+          cmd6 = {id = 'sync', desc = [[Copies your project files to the game.]]}
+        }
+      },
       not_in_project = 'It looks like you\'re not in a project folder...',
       invalid_command = 'not a valid command'
     },
     ygopic = {
-      usage = 'Usage:\
-\
-  $ ygopic <mode> <art-folder> <card-database> <output-folder> [options]\
-\
-Arguments:\
-\
-  mode          \tEither `anime` or `proxy`\
-  art-folder    \tPath to a folder containing artwork for the cards\
-  card-database \tPath to a .cdb describing each card\
-  output-folder \tPath to a folder that will contain output images\
-\
-Available options:\
-\
-  --size WxH        \tW and H determines width and height of the output\
-                    \timages. If only W or H is specified, aspect ratio\
-                    \tis preserved. Example: `--size 800x` will output\
-                    \timages in 800px in width, keeping aspect ratio.\
-                    \tDefaults to original size.\
-\
-  --ext <ext>       \tSpecifies which extension is used for output,\
-                    \teither `png`, `jpg` or `jpeg`. Defaults to `jpg`.\
-\
-  --artsize <mode>  \tSpecifies how artwork is fitted into the artbox,\
-                    \teither `cover`, `contain` or `fill`.\
-                    \tDefaults to `cover`.\
-\
-  --year <year>     \tSpecifies an year to be used in `proxy` mode in\
-                    \tthe copyright line. Defaults to `1996`.\
-\
-  --author <author> \tSpecifies an author to be used in `proxy` mode in\
-                    \tthe copyright line. Defaults to `KAZUKI TAKAHASHI`.\
-\
-  --field           \tEnables the generation of field background images.\
-\
-  --color-* <color> \tChanges the color used for card names in `proxy`\
-                    \tmode, according to the card type (*). <color>\
-                    \tmust be a color string in hex format.\
-                    \tE.g., `--color-effect "#ffffff"` specifies white\
-                    \tfor Effect Monsters card name.',
+      usage = {
+        header = 'Usage:',
+        cmd = '$ ygopic <mode> <art-folder> <card-database> <output-folder> [options]',
+        help = '(use --help to display more details)',
+        arguments = {
+          header = 'Arguments:',
+          arg1 = {id = 'mode', desc = 'Either `anime` or `proxy`'},
+          arg2 = {
+            id = 'art-folder',
+            desc = 'Path to a folder containing artwork for the cards'
+          },
+          arg3 = {id = 'card-database', desc = 'Path to a .cdb describing each card'},
+          arg4 = {
+            id = 'output-folder',
+            desc = 'Path to a folder that will contain output images'
+          }
+        },
+        options = {
+          header = 'Available options:',
+          opt1 = {
+            label = '--size <W>x<H>',
+            desc = [[W and H determines width and height of the output images. If only W or H is specified, aspect ratio is preserved. Example: `--size 800x` will output images in 800px in width, keeping aspect ratio. Defaults to original size.]]
+          },
+          opt2 = {
+            label = '--ext <ext>',
+            desc = [[Specifies which extension is used for output, either `png`, `jpg` or `jpeg`. Defaults to `jpg`.]]
+          },
+          opt3 = {
+            label = '--artsize <mode>',
+            desc = [[Specifies how artwork is fitted into the artbox, either `cover`, `contain` or `fill`. Defaults to `cover`.]]
+          },
+          opt4 = {
+            label = '--year <year>',
+            desc = [[Specifies an year to be used in `proxy` mode in the copyright line. Defaults to `1996`.]]
+          },
+          opt5 = {
+            label = '--author <author>',
+            desc = [[Specifies an author to be used in `proxy` mode in the copyright line. Defaults to `KAZUKI TAKAHASHI`.]]
+          },
+          opt6 = {
+            label = '--field',
+            desc = [[Enables the generation of field background images.]]
+          },
+          opt7 = {
+            label = '--color-* <color>',
+            desc = [[Changes the color used for card names in `proxy` mode, according to the card type (*). <color> must be a color string in hex format. E.g., `--color-effect "#ffffff"` specifies white for Effect Monsters card name.]]
+          }
+        }
+      },
       missing_mode = 'please specify <mode>',
       missing_imgfolder = 'please specify <art-folder>',
       missing_cdbfp = 'please specify <card-database>',

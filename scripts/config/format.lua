@@ -2,7 +2,7 @@ local Schema = require 'scripts.config.schema'
 local Logs = require 'lib.logs'
 local colors = require 'lib.colors'
 local fun = require 'lib.fun'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 
 local function format_value(v)
   if type(v) == 'table' then

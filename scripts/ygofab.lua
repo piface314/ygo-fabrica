@@ -4,15 +4,22 @@ local Version = require 'lib.version'
 local path = require 'lib.path'
 local Locale = require 'locale'
 local Config = require 'scripts.config'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
+local fun = require 'lib.fun'
 
 local function print_header() Logs.info(require 'lib.header') end
 
 local function display_help(msg)
-  local usage = i18n 'ygofab.usage'
-  Logs.assert(not msg, msg, '\n', usage)
+  local commands = fun(1, 6)
+    :map(fun 'i -> "ygofab.usage.commands.cmd" .. i')
+    :map(function(k) return {'  ' .. i18n(k .. '.id') .. '  ', i18n(k .. '.desc')} end)
+  local usage = {
+    i18n 'ygofab.usage.header', '\n  ', i18n 'ygofab.usage.cmd', '\n\n',
+    i18n 'ygofab.usage.commands.header', '\n', unpack(Logs.tabular({0, 0}, commands))
+  }
+  Logs.assert(not msg, msg, '\n', unpack(usage))
   print_header()
-  Logs.info(usage)
+  Logs.info(unpack(usage))
 end
 
 local function add_project_warning()
@@ -54,9 +61,7 @@ local function cmd_make(flags, exp)
   require 'scripts.make'(flags, exp)
 end
 
-local function cmd_new(_, pack_name)
-  require 'scripts.new'(pack_name)
-end
+local function cmd_new(_, pack_name) require 'scripts.new'(pack_name) end
 
 local function cmd_sync(flags)
   add_project_warning()
@@ -65,14 +70,14 @@ end
 
 local interpreter = Interpreter.new()
 interpreter:add_command('compose', cmd_compose, '-p', 1, '-Pall', 0, '-e', 1,
-                        '-Eall', 0, '--verbose', 0)
+  '-Eall', 0, '--verbose', 0)
 interpreter:add_command('config', cmd_config)
-interpreter:add_command('export', cmd_export, '-p', 1, '-Pall', 0, '-o', 1,
-                        '-e', 1, '-Eall', 0, '--verbose', 0)
+interpreter:add_command('export', cmd_export, '-p', 1, '-Pall', 0, '-o', 1, '-e', 1,
+  '-Eall', 0, '--verbose', 0)
 interpreter:add_command('make', cmd_make, '--overwrite', 0, '-ow', 0, '--all', 0)
 interpreter:add_command('new', cmd_new)
 interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,
-                        '--no-string', 0, '--verbose', 0)
+  '--no-string', 0, '--verbose', 0)
 interpreter:add_command('', cmd_version, '--version', 0, '-v', 0)
 
 Locale.set(Config.get('locale') or i18n.getFallbackLocale())

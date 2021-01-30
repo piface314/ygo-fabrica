@@ -5,7 +5,7 @@ local DataFetcher = require 'scripts.make.data-fetcher'
 local Parser = require 'scripts.make.parser'
 local Encoder = require 'scripts.make.encoder'
 local Writer = require 'scripts.make.writer'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 local fun = require 'lib.fun'
 
 local function get_expansions(all, id)

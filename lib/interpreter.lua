@@ -1,4 +1,4 @@
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 
 
 --- Parses and runs commands, as given in `arg`, allowing flags

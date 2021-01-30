@@ -2,7 +2,7 @@ local Layer = require 'scripts.composer.layer'
 local Logs = require 'lib.logs'
 local Locale = require 'locale'
 local fun = require 'lib.fun'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 local vips = require 'vips'
 
 --- @alias State fun(card: CardData, opts: table): any, Layer

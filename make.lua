@@ -90,12 +90,13 @@ function build.dependencies()
   return true
 end
 
-function build.correct_toml()
+function build.adjust_toml()
   local toml_fp = build.tree .. "/share/lua/5.1/toml.lua"
   local toml_lib, errmsg = io.open(toml_fp)
   if not toml_lib then err = errmsg; return false end
   local t = toml_lib:read("*a")
   toml_lib:close()
+  t = t:gsub('while(not char():match(nl)) do', 'while(not char():match(nl) and cursor <= toml:len()) do')
   local pf, m, sf = t:match("^(.*local function parseNumber%(%)(.-))(%s+while%(bounds%(%)%) do.*)$")
   if m:match("prefixes") then return true end
   local add = "\
@@ -125,7 +126,7 @@ function build.correct_toml()
 end
 
 function build.start()
-  local steps = build.tree_folder() and build.dependencies() and build.correct_toml()
+  local steps = build.tree_folder() and build.dependencies() and build.adjust_toml()
   Logs.assert(steps, err)
   Logs.ok("YGOFabrica has been successfully built!")
 end

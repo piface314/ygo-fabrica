@@ -1,7 +1,7 @@
 local path = require 'lib.path'
 local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 local fun = require 'lib.fun'
 
 local tables = fun {

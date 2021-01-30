@@ -3,7 +3,7 @@ local toml = require 'toml'
 local fun = require 'lib.fun'
 local Schema = require 'scripts.config.schema'
 local Logs = require 'lib.logs'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 
 local Config = {groups = {from_flag = {}}}
 

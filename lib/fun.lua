@@ -22,16 +22,34 @@ local function bind(t) return setmetatable(t, Fun) end
 --- @return Fun
 local function new() return bind({}) end
 
---- Runs a function until it returns `nil`, saving its return values.
---- Similar to turning an iterator into a list in Python.
---- @param f fun(): any
+--- Runs an iterator function until it returns `nil`, saving its return values.
+--- Acts like a `for` construction.
+--- @param iter function
+--- @param o any
+--- @param v any
 --- @return Fun
-local function gen(f)
+local function gen(iter, o, v)
   local out = new()
   while true do
-    local vals = {f()}
+    local vals = {iter(o, v)}
     if vals[1] == nil then break end
+    v = vals[1]
     out:push(#vals > 1 and vals or vals[1])
+  end
+  return out
+end
+
+--- Creates a list out of a numeric for range.
+---@param st number
+---@param en number
+---@param step? number
+---@return Fun
+local function range(st, en, step)
+  assert(type(en) == 'number', 'fun: range end must be a number')
+  if not step or type(step) ~= 'number' then step = 1 end
+  local out = new()
+  for i = st, en, step do
+    out[#out + 1] = i
   end
   return out
 end
@@ -244,19 +262,22 @@ function Fun.__concat(a, b)
   return bind(t)
 end
 
---- If `p` is a string, parses that string into a function defined by that string.
---- If `p` is a table, makes `p` an instance of `Fun`.
---- If `p` is a function, that function is treated as a generator for values that are placed in an array.
---- @param p string|table
+local constructors = {
+  ['string'] = strfn,
+  ['function'] = gen,
+  ['table'] = bind,
+  ['number'] = range
+}
+
+--- If `v` is a string, parses that string into a function defined by that string.
+--- If `v` is a table, makes `v` an instance of `Fun`.
+--- If `v` is a function, that function is treated as a generator for values that are placed in an array.
+--- If `v` is a number, uses that number and its following argument to form a range of numbers.
+--- @param v string|table
 --- @return Fun
-return function(p, ...)
-  local t = type(p)
-  if t == 'string' then
-    return strfn(p, ...)
-  elseif t == 'function' then
-    return gen(p)
-  elseif t == 'table' then
-    return bind(p)
-  end
-  error(('fun: bad argument #1 (expected string|table|function, got %s)'):format(t))
+return function(v, ...)
+  local t = type(v)
+  local cons = constructors[t]
+  assert(cons, ('fun: bad argument #1 (expected string|table|function|number, got %s)'):format(t))
+  return cons(v, ...)
 end

@@ -1,6 +1,6 @@
 local toml = require 'toml'
 local Logs = require 'lib.logs'
-local i18n = require 'lib.i18n'
+local i18n = require 'i18n'
 local fun = require 'lib.fun'
 
 local DataFetcher = {}

@@ -45,7 +45,7 @@ return {
         DIVINE_BEAST = 'Besta Divina',
         CREATOR_GOD = 'Deus Criador',
         WYRM = 'Wyrm',
-        CYBERSE = 'Ciberso',
+        CYBERSE = 'Ciberso'
       },
       type = {
         SPELL = {
@@ -106,9 +106,7 @@ return {
         not_layer = 'valor retornado inválido #%{arg} (Layer era esperado, %{got} foi recebido)'
       },
       modes = {
-        anime = {
-          no_card_type = 'falta o tipo da carta',
-        },
+        anime = {no_card_type = 'falta o tipo da carta'},
         proxy = {
           no_card_type = 'falta o tipo da carta',
           copyright = '<t=2><s=5>©</>%{year}</> %{author}',
@@ -142,7 +140,9 @@ return {
         monster_effect = 'Efeito de Monstro',
         flavor_text = 'Texto'
       },
-      parser = {cyclic_macro = '%q: macro cíclico, impossível determinar seu valor'},
+      parser = {
+        cyclic_macro = '%q: macro cíclico, impossível determinar seu valor'
+      },
       writer = {
         create_error = 'erro ao criar .cdb: ',
         write_error = 'erro ao escrever .cdb: ',
@@ -170,60 +170,75 @@ return {
       done = 'Pronto!'
     },
     ygofab = {
-      usage = 'Uso:\
-  $ ygofab <comando> [opções]\
-\
-Comandos disponíveis:\
-  compose\tGera imagens das cartas\
-  config \tMostra as configurações em uso\
-  export \tExporta um projeto para um arquivo .zip\
-  make   \tConverte cartas descritas em .toml para um .cdb\
-  new    \tCria um novo projeto\
-  sync   \tCopia os arquivos do projeto para o jogo',
+      usage = {
+        header = 'Uso:',
+        cmd = '$ ygofab <comando> [opções]',
+        commands = {
+          header = 'Comandos disponíveis:',
+          cmd1 = {id = 'compose', desc = [[Gera imagens das cartas.]]},
+          cmd2 = {id = 'config', desc = [[Mostra as configurações em uso.]]},
+          cmd3 = {id = 'export', desc = [[Exporta um projeto para um arquivo .zip.]]},
+          cmd4 = {id = 'make', desc = [[Converte cartas descritas em .toml para um .cdb.]]},
+          cmd5 = {id = 'new', desc = [[Cria um novo projeto, dado um nome.]]},
+          cmd6 = {id = 'sync', desc = [[Copia os arquivos do projeto para o jogo.]]}
+        }
+      },
       not_in_project = 'Parece que você não está na pasta de um projeto...',
       invalid_command = 'comando inválido'
     },
     ygopic = {
-      usage = 'Uso:\
-\
-  $ ygopic <modo> <pasta-artes> <database> <pasta-saída> [opções]\
-\
-Argumentos:\
-\
-  modo        \tOu `anime` ou `proxy`\
-  pasta-artes \tCaminho da pasta contendo artes para as cartas\
-  database    \tCaminho para um .cdb descrevendo as cartas\
-  pasta-saída \tCaminho da pasta de saída para as imagens geradas\
-\
-Opções disponíveis:\
-\
-  --size LxA        \tL e A determinam a largura e a altura das imagens\
-                    \tgeradas. Se apenas L ou A for especificado, serão\
-                    \tmantidas as proporções. Ex.: `--size 800x` gerará\
-                    \timagens com 800px em largura, mantendo a proporção.\
-                    \tPor padrão, vale o tamanho original.\
-\
-  --ext <ext>       \tEspecifica qual formato de imagem será usado,\
-                    \tsendo `png`, `jpg` ou `jpeg`. Por padrão, `jpg`.\
-\
-  --artsize <modo>  \tEspecifica como as artes se encaixam na carta,\
-                    \tsendo `cover`, `contain` ou `fill`.\
-                    \tPor padrão, `cover`.\
-\
-  --year <ano>      \tEspecifica o ano a ser usado no modo `proxy`, na\
-                    \tlinha do copyright. Por padrão, `1996`\
-\
-  --author <autor>  \tEspecifica o autor a ser usado no modo `proxy`, na\
-                    \tlinha do copyright. Por padrão, `KAZUKI TAKAHASHI`.\
-\
-  --field           \tSe presente, define que serão gerados planos de fundo\
-                    \tpara cartas de campo.\
-\
-  --color-* <cor>   \tMuda a cor usada para os nomes das cartas no modo\
-                    \t`proxy`, de acordo com o tipo da carta (*). <cor>\
-                    \tdeve ser uma string em formato hexadecimal.\
-                    \tEx.: `--color-effect "#ffffff"` define a cor do nome\
-                    \tdos Monstros de Efeito como branco.',
+      usage = {
+        header = 'Uso:',
+        cmd = '$ ygopic <modo> <pasta-artes> <database> <pasta-saída> [opções]',
+        help = '(use --help para mais detalhes)',
+        arguments = {
+          header = 'Argumentos:',
+          arg1 = {id = 'modo', desc = 'Ou `anime` ou `proxy`.'},
+          arg2 = {
+            id = 'pasta-artes',
+            desc = 'Caminho da pasta contendo artes para as cartas.'
+          },
+          arg3 = {
+            id = 'database',
+            desc = 'Caminho para um .cdb descrevendo as cartas.'
+          },
+          arg4 = {
+            id = 'pasta-saída',
+            desc = 'Caminho da pasta de saída para as imagens geradas.'
+          }
+        },
+        options = {
+          header = 'Opções disponíveis:',
+          opt1 = {
+            label = '--size <L>x<A>',
+            desc = [[L e A determinam a largura e a altura das imagens geradas. Se apenas L ou A for especificado, serão mantidas as proporções. Ex.: `--size 800x` gerará imagens com 800px em largura, mantendo a proporção. Por padrão, vale o tamanho original.]]
+          },
+          opt2 = {
+            label = '--ext <ext>',
+            desc = [[Especifica qual formato de imagem será usado, sendo `png`, `jpg` ou `jpeg`. Por padrão, `jpg`.]]
+          },
+          opt3 = {
+            label = '--artsize <modo>',
+            desc = [[Especifica como as artes se encaixam na carta, sendo `cover`, `contain` ou `fill`. Por padrão, `cover`.]]
+          },
+          opt4 = {
+            label = '--year <ano>',
+            desc = [[Especifica o ano a ser usado no modo `proxy`, na linha do copyright. Por padrão, `1996`]]
+          },
+          opt5 = {
+            label = '--author <autor>',
+            desc = [[Especifica o autor a ser usado no modo `proxy`, na linha do copyright. Por padrão, `KAZUKI TAKAHASHI`.]]
+          },
+          opt6 = {
+            label = '--field',
+            desc = [[Se presente, define que serão gerados planos de fundo para cartas de campo.]]
+          },
+          opt7 = {
+            label = '--color-* <cor>',
+            desc = [[Muda a cor usada para os nomes das cartas no modo `proxy`, de acordo com o tipo da carta (*). <cor> deve ser uma string em formato hexadecimal. Ex.: `--color-effect "#ffffff"` define a cor do nome dos Monstros de Efeito como branco.]]
+          }
+        }
+      },
       missing_mode = 'por favor especifique <modo>',
       missing_imgfolder = 'por favor especifique <pasta-artes>',
       missing_cdbfp = 'por favor especifique <database>',
