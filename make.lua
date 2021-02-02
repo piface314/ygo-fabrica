@@ -3,7 +3,7 @@ package.cpath = './T/lib/lua/5.1/?.so;'
 
 local Spec = require 'spec'
 local Interpreter = require 'lib.interpreter'
-local Logs, Locale, i18n, utf8
+local Logs, i18n
 
 local SEP = package.config:sub(1, 1)
 local WIN = SEP == '\\'
@@ -15,14 +15,18 @@ local exec, cp, os_name
 local cmd_build = {}
 local cmd_install = {}
 local cmd_config = {}
-local cmd_fonts = {}
 
-local dirs = {'lib', 'locale', 'modules', 'res', 'scripts'}
-local files = {'CHANGELOG.md', 'LICENSE', 'README.md', 'spec.lua', 'make.lua'}
+cmd_build.file_list = {
+  'lib', 'locale', 'modules', 'res', 'scripts', 'CHANGELOG.md',
+  'LICENSE', 'README.md', 'spec.lua', 'make.lua'
+}
+
+cmd_install.file_list = {
+  'lib', 'locale', 'modules', 'res', 'scripts', 'CHANGELOG.md', 'LICENSE', 'README.md'
+}
 
 if WIN then
-  os_name = 'windows'
-  files[#files + 1] = 'install.cmd'
+  table.insert(cmd_build.file_list, 'install.cmd')
   cmd_install.bin = [[
 @echo off
 setlocal
@@ -47,11 +51,14 @@ endlocal
       return exec('xcopy "%s" "%s" /s/h/e/k/c/y/i', src, dst .. '\\' .. src)
     end
   end
-  function cmd_build.luajit() end
-  function cmd_build.vips() end
+  function cmd_build.luajit()
+    -- TODO
+  end
+  function cmd_build.vips()
+    -- TODO
+  end
 else
-  os_name = 'linux'
-  files[#files + 1] = 'install'
+  table.insert(cmd_build.file_list, 'install')
   cmd_install.bin = [[
 #!/usr/bin/env bash
 export YGOFAB_ROOT="$root"
@@ -63,7 +70,7 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
   function cp(src, dst) return exec('cp -ar "%s" "%s"', src, dst) end
   function cmd_build.luajit()
     local path = require 'lib.path'
-    dirs[#dirs + 1] = 'luajit'
+    table.insert(cmd_build.file_list, 'luajit')
     if path.exists('luajit') and path.isdir('luajit') then return end
     local luajit = Spec.build.luajit_version
     local ok = exec('wget "http://luajit.org/download/%s.tar.gz"', luajit)
@@ -74,7 +81,7 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
   end
   function cmd_build.vips()
     local path = require 'lib.path'
-    dirs[#dirs + 1] = 'vips'
+    table.insert(cmd_build.file_list, 'vips')
     if path.exists('vips') and path.isdir('vips') then return end
     local version = Spec.build.vips_version
     local name = 'vips-' .. version
@@ -86,7 +93,7 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
   end
 end
 
-local function chmod(fp) return exec('chmod +x "%s"', fp) end
+local function chmod(fp) return not WIN or exec('chmod +x "%s"', fp) end
 
 local function read(fp)
   local f, e = io.open(fp, 'r')
@@ -104,19 +111,20 @@ local function write(fp, content)
   return true
 end
 
-local function require_missing()
+local function require_missing(locale)
   local ok
   ok, Logs = pcall(require, 'lib.logs')
   if not ok then return false end
   i18n = require 'i18n'
   i18n.loadFile('make-locale.lua')
   i18n.setFallbackLocale('en')
+  i18n.setLocale(locale)
   return true
 end
 
 function cmd_build.run(flags)
   cmd_build.dependencies(Spec.build.dependencies)
-  assert(require_missing())
+  assert(require_missing(flags['--locale']))
   cmd_build.adjust_i18n()
   cmd_build.dependencies(Spec.dependencies)
   cmd_build.adjust_toml()
@@ -177,7 +185,7 @@ function cmd_build.adjust_toml()
 \t\t\treturn {value = tonumber(num, base), type = "int"}\
 \t\tend'
   local out = ('%s%s%s'):format(pf, add, sf)
-  Logs.assert(write(fp, out))
+  Logs.assert(write(fp, out), i18n 'build.toml_error')
 end
 
 function cmd_build.spec()
@@ -193,15 +201,13 @@ function cmd_build.spec()
 end
 
 function cmd_build.release()
-  local path = require 'lib.path'
+  local path = require 'path'
   local target = Spec.build.target
     :gsub('%%{version}', Spec.version)
   local build_fp = path.join('build', target)
-  Logs.assert(path.mkdir(build_fp), i18n 'build.mkdir_error')
-  for _, g in ipairs({dirs, files}) do
-    for _, fp in ipairs(g) do
-      Logs.assert(cp(fp, build_fp, g == files), i18n('build.cp_error', {fp}))
-    end
+  Logs.assert(path.mkdir(build_fp), i18n('mkdir_error', {build_fp}))
+  for _, fp in ipairs(cmd_build.file_list) do
+    Logs.assert(cp(fp, build_fp, path.isfile(fp)), i18n('cp_error', {fp}))
   end
   if WIN then
     local Zip = require 'lib.zip'
@@ -210,29 +216,89 @@ function cmd_build.release()
     z:add(build_fp, target)
     Logs.assert(z:close() > 0, i18n 'build.release_error')
   else
-    local ok = exec('cd build && tar -zcf ../%s-linux.tar.gz %s && cd ..', target, target)
+    local ok = exec('cd build && tar -zcf ../%s-linux.tar.gz %s; cd ..', target, target)
     Logs.assert(ok, i18n 'build.release_error')
   end
 end
 
-function cmd_install.run(_, base)
-
+function cmd_install.run(flags, base)
+  assert(require_missing(flags['--locale']))
+  cmd_install.base(base)
+  cmd_install.fonts()
+  cmd_install.copy(base)
+  cmd_install.bins(base)
 end
 
 function cmd_install.base(base)
   local path = require 'path'
-  Logs.assert(path.mkdir(base), i18n 'install.mkdir_error')
+  Logs.assert(path.mkdir(base), i18n('mkdir_error', {base}))
+end
+
+function cmd_install.fonts()
+  local path = require 'path'
+  if path.isdir('fonts') then
+    local target = path.join('res', 'composer', 'fonts')
+    Logs.assert(cp('fonts', target), i18n('cp_error', {'fonts'}))
+  end
+end
+
+function cmd_install.copy(base)
+  local path = require 'lib.path'
+  base = base or Spec.install_path
+  for _, fp in ipairs(cmd_install.file_list) do
+    Logs.assert(cp(fp, base, path.isfile(fp)), i18n('cp_error', {fp}))
+  end
+  Logs.assert(not path.exists('luajit') or cp('luajit', base), i18n('cp_error', 'luajit'))
+  Logs.assert(not path.exists('vips') or cp('vips', base), i18n('cp_error', 'vips'))
+end
+
+function cmd_install.bins(base)
+  local path = require 'path'
+  local bins = {'ygofab', 'ygopic'}
+  local ext = WIN and '.cmd' or ''
+  for _, bin in ipairs(bins) do
+    local fp = path.join(Spec.bin_path, bin .. ext)
+    local b = cmd_install.bin:gsub('$script', bin):gsub('$root', base)
+    for f in path.each(path.join(Spec.bin_path, bin .. '*')) do path.remove(f) end
+    Logs.assert(write(fp, b) and chmod(fp), i18n 'install.bin_error')
+  end
+end
+
+function cmd_config.run(flags, gamepath)
+  local locale = flags['--locale']
+  assert(require_missing(locale))
+  local path = require 'path'
+  local config = [[
+# %s
+locale = '%s'
+
+# %s
+[gamedir.main]
+default = true
+path = '''%s'''
+
+# %s
+[picset.regular]
+default = true
+mode = 'proxy'
+size = '256x'
+ext = 'jpg'
+field = true
+]]
+  config = config:format(i18n 'config.comment.header', locale or 'en',
+    i18n 'config.comment.gamedir', gamepath or '', i18n 'config.comment.picset')
+  Logs.assert(path.mkdir(Spec.config_path), i18n('mkdir_error', {Spec.config_path}))
+  Logs.assert(write(path.join(Spec.config_path, 'config.toml'), config), i18n 'config.error')
 end
 
 local interpreter = Interpreter.new()
-interpreter:add_command('build', cmd_build.run, '-r', 0, '--release', 0, '--slim', 0)
-interpreter:add_command('install', cmd_install.run)
-interpreter:add_command('config', cmd_config.run)
-interpreter:add_command('fonts', cmd_fonts.run)
-interpreter:add_command('', function()
-  if require_missing() then Logs.error(i18n 'missing_command') end
-  error('ERROR: please specify `build`, `install`, `config` or `fonts`.')
-end)
+interpreter:add_command('build', cmd_build.run, '-r', 0, '--release', 0, '--slim', 0, '--locale', 1)
+interpreter:add_command('install', cmd_install.run, '--locale', 1)
+interpreter:add_command('config', cmd_config.run, '--locale', 1)
+interpreter:add_command('', function(flags)
+  if require_missing(flags['--locale']) then Logs.error(i18n 'missing_command') end
+  error('ERROR: please specify `build`, `install` or `config`.')
+end, '--locale', 1)
 local errmsg, data = interpreter:exec(...)
 local ok = require_missing()
 if ok then
@@ -240,103 +306,3 @@ if ok then
 else
   assert(not errmsg, ('ERROR: %s %s'):format(errmsg, data))
 end
-
-
---[===[
-
-function install.copy()
-  return cp('modules', install.base) and cp('lib', install.base)
-           and cp('locale', install.base) and cp('res', install.base)
-           and cp('scripts', install.base) and cp('CHANGELOG.md', install.base, true)
-           and cp('LICENSE', install.base, true)
-           and cp('README.md', install.base, true)
-end
-
-function install.bins()
-  if IS_WIN then
-    local bin = ([[
-@echo off
-setlocal
-set "YGOFAB_ROOT=$root"
-set "LUA_PATH=%YGOFAB_ROOT%/?.lua;%YGOFAB_ROOT%/?/init.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?/init.lua"
-set "LUA_CPATH=%YGOFAB_ROOT%/modules/lib/lua/5.1/?.dll"
-set "PATH=%YGOFAB_ROOT%/luajit;%YGOFAB_ROOT%/vips/bin;%PATH%"
-luajit "%YGOFAB_ROOT%/scripts/$script.lua" %*
-endlocal
-@echo on
-]]):gsub('$root', install.base)
-    os.remove(install.bin .. '\\ygofab.bat')
-    os.remove(install.bin .. '\\ygopic.bat')
-    return write_file(install.bin .. '\\ygofab.cmd', bin:gsub('$script', 'ygofab'))
-             and write_file(install.bin .. '\\ygopic.cmd',
-        bin:gsub('$script', 'ygopic'))
-  else
-    local bin = ([[
-#!/usr/bin/env bash
-export YGOFAB_ROOT="$root"
-export LUA_PATH="${YGOFAB_ROOT}/?.lua;${YGOFAB_ROOT}/?/init.lua;${YGOFAB_ROOT}/modules/share/lua/5.1/?.lua;${YGOFAB_ROOT}/modules/share/lua/5.1/?/init.lua"
-export LUA_CPATH="${YGOFAB_ROOT}/modules/lib/lua/5.1/?.so"
-luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
-]]):gsub('$root', install.base)
-    return write_file(install.bin .. '/ygofab', bin:gsub('$script', 'ygofab'))
-             and write_file(install.bin .. '/ygopic', bin:gsub('$script', 'ygopic'))
-             and chmod(install.bin .. '/ygofab') and chmod(install.bin .. '/ygopic')
-  end
-end
-
-function install.start(_, base)
-  install.set_paths(base)
-  local steps = install.base_folder() and install.spec() and install.copy()
-                  and install.bins()
-  Logs.assert(steps, err)
-  Logs.ok('YGOFabrica has been successfully installed!')
-end
-
-function config.write(gamepath)
-  local base = config.base
-  local content = ([[
-# Global configurations for YGOFabrica
-locale = 'pt'
-
-# Define one or more game directories
-[gamedir.main]
-path = '''%s'''
-default = true
-
-# Define one or more picsets
-[picset.regular]
-mode = 'proxy'
-size = '256x'
-ext = 'jpg'
-field = true
-default = true
-]]):format(gamepath or '')
-  return create_folder(base) and write_file(base .. '/config.toml', content)
-end
-
-function config.start(_, gamepath)
-  Logs.assert(config.write(gamepath), err)
-  Logs.ok('YGOFabrica has been successfully configured!')
-end
-
-function fonts.copy(fp)
-  local target = table.concat({install.base, 'res', 'composer', 'fonts'}, SEP)
-  return cp(fp or 'fonts', target)
-end
-
-function fonts.start(_, fp)
-  Logs.assert(fonts.copy(fp), err)
-  Logs.ok('Fonts were successfully installed to YGOFabrica!')
-end
-
-local interpreter = Interpreter.new()
-interpreter:add_command('build', build.start)
-interpreter:add_command('install', install.start)
-interpreter:add_command('config', config.start)
-interpreter:add_command('fonts', fonts.start)
-interpreter:add_command('', function()
-  Logs.error('Please specify `build`, `install`, `config` or `fonts`')
-end)
-local errmsg = interpreter:exec(...)
-Logs.assert(not errmsg, errmsg)
-]===]
