@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--verbose` flag to `ygofab export` and `ygofab sync`.
 - Warning when user seems to be outside a project folder.
 - Support for custom data when reading card database with `ygofab compose`/`ygopic` or writing them with `ygofab make`. Currently supported columns are `holo`, `setnumber`, `year`, `author`, placed in a table called `custom`.
-- `--holo`, `--locale` and `--verbose` flags to `ygopic`.
+- `--holo`, `--locale`, `--verbose` and `--help` flags to `ygopic`.
 - `-o` flag in `ygofab export` can now also specify an output _pattern_.
 
 ### Changed

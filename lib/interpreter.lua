@@ -1,6 +1,3 @@
-local i18n = require 'i18n'
-
-
 --- Parses and runs commands, as given in `arg`, allowing flags
 --- to be configured
 --- @class Interpreter
@@ -86,14 +83,14 @@ function Interpreter:exec(...)
     elseif node['@'] then
       break
     else
-      return i18n('interpreter.invalid_command', {cmd})
+      return 'invalid_command', cmd
     end
     i = i + 1
     token = tokens[i]
   end
   local command = node['@']
   if not command then
-    return i18n('interpreter.invalid_command', {cmd})
+    return 'invalid_command', cmd
   end
   local args, flags = {}, {}
   local current_flag, rem_f_args = nil, 0
@@ -101,10 +98,10 @@ function Interpreter:exec(...)
     if self.check_flag(token) then
       local flag_v = command.flags[token]
       if not flag_v then
-        return i18n('interpreter.invalid_flag', {token})
+        return 'invalid_flag', token
       end
       if rem_f_args > 0 then
-        return i18n('interpreter.missing_flag_args', {current_flag})
+        return 'missing_flag_args', current_flag
       end
       rem_f_args = flag_v
       current_flag = token
@@ -122,7 +119,7 @@ function Interpreter:exec(...)
     token = tokens[i]
   end
   if rem_f_args > 0 then
-    return i18n('interpreter.missing_flag_args', {current_flag})
+    return 'missing_flag_args', current_flag
   end
   command.fn(flags, unpack(args))
 end

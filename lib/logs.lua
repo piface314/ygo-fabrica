@@ -15,10 +15,12 @@ function Logs.add_post_error_cb(cb)
   table.insert(err_cb, cb)
 end
 
---- Checks if `v` is a true value. If it's not, calls Logs.error
+--- Checks if `v` is a true value. If it is, returns `v`, otherwise calls Logs.error
 --- @param v any
+--- @return any v
 function Logs.assert(v, ...)
   if not v then Logs.error(...) end
+  return v
 end
 
 --- Displays an error message and exits the program with error code 1

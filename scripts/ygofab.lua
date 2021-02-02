@@ -81,5 +81,5 @@ interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,
 interpreter:add_command('', cmd_version, '--version', 0, '-v', 0)
 
 Locale.set(Config.get('locale') or i18n.getFallbackLocale())
-local errmsg = interpreter:exec(...)
-if errmsg then display_help(errmsg) end
+local errmsg, data = interpreter:exec(...)
+if errmsg then display_help(i18n('interpreter.' .. errmsg, {data})) end

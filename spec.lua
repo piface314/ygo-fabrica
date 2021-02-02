@@ -3,19 +3,22 @@ local WIN = package.path:sub(1, 1) == '\\'
 return {
   version = '2.0.0',
   version_name = 'barian-babelico',
-  install_path = {
-    linux = (os.getenv('HOME') or '') .. '/.local/ygofab',
-    windows = (os.getenv('LOCALAPPDATA') or '') .. '\\YGOFabrica'
-  },
-  bin_path = (os.getenv('HOME') or '') .. '/.local/bin',
-  config_path = {
-    linux = (os.getenv('HOME') or '') .. '/.config/ygofab',
-    windows = (os.getenv('APPDATA') or '') .. '\\YGOFabrica'
-  },
-  build_dependencies = {
-    'lua-path',
-    'utf8',
-    'i18n'
+  install_path = WIN and os.getenv('LOCALAPPDATA') .. '\\YGOFabrica'
+                      or os.getenv('HOME')         .. '/.local/ygofab',
+  bin_path     = WIN and os.getenv('LOCALAPPDATA') .. '\\YGOFabrica'
+                      or os.getenv('HOME')         .. '/.local/bin',
+  config_path  = WIN and os.getenv('APPDATA')      .. '\\YGOFabrica'
+                      or os.getenv('HOME')         .. '/.config/ygofab',
+  rocks_tree = 'modules',
+  build = {
+    target = 'ygofabrica-v%{version}',
+    luajit_version = 'LuaJIT-2.1.0-beta3',
+    vips_version = '8.9.2',
+    dependencies = {
+      'lua-path',
+      'utf8',
+      'i18n 0.9.2-1'
+    }
   },
   dependencies = {
     'lsqlite3complete',

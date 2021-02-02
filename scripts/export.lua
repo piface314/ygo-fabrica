@@ -7,6 +7,9 @@ local fun = require 'lib.fun'
 
 local Export = {}
 
+---comment
+---@param fp any
+---@return Zip
 local function create_zip(fp)
   path.mkdir(path.dirname(fp))
   local zipfile, err = Zip.new(fp)
@@ -71,8 +74,9 @@ function Export.export(outpattern, expansions, picsets, verbose)
       local bar = Logs.bar(#files)
       local errors = fun {}
       for _, f in ipairs(files) do
-        bar:update(f[1], verbose and i18n('export.file_srcdst', f))
-        local ok, err = zipfile:add(unpack(f))
+        local src, dst = unpack(f)
+        bar:update(src, verbose and i18n('export.file_srcdst', f))
+        local ok, err = zipfile:add(src, dst)
         if not ok then errors:push(err .. '\n') end
       end
       bar:finish()
