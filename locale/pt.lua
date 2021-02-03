@@ -181,7 +181,8 @@ return {
           cmd4 = {id = 'make', desc = [[Converte cartas descritas em .toml para um .cdb.]]},
           cmd5 = {id = 'new', desc = [[Cria um novo projeto, dado um nome.]]},
           cmd6 = {id = 'sync', desc = [[Copia os arquivos do projeto para o jogo.]]}
-        }
+        },
+        more = 'Para mais informações, vá em https://github.com/piface314/ygo-fabrica/wiki'
       },
       not_in_project = 'Parece que você não está na pasta de um projeto...',
       invalid_command = 'comando inválido'

@@ -1,24 +1,16 @@
 #!/usr/bin/env bash
 install_luajit() {
   if command -v luajit >/dev/null 2>&1; then
-    echo "LuaJIT already installed"
     return 0
   fi
-  echo "Installing LuaJIT"
-  cd ./luajit && make && sudo make install \
-    || ( echo "Failed installing LuaJIT." ; cd .. ; exit 1 ) 
-  cd ..
-}
-
-install_vips() {
-  if command -v vips --version >/dev/null 2>&1; then
-    echo "libvips already installed"
-    return 0
+  if test -d ./luajit; then
+    echo "Using sudo to install LuaJIT"
+    cd ./luajit && make && sudo make install \
+      || ( echo "ERROR: failed installing LuaJIT" ; cd .. ; exit 1 ) 
+    cd ..
   fi
-  echo "Installing libvips"
-  cd ./vips && ./configure && make && sudo make install \
-    || ( echo "Failed installing libvips." ; cd .. ; exit 1 )
-  cd ..
+  echo "ERROR: LuaJIT not found"
+  return 1
 }
 
 install_ygofab() {
@@ -29,16 +21,4 @@ configure_ygofab() {
   luajit make.lua config "$1" || exit 1
 }
 
-install_fonts() {
-  if [[ -d ./fonts ]]; then
-    luajit make.lua fonts || exit 1
-  fi
-}
-
-install_luajit \
-  && install_vips \
-  && install_ygofab \
-  && configure_ygofab "$1" \
-  && install_fonts \
-  && echo "Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use! :D"
-
+install_luajit && install_ygofab && configure_ygofab "$1"

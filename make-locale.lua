@@ -17,7 +17,13 @@ return {
       toml_error = 'failed to adjust toml module',
       release_error = 'failed to create release'
     },
+    install = {
+      ok = 'YGOFabrica has been succesfully installed!',
+      sudo = 'Using sudo to install vips',
+      vips_error = 'failed to install vips'
+    },
     config = {
+      ok = 'YGOFabrica has been succesfully configured!',
       comment = {
         header = 'Global configurations for YGOFabrica',
         gamedir = 'Define one or more `gamedir`s (game directories)',
@@ -43,7 +49,13 @@ return {
       toml_error = 'falha ao ajustar o módulo toml',
       release_error = 'falha ao criar o lançamento'
     },
+    install = {
+      ok = 'YGOFabrica foi instalada com sucesso!',
+      sudo = 'Usando sudo para instalar vips',
+      vips_error = 'falha ao instalar vips'
+    },
     config = {
+      ok = 'YGOFabrica foi configurada com sucesso!',
       comment = {
         header = 'Configurações globais para a YGOFabrica',
         gamedir = 'Defina um ou mais `gamedir`s (pastas do jogo)',

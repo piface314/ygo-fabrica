@@ -3,14 +3,14 @@ package.cpath = './T/lib/lua/5.1/?.so;'
 
 local Spec = require 'spec'
 local Interpreter = require 'lib.interpreter'
-local Logs, i18n
+local Logs, i18n, path
 
 local SEP = package.config:sub(1, 1)
 local WIN = SEP == '\\'
 package.path = package.path:gsub('/', SEP):gsub('T', Spec.rocks_tree)
 package.cpath = package.cpath:gsub('/', SEP):gsub('T', Spec.rocks_tree)
 
-local exec, cp, os_name
+local exec, cp, check_cmd
 
 local cmd_build = {}
 local cmd_install = {}
@@ -51,11 +51,20 @@ endlocal
       return exec('xcopy "%s" "%s" /s/h/e/k/c/y/i', src, dst .. '\\' .. src)
     end
   end
+  function check_cmd(command) return exec('where >nul 2>nul "%s"', command) end
   function cmd_build.luajit()
     -- TODO
   end
   function cmd_build.vips()
     -- TODO
+  end
+  function cmd_install.luajit(base)
+    if check_cmd('luajit') then return end
+    Logs.assert(path.isdir('luajit') and cp('luajit', base), i18n('cp_error', 'luajit'))
+  end
+  function cmd_install.vips(base)
+    if check_cmd('vips') then return end
+    Logs.assert(path.isdir('vips') and cp('vips', base), i18n('cp_error', 'vips'))
   end
 else
   table.insert(cmd_build.file_list, 'install')
@@ -68,10 +77,10 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
 ]]
   function exec(command, ...) return os.execute(command:format(...)) == 0 end
   function cp(src, dst) return exec('cp -ar "%s" "%s"', src, dst) end
+  function check_cmd(command) return exec('command -v "%s" >/dev/null 2>&1', command) end
   function cmd_build.luajit()
-    local path = require 'lib.path'
     table.insert(cmd_build.file_list, 'luajit')
-    if path.exists('luajit') and path.isdir('luajit') then return end
+    if path.isdir('luajit') then return end
     local luajit = Spec.build.luajit_version
     local ok = exec('wget "http://luajit.org/download/%s.tar.gz"', luajit)
       and exec('tar -zxf "%s.tar.gz"', luajit)
@@ -80,9 +89,8 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
     Logs.assert(ok, i18n 'build.luajit_error')
   end
   function cmd_build.vips()
-    local path = require 'lib.path'
     table.insert(cmd_build.file_list, 'vips')
-    if path.exists('vips') and path.isdir('vips') then return end
+    if path.isdir('vips') then return end
     local version = Spec.build.vips_version
     local name = 'vips-' .. version
     local ok = exec('wget "https://github.com/libvips/libvips/releases/download/v%s/%s.tar.gz"', version, name)
@@ -91,9 +99,20 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
       and exec('mv %s ./vips', name)
     Logs.assert(ok, i18n 'build.vips_error')
   end
+  function cmd_install.luajit() end
+  function cmd_install.vips()
+    if check_cmd('vips') then return end
+    local errmsg = i18n 'install.vips_error'
+    Logs.assert(path.isdir('vips'), errmsg)
+    Logs.warning(i18n 'install.sudo')
+    Logs.assert(exec 'cd vips', errmsg)
+    local ok = exec './configure && make && sudo make install'
+    exec 'cd ..'
+    Logs.assert(ok, errmsg)
+  end
 end
 
-local function chmod(fp) return not WIN or exec('chmod +x "%s"', fp) end
+local function chmod(fp) return WIN or exec('chmod +x "%s"', fp) end
 
 local function read(fp)
   local f, e = io.open(fp, 'r')
@@ -111,14 +130,16 @@ local function write(fp, content)
   return true
 end
 
-local function require_missing(locale)
+local function require_missing(locale_f)
   local ok
   ok, Logs = pcall(require, 'lib.logs')
+  if not ok then return false end
+  ok, path = pcall(require, 'path')
   if not ok then return false end
   i18n = require 'i18n'
   i18n.loadFile('make-locale.lua')
   i18n.setFallbackLocale('en')
-  i18n.setLocale(locale)
+  i18n.setLocale(locale_f and locale_f[1] or 'en')
   return true
 end
 
@@ -130,11 +151,12 @@ function cmd_build.run(flags)
   cmd_build.adjust_toml()
   cmd_build.spec()
   if flags['-r'] or flags['--release'] then
-    if not flags['--slim'] then
+    local slim = flags['--slim']
+    if not slim then
       cmd_build.luajit()
       cmd_build.vips()
     end
-    cmd_build.release()
+    cmd_build.release(slim)
   end
   Logs.ok(i18n 'build.ok')
 end
@@ -200,12 +222,16 @@ function cmd_build.spec()
   return write('lib/version.lua', info)
 end
 
-function cmd_build.release()
-  local path = require 'path'
+function cmd_build.release(slim)
   local target = Spec.build.target
     :gsub('%%{version}', Spec.version)
   local build_fp = path.join('build', target)
   Logs.assert(path.mkdir(build_fp), i18n('mkdir_error', {build_fp}))
+  local files = cmd_build.file_list
+  if not slim then
+    files[#files + 1] = 'luajit'
+    files[#files + 1] = 'vips'
+  end
   for _, fp in ipairs(cmd_build.file_list) do
     Logs.assert(cp(fp, build_fp, path.isfile(fp)), i18n('cp_error', {fp}))
   end
@@ -223,19 +249,21 @@ end
 
 function cmd_install.run(flags, base)
   assert(require_missing(flags['--locale']))
+  base = base or Spec.install_path
   cmd_install.base(base)
   cmd_install.fonts()
   cmd_install.copy(base)
+  cmd_install.luajit(base)
+  cmd_install.vips(base)
   cmd_install.bins(base)
+  Logs.ok(i18n 'install.ok')
 end
 
 function cmd_install.base(base)
-  local path = require 'path'
   Logs.assert(path.mkdir(base), i18n('mkdir_error', {base}))
 end
 
 function cmd_install.fonts()
-  local path = require 'path'
   if path.isdir('fonts') then
     local target = path.join('res', 'composer', 'fonts')
     Logs.assert(cp('fonts', target), i18n('cp_error', {'fonts'}))
@@ -243,17 +271,13 @@ function cmd_install.fonts()
 end
 
 function cmd_install.copy(base)
-  local path = require 'lib.path'
   base = base or Spec.install_path
   for _, fp in ipairs(cmd_install.file_list) do
     Logs.assert(cp(fp, base, path.isfile(fp)), i18n('cp_error', {fp}))
   end
-  Logs.assert(not path.exists('luajit') or cp('luajit', base), i18n('cp_error', 'luajit'))
-  Logs.assert(not path.exists('vips') or cp('vips', base), i18n('cp_error', 'vips'))
 end
 
 function cmd_install.bins(base)
-  local path = require 'path'
   local bins = {'ygofab', 'ygopic'}
   local ext = WIN and '.cmd' or ''
   for _, bin in ipairs(bins) do
@@ -267,7 +291,6 @@ end
 function cmd_config.run(flags, gamepath)
   local locale = flags['--locale']
   assert(require_missing(locale))
-  local path = require 'path'
   local config = [[
 # %s
 locale = '%s'
@@ -289,6 +312,7 @@ field = true
     i18n 'config.comment.gamedir', gamepath or '', i18n 'config.comment.picset')
   Logs.assert(path.mkdir(Spec.config_path), i18n('mkdir_error', {Spec.config_path}))
   Logs.assert(write(path.join(Spec.config_path, 'config.toml'), config), i18n 'config.error')
+  Logs.ok(i18n 'config.ok')
 end
 
 local interpreter = Interpreter.new()

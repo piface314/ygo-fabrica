@@ -20,6 +20,7 @@ local function display_help(msg)
   Logs.assert(not msg, msg, '\n', unpack(usage))
   print_header()
   Logs.info(unpack(usage))
+  Logs.info('\n', i18n 'ygofab.usage.more')
 end
 
 local function add_project_warning()
