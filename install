@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+locale=$(locale | grep LANGUAGE | cut -d= -f2 | cut -d_ -f1)
+
+# TODO: let user install luajit and vips with their appropriate package manager
+
 install_luajit() {
   if command -v luajit >/dev/null 2>&1; then
     return 0
@@ -6,7 +10,7 @@ install_luajit() {
   if test -d ./luajit; then
     echo "Using sudo to install LuaJIT"
     cd ./luajit && make && sudo make install \
-      || ( echo "ERROR: failed installing LuaJIT" ; cd .. ; exit 1 ) 
+      || ( echo "ERROR: failed installing LuaJIT" ; cd .. ; exit 1 )
     cd ..
   fi
   echo "ERROR: LuaJIT not found"
@@ -14,11 +18,11 @@ install_luajit() {
 }
 
 install_ygofab() {
-  luajit make.lua install || exit 1
+  luajit make.lua install --locale $locale || exit 1
 }
 
 configure_ygofab() {
-  luajit make.lua config "$1" || exit 1
+  luajit make.lua config "$1" --locale $locale || exit 1
 }
 
 install_luajit && install_ygofab && configure_ygofab "$1"

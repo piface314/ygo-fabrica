@@ -5,12 +5,10 @@ local Schema = require 'scripts.config.schema'
 local Logs = require 'lib.logs'
 local i18n = require 'i18n'
 
-local Config = {groups = {from_flag = {}}}
-
-local HOME =
-  path.IS_WINDOWS and path.join(os.getenv('APPDATA'), 'YGOFabrica') or
-    path.join(os.getenv('HOME'), '.config', 'ygofab')
-Config.GLOBAL_FP = path.join(HOME, 'config.toml')
+local Config = {
+  groups = {from_flag = {}},
+  GLOBAL_FP = path.gcjoin('config.toml')
+}
 
 local function un_mt(t) return setmetatable(t, nil) end
 

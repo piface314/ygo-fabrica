@@ -308,7 +308,7 @@ size = '256x'
 ext = 'jpg'
 field = true
 ]]
-  config = config:format(i18n 'config.comment.header', locale or 'en',
+  config = config:format(i18n 'config.comment.header', locale and locale[1] or 'en',
     i18n 'config.comment.gamedir', gamepath or '', i18n 'config.comment.picset')
   Logs.assert(path.mkdir(Spec.config_path), i18n('mkdir_error', {Spec.config_path}))
   Logs.assert(write(path.join(Spec.config_path, 'config.toml'), config), i18n 'config.error')
