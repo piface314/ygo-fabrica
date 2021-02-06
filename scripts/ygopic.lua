@@ -49,5 +49,6 @@ interpreter:add_command('', run, '--size', 1, '--ext', 1, '--artsize', 1, '--yea
 
 Locale.set(Config.get('locale'))
 local errmsg, data = interpreter:exec(...)
-assert_help(not errmsg, i18n('interpreter.' .. errmsg, {data}))
+if not errmsg then return end
+assert_help(false, i18n('interpreter.' .. errmsg, {data}))
 

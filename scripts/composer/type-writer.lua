@@ -36,7 +36,7 @@ local function prepare_text(text)
   if not text then return nil end
   if type(text) ~= 'string' then text = tostring(text) end
   if is_empty(text) then return nil end
-  return expand_markup(text)
+  return '<span insert_hyphens="false">' .. expand_markup(text) .. '</span>'
 end
 
 local function paint_insert(t, base, color, x, y)
