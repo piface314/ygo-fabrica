@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internationalization in program interface, `ygofab make` and `ygofab compose`.
 - `locale` general configuration.
 - `locale` configuration in `picset` and `expansion`.
+- `--locale` flag in `make.lua` (installer).
+- Currently, only `en` and `pt` are the supported languages, but you can add custom locales. 
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in `proxy` mode.
 - Support for custom counters in `ygofab sync` and `ygofab make`.
 - `--verbose` flag to `ygofab export` and `ygofab sync`.
@@ -25,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
 - `--clean` flag in `ygofab make` renamed to `--overwrite` or `-ow`.
 - Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
-- Correct ot codes and categories for EDOPro.
+- Correct OT codes and categories for EDOPro.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.
@@ -36,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `--clean`, `--no-pics`, `--no-script` and `--no-exp` flags from `ygofab sync`.
 - `luafilesystem` dependency.
+- `fonts` command in `make.lua`. Fonts are now copied when `luajit make.lua install` is used.
 
 ## [2.0.0] - Barian Babélico // 2021-??-??
 
