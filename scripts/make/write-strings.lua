@@ -2,60 +2,61 @@ local Logs = require 'lib.logs'
 local i18n = require 'i18n'
 local fun = require 'lib.fun'
 
-local STRING_KEYS = fun {setname = true, counter = true}
+local STRING_KEYS = {setname = true, counter = true}
 --- Reads a `string.conf` file and gets its content as a table
 --- @param fp string
 --- @return Fun
 local function get_string_lines_from_file(fp)
   local src = io.open(fp)
   if not src then return end
-  local lines = STRING_KEYS:map(fun '_ -> {}')
+  local lines = fun.iter(STRING_KEYS):map(function(k) return k, {} end):tomap()
   for line in src:lines() do
     local key, code, val = line:match('^%s*!(%w+)%s+(0x%x+)%s*(.-)%s*$')
     code = tonumber(code)
-    if lines(key) then
-      lines(key)[code] = val
+    if lines[key] then
+      lines[key][code] = val
     end
   end
   src:close()
   return lines
 end
 
-local fmt_line = fun '... -> ("!%s 0x%04x %s\\n"):format(...)'
+local fmt_line = function(...) return ('!%s 0x%04x %s\n'):format(...) end
 --- Formats the string lines as table into a proper single string
 --- @param rlines table
 --- @return string
 local function fmt_lines(rlines)
-  local wlines = fun {}
+  local wlines = {}
   for key, t in pairs(rlines) do
     for code, val in pairs(t) do
-      wlines:push(fmt_line(key, code, val))
+      table.insert(wlines, fmt_line(key, code, val))
     end
   end
-  return wlines:reduce('', fun 'a, s -> a .. s')
+  return table.concat(wlines)
 end
 
 --- Reads a file and merges its string lines with `rlines`.
 --- `rlines` overwrites values from the source file.
 --- Returns a single formatted string
 --- @param fp string
---- @param rlines Fun
+--- @param rlines table
 --- @return string
 local function merge_lines_with_file(fp, rlines)
   local f, wlines = io.open(fp), ''
   if f then
-    wlines = fun(f:lines())
-      :map(fun 'l -> {l, l:match("^%s*!(%w+)%s+(0x%x+).*$")}')
-      :map(function(t)
-        local line, key, code = t[1], t[2], tonumber(t[3])
-        local val = rlines(key) and rlines(key)[code]
+    wlines = fun.iter(f:lines())
+      :map(function(l) return l, l:match("^%s*!(%w+)%s+(0x%x+).*$") end)
+      :map(function(line, key, code)
+        code = tonumber(code)
+        local val = rlines[key] and rlines[key][code]
         if val then
-          rlines(key)[code] = nil
+          rlines[key][code] = nil
           return fmt_line(key, code, val)
         else
           return line .. '\n'
         end
-      end):reduce('', fun 'a, s -> a .. s')
+      end):totable()
+    wlines = table.concat(wlines)
     f:close()
   end
   return wlines .. fmt_lines(rlines)
@@ -63,12 +64,12 @@ end
 
 --- Converts string data obtained from .toml files into an appropriate
 --- table format
---- @param strings Fun
---- @return Fun
+--- @param strings table
+--- @return table
 local function get_string_lines(strings)
-  return strings:map(function(entries)
-      return fun(entries):hashmap(fun 'e -> tonumber(e.code), e.name')
-    end):filter(fun 'g -> next(g) ~= nil')
+  return fun.iter(strings):map(function(_, entries)
+    return fun.iter(entries):map(function(_, e) return tonumber(e.code), e.name end):tomap()
+  end):filter(function(g) return next(g) ~= nil end):totable()
 end
 
 --- Merges the strings found in a source `strings.conf` file into a destination

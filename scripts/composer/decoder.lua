@@ -20,19 +20,18 @@ local vips = require 'vips'
 local Decoder = {}
 Decoder.__index = Decoder
 
-local bad_mode = fun 't -> {arg="mode",caller="Decoder.new",exp="string",got=t}'
-local bad_states = fun 't -> {arg="states",caller="Decoder.new",exp="table",got=t}'
-local bad_state = fun 't -> {arg="state",caller="Decoder.add_state",exp="function",got=t}'
-local bad_base = fun 't -> {arg="base",caller="Decoder.set_base",exp="Image",got=t}'
+local function badarg_t(a, c, e, g) return {arg = a, caller = c, exp = e, got = g} end
+local function bad_mode(t) return badarg_t('mode', 'Decoder.new', 'string', t) end
+local function bad_states(t) return badarg_t('states', 'Decoder.new', 'table', t) end
+local function bad_state(t) return badarg_t('state', 'Decoder.add_state', 'function', t) end
+local function bad_base(t) return badarg_t('base', 'Decoder.set_base', 'Image', t) end
 local nil_state_id = i18n('nil_argument', {arg = 'state_id', caller = 'Decoder.add_state'})
 
 local function check_transition(state, transition)
-  if transition[1] or type(transition[2]) ~= 'string' then
-    return true
-  end
+  if transition[1] or type(transition[2]) ~= 'string' then return true end
   local ok, errmsg = pcall(i18n, transition[2], transition[3])
   errmsg = ok and i18n('compose.decoder.error', {state}) .. errmsg
-    or i18n('compose.decoder.unknown_error', {state})
+             or i18n('compose.decoder.unknown_error', {state})
   return false, errmsg
 end
 
@@ -54,18 +53,14 @@ function Decoder.new(mode, base, initial_state, states)
   local d = setmetatable({mode = mode, states = {}}, Decoder)
   if states then
     Logs.assert(t_states == 'table', i18n('bad_argument', bad_states(t_states)))
-    for state_id, state in pairs(states) do
-      d:add_state(state_id, state)
-    end
+    for state_id, state in pairs(states) do d:add_state(state_id, state) end
   end
   if base then d:set_base(base) end
   if initial_state then d:set_inital(initial_state) end
   return d
 end
 
-function Decoder:__tostring()
-  return ('%s@Decoder'):format(self.mode)
-end
+function Decoder:__tostring() return ('%s@Decoder'):format(self.mode) end
 
 --- Sets a base Image that will be placed below `Layer`s
 --- @param base Image
@@ -92,24 +87,23 @@ end
 --- Sets which state is the initial state
 --- @param state_id any
 function Decoder:set_inital(state_id)
-  Logs.assert(self.states[state_id], i18n('compose.decoder.state_key_err', {state_id}))
+  Logs.assert(self.states[state_id],
+    i18n('compose.decoder.state_key_err', {state_id}))
   self.initial = state_id
 end
 
 --- Sets which locale should be used when decoding and rendering cards
 --- @param locale string
-function Decoder:set_locale(locale)
-  self.locale = locale
-end
+function Decoder:set_locale(locale) self.locale = locale end
 
 --- Turns a `card` into a list of `Layer`s
 --- @param card CardData
 --- @param options table
---- @return Fun
+--- @return Layer[]
 function Decoder:decode(card, options)
   local locale = Locale.get()
   local state_id = self.initial
-  local state, layers = self.states[state_id], fun {}
+  local state, layers = self.states[state_id], {}
   while state do
     Locale.set(self.locale)
     local transition = {state(card, options)}
@@ -119,7 +113,7 @@ function Decoder:decode(card, options)
     for i = 2, #transition do
       local layer, errmsg = check_layer(state_id, i, transition[i])
       if not layer then return nil, errmsg end
-      layers:push(layer)
+      table.insert(layers, layer)
     end
     state_id = transition[1]
     state = self.states[state_id]
@@ -128,12 +122,12 @@ function Decoder:decode(card, options)
 end
 
 --- Reduces a list of `Layer`s into a single card image
---- @param layers Fun
+--- @param layers Layer[]
 --- @return Image
 function Decoder:render(layers)
   local locale = Locale.get()
   Locale.set(self.locale)
-  local image = layers:reduce(self.base, function (img, layer)
+  local image = fun.iter(layers):reduce(self.base, function(img, layer)
     return img:composite(layer:render(), 'over')
   end)
   Locale.set(locale)

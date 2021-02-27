@@ -115,13 +115,15 @@ return Decoder('proxy', Shapes.BASE, 'frame', {
   end,
   def = function(card) return 'atk', Layer(Shapes.DEF, card.def) end,
   atk = function(card) return 'monster_desc', Layer(Shapes.ATK, card.atk) end,
-  monster_desc = function(card, opts)
+  monster_desc = function(card)
     local is_token = Parser.bcheck(card.type, types.TOKEN)
     local normal = not is_token and types.NORMAL or nil
-    local desc = fun {get_race(card), get_sumtype(card)}:vals() .. fun {
+    local prefix = {get_race(card), get_sumtype(card)}
+    local typedesc = fun.iter {
       types.PENDULUM, types.FLIP, types.GEMINI, types.GEMINI, types.SPIRIT,
       types.TOON, types.UNION, types.TUNER, types.EFFECT, normal
-    }:map(function(t) return get_desc_label(card, t) end):vals()
+    }:map(function(t) return get_desc_label(card, t) end)
+    local desc = fun.chain(prefix, typedesc):totable()
     return 'monster_text', Layer(Shapes.MONSTER_DESC, desc)
   end,
   monster_text = function(card)

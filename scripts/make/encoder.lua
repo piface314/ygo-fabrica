@@ -30,7 +30,7 @@ local generics = {
   end
 }
 
-local encode = fun {
+local encode = {
   id = generics.number('id'),
   ot = generics.combined('ot'),
   alias = generics.number('alias'),
@@ -128,11 +128,12 @@ end
 --- Encodes card data from .toml into .cdb entries
 --- @param cards table
 --- @param sets table
---- @return Fun
+--- @return CardData[]
 function Encoder.encode(cards, sets)
-  return fun(cards):vals():map(function(card)
-    return encode:map(function(e) return e(card, sets) end)
-  end)
+  local enc = fun.iter(encode)
+  return fun.iter(cards):map(function(_, card)
+    return enc:map(function(k, e) return k, e(card, sets) end):tomap()
+  end):totable()
 end
 
 return Encoder

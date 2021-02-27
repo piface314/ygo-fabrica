@@ -10,8 +10,6 @@ local Config = {
   GLOBAL_FP = path.gcjoin('config.toml')
 }
 
-local function un_mt(t) return setmetatable(t, nil) end
-
 local cache = {}
 local function load_file(fp)
   if cache[fp] then return cache[fp] end
@@ -43,7 +41,7 @@ function Config.get(cfg, ...)
     key = {...}
   else
     key = {cfg, ...}
-    cfg = un_mt(fun {}:merge(Config.load()))
+    cfg = table.merge(Config.load())
   end
   for _, k in ipairs(key) do
     if type(cfg) == 'table' then
@@ -55,7 +53,8 @@ function Config.get(cfg, ...)
   return cfg
 end
 
-local function key(...) return table.concat({...}, '.') end
+local key = function(...) return table.concat({...}, '.') end
+local default_f = function(_, g) return g.default end
 
 --- Gets many configuration values. If `default` is `true`, then
 --- every default value is returned. If `all` is `true`, all values
@@ -71,7 +70,7 @@ local function key(...) return table.concat({...}, '.') end
 function Config.groups.get_many(all, default, ...)
   local groups = Config.get(...)
   if default then
-    return un_mt(fun(groups):filter(fun 'g -> g.default'))
+    return fun.iter(groups):filter(default_f):tomap()
   elseif all then
     return groups
   else
@@ -80,7 +79,7 @@ function Config.groups.get_many(all, default, ...)
 end
 
 local function first_default(gs)
-  return next(fun(gs):filter(fun 'g -> g.default'))
+  return next(fun.iter(gs):filter(default_f):tomap())
 end
 
 --- Gets one specific configuration, or looks for a default one,

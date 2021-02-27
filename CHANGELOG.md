@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - Barian Babélico // 2021-02-??
 ### Added
 - Internationalization in program interface, `ygofab make` and `ygofab compose`.
 - `locale` general configuration.
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
 - Default binaries location changed from `/usr/local/bin` to `$HOME/.local/bin` for Linux, to avoid using `sudo`.
+- Default install location changed from `C:\Program Files\YGOFabrica` to `%LOCALAPPDATA%\YGOFabrica` for Windows, to avoid the need of running the installer as admin.
+- Global configurations location changed from `%USERPROFILE%\ygofab` to `%APPDATA%\YGOFabrica` for Windows.
 - More detailed output in `ygofab config`.
 - `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
@@ -39,8 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--clean`, `--no-pics`, `--no-script` and `--no-exp` flags from `ygofab sync`.
 - `luafilesystem` dependency.
 - `fonts` command in `make.lua`. Fonts are now copied when `luajit make.lua install` is used.
-
-## [2.0.0] - Barian Babélico // 2021-??-??
 
 ## [1.0.2] - Artefato Astral // 2020-06-23
 ### Fixed

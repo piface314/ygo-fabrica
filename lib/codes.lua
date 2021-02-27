@@ -129,15 +129,15 @@ local Codes = {
   }
 }
 
-local normalize = fun 's -> s:gsub("[-_]", ""):lower()'
+local normalize = function(s) return s:gsub('[-_]', ''):lower() end
 
-local rev_index = fun(Codes.const):map(function(group)
-    return fun(group):hashmap(fun 'v, k -> v, k')
-  end)
+local rev_index = fun.iter(Codes.const):map(function(k, group)
+  return k, fun.iter(group):map(function(k, v) return v, k end):tomap()
+end):tomap()
 
-local norm_index = fun(Codes.const):map(function(group)
-    return fun(group):hashmap(function(v, k) return normalize(k), v end)
-  end)
+local norm_index = fun.iter(Codes.const):map(function(k, group)
+  return k, fun.iter(group):map(function(k, v) return normalize(k), v end):tomap()
+end):tomap()
 
 --- @alias CodeGroupKey "'attribute'"|"'category'"|"'link'"|"'ot'"|"'race'"|"'type'"
 
@@ -150,9 +150,9 @@ local norm_index = fun(Codes.const):map(function(group)
 --- @param sub? string
 --- @return string|nil
 function Codes.i18n(group_key, code, sub)
-  local group = rev_index(group_key)
+  local group = rev_index[group_key]
   if not group then return end
-  local partial_key = group(code)
+  local partial_key = group[code]
   if not partial_key then return end
   sub = sub and '.' .. sub or ''
   return i18n('codes.' .. group_key .. '.' .. partial_key .. sub)
@@ -164,13 +164,11 @@ end
 --- @param keys string
 --- @return number
 function Codes.combine(group_key, keys)
-  local group = norm_index(group_key)
+  local group = norm_index[group_key]
   if not group then return 0 end
-  return fun(keys:gmatch('[%a-_]+'))
-    :map(normalize)
-    :reduce(0, function (c, key)
-      return bit.bor(c, group(key) or 0)
-    end)
+  return fun.iter(keys:gmatch '[%a-_]+'):map(normalize):reduce(0, function(c, key)
+    return bit.bor(c, group[key] or 0)
+  end)
 end
 
 return Codes

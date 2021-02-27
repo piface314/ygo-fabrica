@@ -1,5 +1,4 @@
 local Codes = require 'lib.codes'
-local fun = require 'lib.fun'
 
 --- Groups helper functions to parse card data
 local Parser = {}
@@ -40,13 +39,13 @@ end
 
 --- Returns a list with each set bit in `n`
 --- @param n number
---- @return Fun
+--- @return number[]
 function Parser.bits(n)
-  local bits = fun {}
+  local bits = {}
   local b = 1
   while n > 0 do
     if Parser.bcheck(n, 1) then
-      bits:push(b)
+      table.insert(bits, b)
     end
     n = bit.rshift(n, 1)
     b = bit.lshift(b, 1)
@@ -67,12 +66,12 @@ end
 
 --- Returns card Level/Rank/Link Rating
 --- @param card CardData
---- @return any
+--- @return number
 function Parser.get_level(card) return bit.band(card.level, 0x0000FFFF) end
 
 --- Returns card Link Arrows
 --- @param card CardData
---- @return any
+--- @return number
 function Parser.get_link_arrows(card) return bit.band(card.def, Codes.const.link.ALL) end
 
 local PEND_DESC_PAT = '^%s*%[.-%]%s*(.-)%s*[-_][-_][-_]+%s*%[.-%]%s*(.-)%s*$'

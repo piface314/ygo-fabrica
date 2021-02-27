@@ -3,7 +3,6 @@ local Composer = require 'scripts.composer'
 local Config = require 'scripts.config'
 local Logs = require 'lib.logs'
 local i18n = require 'i18n'
-local fun = require 'lib.fun'
 
 return function(flags)
   local imgfolder = path.join('artwork')
@@ -16,7 +15,7 @@ return function(flags)
     for eid, exp in pairs(exps) do
       Logs.info(i18n('compose.status', {picset, eid}))
       local cdbfp = path.join('expansions', eid .. '.cdb')
-      local options = setmetatable(fun(pscfg):copy(), nil)
+      local options = table.deepcopy(pscfg)
       options.holo = options.holo == false and 0 or 1
       options.locale = options.locale or exp.locale
       Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, options)

@@ -1,3 +1,4 @@
+require 'lib.table'
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
 local Version = require 'lib.version'
@@ -10,14 +11,15 @@ local fun = require 'lib.fun'
 local function print_header() Logs.info(require 'lib.header') end
 
 local function display_help(msg)
-  local commands = fun(1, 6)
-    :map(fun 'i -> "ygofab.usage.commands.cmd" .. i')
+  local commands = fun.range(1, 6)
+    :map(function(i) return 'ygofab.usage.commands.cmd' .. i end)
     :map(function(k) return {'  ' .. i18n(k .. '.id') .. '  ', i18n(k .. '.desc')} end)
+    :totable()
   local usage = {
     i18n 'ygofab.usage.header', '\n  ', i18n 'ygofab.usage.cmd', '\n\n',
     i18n 'ygofab.usage.commands.header', '\n', unpack(Logs.tabular({0, 0}, commands))
   }
-  Logs.assert(not msg, msg, '\n', unpack(usage))
+  if msg then Logs.error(msg, '\n', unpack(usage)) end
   print_header()
   Logs.info(unpack(usage))
   Logs.info('\n', i18n 'ygofab.usage.more')

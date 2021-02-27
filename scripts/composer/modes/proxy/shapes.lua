@@ -6,7 +6,6 @@ local vips = require 'vips'
 local path = require 'lib.path'
 local Codes = require 'lib.codes'
 local i18n = require 'i18n'
-local fun = require 'lib.fun'
 
 local types = Codes.const.type
 
@@ -32,7 +31,7 @@ local function best_layout(ref, layouts)
   return best, layouts[best]
 end
 
-local fmt_sc = fun 'sc -> ("<t=-14>%d</>"):format(sc)'
+local fmt_sc = function(sc) return ('<t=-14>%d</>'):format(sc) end
 
 local setnumber_keys = {
   [0] = 'regular',

@@ -24,7 +24,7 @@ end
 --- @param files Fun
 --- @return Fun
 function DataFetcher.get(files)
-  return fun {}:merge(unpack(files:map(read_file)))
+  return table.merge(fun.iter(files):map(read_file):unpack())
 end
 
 return DataFetcher

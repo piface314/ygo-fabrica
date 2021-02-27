@@ -7,8 +7,7 @@ local fun = require 'lib.fun'
 
 local Export = {}
 
----comment
----@param fp any
+---@param fp string
 ---@return Zip
 local function create_zip(fp)
   path.mkdir(path.dirname(fp))
@@ -27,9 +26,10 @@ local function get_output(outpattern, exp, picset)
 end
 
 local function scan_dir(dir, pattern, out)
-  return fun(path.each(dir .. path.DIR_SEP))
+  return fun.iter(path.each(dir .. path.DIR_SEP))
     :filter(function(fp) return path.basename(fp):match(pattern) end)
     :map(function(fp) return {fp, path.join(out, path.basename(fp))} end)
+    :totable()
 end
 
 local function scan_scripts()
@@ -52,12 +52,12 @@ end
 local function get_expansion_file(eid)
   local exp = eid .. '.cdb'
   local fp = path.join('expansions', exp)
-  return fun {{fp, fp}}
+  return {{fp, fp}}
 end
 
 local function get_strings_file(eid)
   local fp = path.join('expansions', eid .. '-strings.conf')
-  return fun {{fp, fp}}
+  return {{fp, fp}}
 end
 
 function Export.export(outpattern, expansions, picsets, verbose)
@@ -69,15 +69,14 @@ function Export.export(outpattern, expansions, picsets, verbose)
     for pid, picset in pairs(picsets) do
       Logs.info(i18n('export.status', {eid, pid}))
       local zipfile = create_zip(get_output(outpattern, eid, pid))
-      local files = fun {exp_file, str_file, scripts, scan_pics(pid, picset)}
-                      :reduce(fun {}, fun 'a, b -> a .. b')
+      local files = fun.chain(exp_file, str_file, scripts, scan_pics(pid, picset)):totable()
       local bar = Logs.bar(#files)
-      local errors = fun {}
+      local errors = {}
       for _, f in ipairs(files) do
         local src, dst = unpack(f)
         bar:update(src, verbose and i18n('export.file_srcdst', f))
         local ok, err = zipfile:add(src, dst)
-        if not ok then errors:push(err .. '\n') end
+        if not ok then table.insert(errors, err .. '\n') end
       end
       bar:finish()
       if #errors > 0 then

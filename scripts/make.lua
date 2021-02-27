@@ -12,11 +12,9 @@ local function get_expansions(all, id)
   return Config.groups.from_flag.get_many('expansion', all or id and {id})
 end
 
---- @param recipe table
---- @return Fun
 local function get_files(recipe)
   Logs.assert(type(recipe) == 'table', i18n 'make.recipe_not_list')
-  return fun(recipe):copy()
+  return table.copy(recipe)
 end
 
 local key_to_string = {counter = 'counter', set = 'setname'}
@@ -32,9 +30,9 @@ return function(flags, exp)
     local files = get_files(expansion.recipe)
     local data = DataFetcher.get(files)
     local cards = Parser.parse(data, 'card')
-    local strings = fun {'set', 'counter'}:hashmap(function(key)
-      return key_to_string[key], Parser.parse(data, key)
-    end)
+    local strings = fun.iter(key_to_string):map(function(ink, outk)
+      return outk, Parser.parse(data, ink)
+    end):tomap()
     Encoder.set_locale(expansion.locale or i18n.getLocale())
     local entries = Encoder.encode(cards, strings.setname)
     Writer.write_strings(strfp, strings, overwrite)

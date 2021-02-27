@@ -1,5 +1,6 @@
 local path = require 'lib.path'
 local Codes = require 'lib.codes'
+local fun = require 'lib.fun'
 
 local Writer = {
   merge_strings = require 'scripts.make.write-strings'.merge,
@@ -25,24 +26,24 @@ local function is_spell_trap(t)
   return bit.band(t, types.SPELL + types.TRAP) ~= 0
 end
 --- Writes script file templates if a script file doesn't exist already
---- @param entries Fun
+--- @param entries CardData[]
 function Writer.write_scripts(entries)
-  entries:map(function(e)
-    return {e, path.join('script', ('c%d.lua'):format(e.id))}
-  end):filter(function(t) return not path.exists(t[2]) end)
-  :foreach(function(t)
-    local entry, fp, script = t[1], t[2], nil
-    if is_effect_monster(entry.type) then
-      script = script_template:format(entry.name, '-- effects')
-    elseif is_spell_trap(entry.type) then
-      script = script_template:format(entry.name, st_activate)
-    else return end
-    local f = io.open(fp, 'w')
-    if f then
-      f:write(script, '\n')
-      f:close()
-    end
-  end)
+  fun.iter(entries)
+    :map(function(e) return e, path.join('script', ('c%d.lua'):format(e.id)) end)
+    :filter(function(_, fp) return not path.exists(fp) end)
+    :each(function(entry, fp)
+      local script
+      if is_effect_monster(entry.type) then
+        script = script_template:format(entry.name, '-- effects')
+      elseif is_spell_trap(entry.type) then
+        script = script_template:format(entry.name, st_activate)
+      else return end
+      local f = io.open(fp, 'w')
+      if f then
+        f:write(script, '\n')
+        f:close()
+      end
+    end)
 end
 
 return Writer

@@ -12,14 +12,12 @@ Layer.__index = Layer
 --- @param shape function
 --- @return Layer
 function Layer.new(shape, ...)
-  return setmetatable({shape = shape, values = fun {...}}, Layer)
+  return setmetatable({shape = shape, values = {...}}, Layer)
 end
 
 --- Returns a string representation of a `Layer`
 function Layer:__tostring()
-  local s = table.concat(self.values:map(function (v)
-    return tostring(v)
-  end), ',')
+  local s = table.concat(fun.iter(self.values):map(tostring):totable(), ',')
   return ('%s(%s)'):format(self.shape, s)
 end
 

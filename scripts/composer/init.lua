@@ -10,29 +10,30 @@ local Composer = {}
 --- @type Decoder
 local field_decoder = require 'scripts.composer.field-decoder'
 
-local modes = fun(path.each(path.prjoin('scripts', 'composer', 'modes', '')))
+local modes = fun.iter(path.each(path.prjoin('scripts', 'composer', 'modes', '')))
   :map(function(fp) return dofile(path.join(fp, 'decoder.lua')) end)
-  :hashmap(fun 'd -> d.mode, d')
+  :map(function(d) return d.mode, d end)
+  :tomap()
 
 --- Returns the `Decoder` of the specified mode
 --- @param mode string
 --- @return Decoder
 local function get_mode(mode)
-  local decoder = modes(mode)
+  local decoder = modes[mode]
   Logs.assert(decoder, i18n('compose.unknown_mode', {mode}))
   return decoder
 end
 
 local function show_layers(card, layers)
   local label = card.id
-  local sl = layers:map(fun 'l -> tostring(l)')
+  local sl = fun.iter(layers):map(tostring):totable()
   local s = table.concat(sl, '\n'  .. (' '):rep(#label + 2) .. ', ')
   return ('%s: [ %s ]'):format(label, s)
 end
 
 local function decode(decoder, cards, options)
   local bar, prelabel = Logs.bar(#cards), nil
-  local cards_layered = cards:map(function(card)
+  local cards_layered = fun.iter(cards):map(function(card)
     local id = card.id
     bar:update(i18n('compose.decoding', {id}), prelabel)
     prelabel = nil
@@ -44,31 +45,31 @@ local function decode(decoder, cards, options)
       prelabel = show_layers(card, layers)
     end
     return {id, layers, field_l}
-  end):filter(fun 't -> t[2]')
+  end):filter(function(t) return t[2] end):totable()
   bar:finish(i18n 'compose.done', prelabel)
   return cards_layered
 end
 
-local function render(decoder, cards_layered)
-  local bar = Logs.bar(#cards_layered)
-  local pics = cards_layered:map(function(t)
+local function render(decoder, cards)
+  local bar = Logs.bar(#cards)
+  local pics = fun.iter(cards):map(function(t)
     local id, layers, field_l = unpack(t)
     bar:update(i18n('compose.rendering', {id}))
     local field_pic = field_l and field_decoder:render(field_l)
     return {id, decoder:render(layers), field_pic}
-  end)
+  end):totable()
   bar:finish(i18n 'compose.done')
   return pics
 end
 
 local function print_pics(pics)
   local bar = Logs.bar(#pics)
-  pics:foreach(function(t)
+  for _, t in ipairs(pics) do
     local id, pic, field_pic = unpack(t)
     bar:update(i18n('compose.printing', {id}))
     Printer.print(id, pic)
     Printer.print_field(id, field_pic)
-  end)
+  end
   bar:finish(i18n 'compose.done')
 end
 

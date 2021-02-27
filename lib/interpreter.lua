@@ -7,7 +7,6 @@ Interpreter.__index = Interpreter
 
 Interpreter.flag_prefixes = {'%-%-', '%-'}
 
-local insert = table.insert
 local unpack = unpack or table.unpack
 
 --- Creates a new instance of `Interpreter`
@@ -107,13 +106,13 @@ function Interpreter:exec(...)
       current_flag = token
       flags[current_flag] = {}
     elseif current_flag then
-      insert(flags[current_flag], token)
+      table.insert(flags[current_flag], token)
       rem_f_args = rem_f_args - 1
       if rem_f_args == 0 then
         current_flag = nil
       end
     else
-      insert(args, token)
+      table.insert(args, token)
     end
     i = i + 1
     token = tokens[i]
