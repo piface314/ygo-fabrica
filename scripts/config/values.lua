@@ -109,7 +109,7 @@ end
 function Config.groups.from_flag.get_many(gkey, flag)
   local all = flag and not flag[1]
   local id = flag and flag[1]
-  local selected = Config.groups.get_many(all, not id, gkey, id)
+  local selected = Config.groups.get_many(all, not flag, gkey, id)
   local has_any, full_key = next(selected) ~= nil, {key(gkey, id)}
   Logs.assert(not id or has_any, i18n('config.missing', full_key))
   if not has_any then Logs.warning(i18n('config.none', full_key)) end
@@ -124,7 +124,7 @@ end
 --- @return table config
 function Config.groups.from_flag.get_one(gkey, flag)
   local id = flag and flag[1]
-  local selid, sel = Config.groups.get_one(not id, gkey, id)
+  local selid, sel = Config.groups.get_one(not flag, gkey, id)
   Logs.assert(selid, i18n('config.missing', {key(gkey, id)}))
   return selid, sel
 end
