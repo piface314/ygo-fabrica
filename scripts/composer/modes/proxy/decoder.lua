@@ -44,6 +44,8 @@ local function get_desc_label(card, t)
   return Parser.bcheck(card.type, t) and Codes.i18n('type', t) or nil
 end
 
+local function notnil(v) return v end
+
 return Decoder('proxy', Shapes.BASE, 'frame', {
   frame = function(card)
     local is_st = Parser.bcheck(card.type, agtypes.SPELLTRAP)
@@ -118,11 +120,11 @@ return Decoder('proxy', Shapes.BASE, 'frame', {
   monster_desc = function(card)
     local is_token = Parser.bcheck(card.type, types.TOKEN)
     local normal = not is_token and types.NORMAL or nil
-    local prefix = {get_race(card), get_sumtype(card)}
+    local prefix = fun.iter {get_race(card), get_sumtype(card)}:filter(notnil)
     local typedesc = fun.iter {
       types.PENDULUM, types.FLIP, types.GEMINI, types.GEMINI, types.SPIRIT,
       types.TOON, types.UNION, types.TUNER, types.EFFECT, normal
-    }:map(function(t) return get_desc_label(card, t) end)
+    }:map(function(t) return get_desc_label(card, t) end):filter(notnil)
     local desc = fun.chain(prefix, typedesc):totable()
     return 'monster_text', Layer(Shapes.MONSTER_DESC, desc)
   end,

@@ -115,7 +115,7 @@ local rawiter = function(obj, param, state)
                 return mt.__pairs(obj)
             end
         end
-        if #obj > 0 and next(obj, #obj) == nil then
+        if next(obj) == 1 and next(obj, #obj) == nil then
             return ipairs(obj)
         else
             return map_gen, obj, nil
