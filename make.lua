@@ -1,5 +1,5 @@
 package.path = './?.lua;./?/init.lua;./T/share/lua/5.1/?.lua;./T/share/lua/5.1/?/init.lua;'
-package.cpath = './T/lib/lua/5.1/?.so;'
+package.cpath = './T/lib/lua/5.1/?.ext;'
 
 local Spec = require 'spec'
 local Interpreter = require 'lib.interpreter'
@@ -18,19 +18,39 @@ local cmd_config = {}
 
 cmd_build.file_list = {
   'lib', 'locale', 'modules', 'res', 'scripts', 'CHANGELOG.md',
-  'LICENSE', 'README.md', 'spec.lua', 'make.lua'
+  'LICENSE', 'README.md', 'spec.lua', 'make.lua', 'make-locale.lua'
 }
 
 cmd_install.file_list = {
   'lib', 'locale', 'modules', 'res', 'scripts', 'CHANGELOG.md', 'LICENSE', 'README.md'
 }
 
+local function chmod(fp) return WIN or exec('chmod +x "%s"', fp) end
+
+local function read(fp)
+  local f, e = io.open(fp, 'r')
+  if not f then return false, e end
+  local content = f:read('*a')
+  f:close()
+  return content
+end
+
+local function write(fp, content)
+  local f, e = io.open(fp, 'w')
+  if not f then return false, e end
+  f:write(content)
+  f:close()
+  return true
+end
+
 if WIN then
+  package.cpath = package.cpath:gsub('%.ext', '.dll')
   table.insert(cmd_build.file_list, 'install.cmd')
   cmd_install.bin = [[
 @echo off
-setlocal
 call :setESC > nul 2> nul
+chcp 65001 > nul 2> nul
+setlocal
 set "YGOFAB_ROOT=$root"
 set "LUA_PATH=%YGOFAB_ROOT%/?.lua;%YGOFAB_ROOT%/?/init.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?.lua;%YGOFAB_ROOT%/modules/share/lua/5.1/?/init.lua"
 set "LUA_CPATH=%YGOFAB_ROOT%/modules/lib/lua/5.1/?.dll"
@@ -45,28 +65,70 @@ endlocal
   end
   function cp(src, dst, file)
     if file then
-      local src_file = src:match('.*\\(.-)$') or src
-      return exec('copy /y "%s" "%s"', src, dst .. '\\' .. src_file)
+      return exec('xcopy "%s" "%s" /q/y', src, dst)
     else
-      return exec('xcopy "%s" "%s" /s/h/e/k/c/y/i', src, dst .. '\\' .. src)
+      local folder_name = src:match('[^\\]+$')
+      return exec('xcopy "%s" "%s" /q/s/h/e/k/c/y/i', src, dst .. '\\' .. folder_name)
     end
   end
   function check_cmd(command) return exec('where >nul 2>nul "%s"', command) end
+
+  exec 'chcp 65001 > nul 2> nul'
+  
   function cmd_build.luajit()
-    -- TODO
+    table.insert(cmd_build.file_list, 'luajit')
+    if path.isdir('luajit') then return end
+    local luajit = 'LuaJIT-' .. Spec.build.luajit_version
+    local ok = exec('certutil -urlcache -split -f "http://luajit.org/download/%s.zip"', luajit)
+      and exec('"C:\\Program Files\\7-Zip\\7z" x %s.zip -xr!contact.png', luajit)
+      and exec('del /q/f "%s.zip"', luajit)
+    Logs.assert(ok, i18n 'build.luajit_error')
+    ok = exec('cd "%s\\src" && msvcbuild && cd ..\\..', luajit)
+      and cp(luajit .. '\\src\\jit', 'luajit')
+      and cp(luajit .. '\\src\\lua51.dll', 'luajit', true)
+      and cp(luajit .. '\\src\\luajit.exe', 'luajit', true)
+      and exec('rmdir /q/s "%s"', luajit)
+    Logs.assert(ok, i18n 'build.luajit_error')
   end
   function cmd_build.vips()
-    -- TODO
+    table.insert(cmd_build.file_list, 'vips')
+    if path.isdir('vips') then return end
+    local version = Spec.build.vips_version
+    local vips_file = 'vips-dev-w64-web-' .. version .. '.zip'
+    local vips = 'vips-dev-' .. version:match('^(.+%..+)%..+$')
+    local ok = exec('certutil -urlcache -split -f "https://github.com/libvips/libvips/releases/download/v%s/%s"', version, vips_file)
+      and exec('"C:\\Program Files\\7-Zip\\7z" x %s', vips_file)
+      and exec('del /f/q "%s"', vips_file)
+      and cp(vips .. '\\bin', 'vips')
+      and cp(vips .. '\\etc', 'vips')
+      and cp(vips .. '\\AUTHORS', 'vips', true)
+      and cp(vips .. '\\COPYING', 'vips', true)
+      and exec('rmdir /q/s "%s"', vips)
+    Logs.assert(ok, i18n 'build.vips_error')
   end
   function cmd_install.luajit(base)
     if check_cmd('luajit') then return end
-    Logs.assert(path.isdir('luajit') and cp('luajit', base), i18n('cp_error', 'luajit'))
+    Logs.assert(path.isdir('luajit') and cp('luajit', base), i18n('cp_error', {'luajit'}))
   end
   function cmd_install.vips(base)
     if check_cmd('vips') then return end
-    Logs.assert(path.isdir('vips') and cp('vips', base), i18n('cp_error', 'vips'))
+    Logs.assert(path.isdir('vips') and cp('vips', base), i18n('cp_error', {'vips'}))
+  end
+  function cmd_install.pathenv(base)
+    local pipe = io.popen('reg query HKCU\\Environment /v PATH')
+    pipe:read('*l'); pipe:read('*l')
+    local pathvar = pipe:read('*l'):match('%s*[%w_]+%s*[%w_]+%s*(.*)') or ''
+    pipe:close()
+    for fp in pathvar:gmatch '(.-);' do
+      if fp == base then return end
+    end
+    local bup_fp = 'path-var-backup'
+    Logs.assert(write(bup_fp, pathvar), i18n 'install.path_backup_error')
+    Logs.warning(i18n('install.path_backup', {bup_fp}))
+    Logs.assert(exec('setx PATH "%s;%s"', base, pathvar), i18n 'install.path_error')
   end
 else
+  package.cpath = package.cpath:gsub('%.ext', '.so')
   table.insert(cmd_build.file_list, 'install')
   cmd_install.bin = [[
 #!/usr/bin/env bash
@@ -81,7 +143,7 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
   function cmd_build.luajit()
     table.insert(cmd_build.file_list, 'luajit')
     if path.isdir('luajit') then return end
-    local luajit = Spec.build.luajit_version
+    local luajit = 'LuaJIT-' .. Spec.build.luajit_version
     local ok = exec('wget "http://luajit.org/download/%s.tar.gz"', luajit)
       and exec('tar -zxf "%s.tar.gz"', luajit)
       and exec('rm "%s.tar.gz"', luajit)
@@ -110,24 +172,7 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
     exec 'cd ..'
     Logs.assert(ok, errmsg)
   end
-end
-
-local function chmod(fp) return WIN or exec('chmod +x "%s"', fp) end
-
-local function read(fp)
-  local f, e = io.open(fp, 'r')
-  if not f then return false, e end
-  local content = f:read('*a')
-  f:close()
-  return content
-end
-
-local function write(fp, content)
-  local f, e = io.open(fp, 'w')
-  if not f then return false, e end
-  f:write(content)
-  f:close()
-  return true
+  function cmd_install.pathenv(base) end
 end
 
 local function require_missing(locale_f)
@@ -144,19 +189,23 @@ local function require_missing(locale_f)
 end
 
 function cmd_build.run(flags)
-  cmd_build.dependencies(Spec.build.dependencies)
-  assert(require_missing(flags['--locale']))
-  cmd_build.adjust_i18n()
-  cmd_build.dependencies(Spec.dependencies)
-  cmd_build.adjust_toml()
-  cmd_build.spec()
+  if flags['-d'] or flags['--deps'] then
+    cmd_build.dependencies(Spec.build.dependencies)
+    assert(require_missing(flags['--locale']))
+    cmd_build.adjust_i18n()
+    cmd_build.dependencies(Spec.dependencies)
+    cmd_build.adjust_toml()
+    cmd_build.spec()
+  else
+    assert(require_missing(flags['--locale']))
+  end
   if flags['-r'] or flags['--release'] then
     local slim = flags['--slim']
     if not slim then
       cmd_build.luajit()
       cmd_build.vips()
     end
-    cmd_build.release(slim)
+    cmd_build.release()
   end
   Logs.ok(i18n 'build.ok')
 end
@@ -222,23 +271,17 @@ function cmd_build.spec()
   return write('lib/version.lua', info)
 end
 
-function cmd_build.release(slim)
-  local target = Spec.build.target
-    :gsub('%%{version}', Spec.version)
+function cmd_build.release()
+  local target = Spec.build.target:gsub('%%{version}', Spec.version)
   local build_fp = path.join('build', target)
   Logs.assert(path.mkdir(build_fp), i18n('mkdir_error', {build_fp}))
-  local files = cmd_build.file_list
-  if not slim then
-    files[#files + 1] = 'luajit'
-    files[#files + 1] = 'vips'
-  end
   for _, fp in ipairs(cmd_build.file_list) do
     Logs.assert(cp(fp, build_fp, path.isfile(fp)), i18n('cp_error', {fp}))
   end
   if WIN then
     local Zip = require 'lib.zip'
-    local z = Zip.new(target .. '-windows.zip')
-    Logs.assert(z, i18n 'build.release_error')
+    local z, err = Zip.new(target .. '-windows.zip')
+    Logs.assert(z, i18n 'build.release_error', ': ', err)
     z:add(build_fp, target)
     Logs.assert(z:close() > 0, i18n 'build.release_error')
   else
@@ -256,6 +299,7 @@ function cmd_install.run(flags, base)
   cmd_install.luajit(base)
   cmd_install.vips(base)
   cmd_install.bins(base)
+  cmd_install.pathenv(base)
   Logs.ok(i18n 'install.ok')
 end
 
@@ -265,7 +309,7 @@ end
 
 function cmd_install.fonts()
   if path.isdir('fonts') then
-    local target = path.join('res', 'composer', 'fonts')
+    local target = path.join('res', 'composer')
     Logs.assert(cp('fonts', target), i18n('cp_error', {'fonts'}))
   end
 end
@@ -316,7 +360,7 @@ field = true
 end
 
 local interpreter = Interpreter.new()
-interpreter:add_command('build', cmd_build.run, '-r', 0, '--release', 0, '--slim', 0, '--locale', 1)
+interpreter:add_command('build', cmd_build.run, '-d', 0, '--deps', 0, '-r', 0, '--release', 0, '--slim', 0, '--locale', 1)
 interpreter:add_command('install', cmd_install.run, '--locale', 1)
 interpreter:add_command('config', cmd_config.run, '--locale', 1)
 interpreter:add_command('', function(flags)

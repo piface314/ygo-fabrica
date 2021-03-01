@@ -1,4 +1,4 @@
-local WIN = package.path:sub(1, 1) == '\\'
+local WIN = package.config:sub(1, 1) == '\\'
 
 return {
   version = '2.0.0',
@@ -12,8 +12,8 @@ return {
   rocks_tree = 'modules',
   build = {
     target = 'ygofabrica-v%{version}',
-    luajit_version = 'LuaJIT-2.1.0-beta3',
-    vips_version = '8.9.2',
+    luajit_version = '2.1.0-beta3',
+    vips_version = '8.10.5',
     dependencies = {
       'lua-path',
       'utf8',

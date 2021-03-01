@@ -2,9 +2,10 @@ local ZipWriter = require 'ZipWriter'
 local path = require 'lib.path'
 
 ---@class Zip
----@field write function
----@field close function
+---@field file any
+---@field fp string
 local Zip = {}
+Zip.__index = Zip
 
 local READER_DESC = {
   istext = true,
@@ -20,7 +21,8 @@ local READER_DESC = {
 --- Creates a new .zip file in the specified filepath.
 --- Returns nil and an error message if it's unable to open the file.
 --- @param fp string file path
---- @return Zip?, string?
+--- @return Zip?
+--- @return string? errmsg
 function Zip.new(fp)
   local zipfile = ZipWriter.new()
   local f, errmsg = io.open(fp, 'w+b')
@@ -28,8 +30,7 @@ function Zip.new(fp)
     return nil, errmsg
   end
   zipfile:open_stream(f, true)
-  zipfile.add = Zip.add
-  return zipfile
+  return setmetatable({fp = fp, file = zipfile}, Zip)
 end
 
 local function reader(fp)
@@ -47,14 +48,15 @@ end
 --- Adds a source file to a destination path inside the zip.
 --- @param src_fp string source file path
 --- @param dst_fp string destination file path
---- @return boolean, string? errmsg
+--- @return boolean
+--- @return string? errmsg
 function Zip:add(src_fp, dst_fp)
   if path.isfile(src_fp) then
     local r, errmsg = reader(src_fp)
     if not r then
       return false, errmsg
     end
-    self:write(dst_fp, READER_DESC, r)
+    self.file:write(dst_fp, READER_DESC, r)
     return true
   elseif path.isdir(src_fp) then
     for nfp in path.each(src_fp .. path.DIR_SEP) do
@@ -65,6 +67,12 @@ function Zip:add(src_fp, dst_fp)
   else
     return false
   end
+end
+
+---Closes the zip file
+---@return number
+function Zip:close()
+  return self.file:close()
 end
 
 return Zip

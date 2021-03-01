@@ -20,7 +20,10 @@ return {
     install = {
       ok = 'YGOFabrica has been succesfully installed!',
       sudo = 'Using sudo to install vips',
-      vips_error = 'failed to install vips'
+      vips_error = 'failed to install vips',
+      path_backup_error = 'failed to backup user variable PATH',
+      path_backup = 'Previous value of user variable PATH has been written to %s',
+      path_error = 'failed to add new value into user variable PATH'
     },
     config = {
       ok = 'YGOFabrica has been succesfully configured!',
@@ -52,7 +55,10 @@ return {
     install = {
       ok = 'YGOFabrica foi instalada com sucesso!',
       sudo = 'Usando sudo para instalar vips',
-      vips_error = 'falha ao instalar vips'
+      vips_error = 'falha ao instalar vips',
+      path_backup_error = 'falha ao fazer backup da variável de ambiente PATH',
+      path_backup = 'Valor prévio da variável de ambiente PATH foi escrito em %s',
+      path_error = 'falha ao inserir novo valor na variável PATH'
     },
     config = {
       ok = 'YGOFabrica foi configurada com sucesso!',
