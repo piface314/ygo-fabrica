@@ -6,6 +6,7 @@ local vips = require 'vips'
 local path = require 'lib.path'
 local Codes = require 'lib.codes'
 local i18n = require 'i18n'
+local fun = require 'lib.fun'
 
 local types = Codes.const.type
 
@@ -72,7 +73,7 @@ return {
   end),
   LINK_ARROWS = Shape('link-arrows', function(arrows, ps)
     local suffix = ps and 'p' .. ps or ''
-    return arrows:map(function(a) return ov('lka', a, suffix) end)
+    return fun.iter(arrows):map(function(a) return ov('lka', a, suffix) end)
       :reduce(ov('lka-base', suffix), function(img, a)
         return img:composite(a, 'over')
       end)

@@ -20,9 +20,6 @@ local function read_file(fp)
   return p
 end
 
---- Reads data from a list of .toml files
---- @param files Fun
---- @return Fun
 function DataFetcher.get(files)
   return table.merge(fun.iter(files):map(read_file):unpack())
 end

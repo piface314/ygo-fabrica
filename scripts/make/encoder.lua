@@ -92,7 +92,7 @@ function encode.def(card)
 end
 
 function encode.level(card)
-  local scales = card['pendulum-scale']
+  local scales = card['pendulum-scale'] or card['pendulum-scales']
   local level = tonumber(card['link-rating'] or card.rank or card.level) or 0
   local lsc, rsc = 0, 0
   if tonumber(scales) then
@@ -131,7 +131,7 @@ end
 --- @return CardData[]
 function Encoder.encode(cards, sets)
   local enc = fun.iter(encode)
-  return fun.iter(cards):map(function(_, card)
+  return fun.iter(next, cards):map(function(_, card)
     return enc:map(function(k, e) return k, e(card, sets) end):tomap()
   end):totable()
 end

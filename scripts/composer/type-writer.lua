@@ -36,7 +36,7 @@ local function prepare_text(text)
   if not text then return nil end
   if type(text) ~= 'string' then text = tostring(text) end
   if is_empty(text) then return nil end
-  return '<span insert_hyphens="false">' .. expand_markup(text) .. '</span>'
+  return expand_markup(text)
 end
 
 local function paint_insert(t, base, color, x, y)
@@ -106,6 +106,7 @@ function TypeWriter.printf(text, base, args, color)
   text = prepare_text(text)
   color = color_clamp(color)
   if not text then return base end
+  text = '<span insert_hyphens="false">' .. text .. '</span>'
   local x, y, w, h, ft, fs = args.x, args.y, args.w, args.h, args.ft, args.fs
   local ff, a, j, i = args.ff, align[args.a] or 'low', args.j, args.i or 16
   local opt = {width = w, fontfile = ff, dpi = DPI, justify = j, align = a}

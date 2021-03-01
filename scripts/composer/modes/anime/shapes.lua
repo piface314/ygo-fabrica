@@ -5,6 +5,7 @@ local TypeWriter = require 'scripts.composer.type-writer'
 local Codes = require 'lib.codes'
 local vips = require 'vips'
 local path = require 'lib.path'
+local fun = require 'lib.fun'
 
 local cache = {}
 local ov_fp = path.prjoin('res', 'composer', 'layers', 'anime')
@@ -47,7 +48,7 @@ return {
     return TypeWriter.print(tostring(lkr), ov('link'), Layout.lkr)
   end),
   LINK_ARROWS = Shape('link-arrows', function(arrows)
-    return arrows:map(function(a) return ov('lka', a) end)
+    return fun.iter(arrows):map(function(a) return ov('lka', a) end)
       :reduce(ov('lka-base'), function(img, a)
         return img:composite(a, 'over')
       end)

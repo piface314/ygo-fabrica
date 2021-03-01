@@ -88,11 +88,10 @@ end
 local function write_custom(cdb, entries)
   local cols, missing = {}, get_missing_custom_cols(cdb)
   for _, e in pairs(entries) do
-    for c in pairs(custom_cols) do cols[c] = e[c] ~= nil end
+    for c in pairs(custom_cols) do cols[c] = e[c] end
   end
-  cols = fun.iter(cols)
-  if cols:length() == 0 then return false end
-  local add_sql = table.concat(cols
+  if next(cols) == nil then return false end
+  local add_sql = table.concat(fun.iter(cols)
     :filter(function(c) return missing[c] ~= nil end)
     :map(function(c) return CUSTOM_ADDCOL_SQL:format(c, custom_cols[c]) end)
     :totable())
@@ -105,7 +104,7 @@ local function write_custom(cdb, entries)
     Logs.warning(i18n 'make.writer.custom_error', cdb:errmsg())
     return false
   end
-  return #cols == 0
+  return true
 end
 
 --- Cleans rows that were not written by `ygofab make`
@@ -123,7 +122,7 @@ end
 
 --- Writes `entries` to a card database (.cdb file)
 --- @param cdbfp string card database file path
---- @param entries table[] entries to be written
+--- @param entries CardData[] entries to be written
 --- @param overwrite boolean if `true`, old .cdb is overwritten
 local function write_cdb(cdbfp, entries, overwrite)
   local cdb = open_cdb(cdbfp)
