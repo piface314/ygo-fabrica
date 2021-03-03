@@ -76,7 +76,7 @@ function encode.setcode(card, sets)
   for setid in cardset:gmatch('[%w-_]+') do
     local set = sets[setid]
     local code = tonumber(set and set.code)
-    if code then setcode = setcode * 0x10000 + set.code % 0x10000 end
+    if code then setcode = setcode * 0x10000 + code % 0x10000 end
   end
   return setcode
 end

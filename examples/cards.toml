@@ -1,21 +1,22 @@
 # These are examples of already existing Yu-Gi-Oh! cards described in the format that
 #  `ygofab make` uses to transform into `.cdb`.
 
-[card.relinq-ritual]
+# You don't have to specify an id to the card, in which case you use [[card]]
+[[card]]
 id = 41426869
 name = "Black Illusion Ritual"
 type = "spell ritual"
 effect = '''
 This card is used to Ritual Summon "Relinquished". You must also Tribute a monster from your hand or field whose Level is 1 or more.'''
 
-[card.ult-offer]
+[[card]]
 id = 80604091
 name = "Ultimate Offering"
 type = "trap continuous"
 effect = '''
 During your Main Phase or your opponent's Battle Phase: You can pay 500 Life Points; immediately after this effect resolves, Normal Summon/Set 1 monster.'''
 
-[card.dragon-hunter]
+[[card]]
 id = 21970285
 name = "Dragon Horn Hunter"
 attribute = "dark"
@@ -30,6 +31,7 @@ The horns were needed to prepare a medicine for her village, suffering from a pl
 atk = 2300
 def = 1000
 
+# Using IDs for cards is completely optional (this might be used in yet unreleased features)
 [card.amaterasu]
 id = 20073910
 name = "Amaterasu"

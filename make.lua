@@ -74,7 +74,7 @@ endlocal
   function check_cmd(command) return exec('where >nul 2>nul "%s"', command) end
 
   exec 'chcp 65001 > nul 2> nul'
-  
+
   function cmd_build.luajit()
     table.insert(cmd_build.file_list, 'luajit')
     if path.isdir('luajit') then return end
@@ -140,39 +140,18 @@ luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
   function exec(command, ...) return os.execute(command:format(...)) == 0 end
   function cp(src, dst) return exec('cp -ar "%s" "%s"', src, dst) end
   function check_cmd(command) return exec('command -v "%s" >/dev/null 2>&1', command) end
-  function cmd_build.luajit()
-    table.insert(cmd_build.file_list, 'luajit')
-    if path.isdir('luajit') then return end
-    local luajit = 'LuaJIT-' .. Spec.build.luajit_version
-    local ok = exec('wget "http://luajit.org/download/%s.tar.gz"', luajit)
-      and exec('tar -zxf "%s.tar.gz"', luajit)
-      and exec('rm "%s.tar.gz"', luajit)
-      and exec('mv %s ./luajit', luajit)
-    Logs.assert(ok, i18n 'build.luajit_error')
-  end
-  function cmd_build.vips()
-    table.insert(cmd_build.file_list, 'vips')
-    if path.isdir('vips') then return end
-    local version = Spec.build.vips_version
-    local name = 'vips-' .. version
-    local ok = exec('wget "https://github.com/libvips/libvips/releases/download/v%s/%s.tar.gz"', version, name)
-      and exec('tar -zxf "%s.tar.gz"', name)
-      and exec('rm "%s.tar.gz"', name)
-      and exec('mv %s ./vips', name)
-    Logs.assert(ok, i18n 'build.vips_error')
-  end
-  function cmd_install.luajit() end
+  function cmd_build.luajit() end
+  function cmd_build.vips() end
+  function cmd_install.luajit() end --merged with cmd_install.vips
   function cmd_install.vips()
-    if check_cmd('vips') then return end
-    local errmsg = i18n 'install.vips_error'
-    Logs.assert(path.isdir('vips'), errmsg)
-    Logs.warning(i18n 'install.sudo')
-    Logs.assert(exec 'cd vips', errmsg)
-    local ok = exec './configure && make && sudo make install'
-    exec 'cd ..'
-    Logs.assert(ok, errmsg)
+    local install_script = read('install')
+    Logs.assert(install_script, i18n 'build.install_script_error')
+    install_script = install_script
+      :gsub('\nluajit_version=".-"\n', '\nluajit_version="' .. Spec.build.luajit_version .. '"\n')
+      :gsub('\nvips_version=".-"\n', '\nvips_version="' .. Spec.build.vips_version .. '"\n')
+    Logs.assert(write('install', install_script), i18n 'build.install_script_error')
   end
-  function cmd_install.pathenv(base) end
+  function cmd_install.pathenv() end
 end
 
 local function require_missing(locale_f)
@@ -189,7 +168,10 @@ local function require_missing(locale_f)
 end
 
 function cmd_build.run(flags)
-  if flags['-d'] or flags['--deps'] then
+  local dep = flags['-d'] or flags['--deps']
+  local rel = flags['-r'] or flags['--release']
+  local both = not (dep or rel)
+  if both or dep then
     cmd_build.dependencies(Spec.build.dependencies)
     assert(require_missing(flags['--locale']))
     cmd_build.adjust_i18n()
@@ -199,12 +181,9 @@ function cmd_build.run(flags)
   else
     assert(require_missing(flags['--locale']))
   end
-  if flags['-r'] or flags['--release'] then
-    local slim = flags['--slim']
-    if not slim then
-      cmd_build.luajit()
-      cmd_build.vips()
-    end
+  if both or rel then
+    cmd_build.luajit()
+    cmd_build.vips()
     cmd_build.release()
   end
   Logs.ok(i18n 'build.ok')
@@ -222,7 +201,7 @@ function cmd_build.adjust_i18n()
   local fp = Spec.rocks_tree .. '/share/lua/5.1/i18n/init.lua'
   local f = Logs.assert(read(fp), i18n 'build.i18n_error')
   local line = 'return type%(str%) == \'string\' and #str > 0'
-  local out = f:gsub(line, 'return type(str) == \'string\'')
+  local out = f:gsub(line, 'return type(str) == \'string\'', 1)
   Logs.assert(write(fp, out), i18n 'build.i18n_error')
 end
 
@@ -280,12 +259,12 @@ function cmd_build.release()
   end
   if WIN then
     local Zip = require 'lib.zip'
-    local z, err = Zip.new(target .. '-windows.zip')
+    local z, err = Zip.new(target .. '.zip')
     Logs.assert(z, i18n 'build.release_error', ': ', err)
     z:add(build_fp, target)
     Logs.assert(z:close() > 0, i18n 'build.release_error')
   else
-    local ok = exec('cd build && tar -zcf ../%s-linux.tar.gz %s; cd ..', target, target)
+    local ok = exec('cd build && tar -zcf ../%s.tar.gz %s; cd ..', target, target)
     Logs.assert(ok, i18n 'build.release_error')
   end
 end
@@ -360,7 +339,7 @@ field = true
 end
 
 local interpreter = Interpreter.new()
-interpreter:add_command('build', cmd_build.run, '-d', 0, '--deps', 0, '-r', 0, '--release', 0, '--slim', 0, '--locale', 1)
+interpreter:add_command('build', cmd_build.run, '-d', 0, '--deps', 0, '-r', 0, '--release', 0, '--locale', 1)
 interpreter:add_command('install', cmd_install.run, '--locale', 1)
 interpreter:add_command('config', cmd_config.run, '--locale', 1)
 interpreter:add_command('', function(flags)

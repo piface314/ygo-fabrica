@@ -36,8 +36,18 @@ atk = 4500
 def = 3000
 
 # You can also specify setcodes in the traditional way, using `setcode` instead:
+# > Note: duplicate key are forbidden in TOML, this is just an example.
 [card.paladin]
 setcode = 0x0055
 
 [card.neo-dragon]
 setcode = 0x107b0055
+
+# And finally, examples of counters:
+[counter.fog]
+name = "Fog Counter"
+code = 0x1019
+
+[counter.kaiju]
+name = "Kaiju Counter"
+code = 0x37

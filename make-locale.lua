@@ -23,7 +23,8 @@ return {
       vips_error = 'failed to install vips',
       path_backup_error = 'failed to backup user variable PATH',
       path_backup = 'Previous value of user variable PATH has been written to %s',
-      path_error = 'failed to add new value into user variable PATH'
+      path_error = 'failed to add new value into user variable PATH',
+      install_script_error = 'failed to write versions to install script'
     },
     config = {
       ok = 'YGOFabrica has been succesfully configured!',
@@ -58,7 +59,8 @@ return {
       vips_error = 'falha ao instalar vips',
       path_backup_error = 'falha ao fazer backup da variável de ambiente PATH',
       path_backup = 'Valor prévio da variável de ambiente PATH foi escrito em %s',
-      path_error = 'falha ao inserir novo valor na variável PATH'
+      path_error = 'falha ao inserir novo valor na variável PATH',
+      install_script_error = 'falha ao escrever versões no script de instalação'
     },
     config = {
       ok = 'YGOFabrica foi configurada com sucesso!',

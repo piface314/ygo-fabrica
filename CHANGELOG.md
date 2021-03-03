@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - Barian Babélico // 2021-02-??
+## [Unreleased]
+
+## [2.0.0] - Barian Babélico // 2021-03-06
 ### Added
 - Internationalization in program interface, `ygofab make` and `ygofab compose`.
 - `locale` general configuration.
@@ -13,23 +15,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Currently, only `en` and `pt` are the supported languages, but you can add custom locales. 
 - Support for multiple monster abilities (Spirit, Union, Flip, etc.) in `proxy` mode.
 - Support for custom counters in `ygofab sync` and `ygofab make`.
-- `--verbose` flag to `ygofab export` and `ygofab sync`.
+- `--verbose` flag to `ygofab compose`, `ygofab export` and `ygofab sync`.
 - Warning when user seems to be outside a project folder.
 - Support for custom data when reading card database with `ygofab compose`/`ygopic` or writing them with `ygofab make`. Currently supported columns are `holo`, `setnumber`, `year`, `author`, placed in a table called `custom`.
 - `--holo`, `--locale`, `--verbose` and `--help` flags to `ygopic`.
 - `-o` flag in `ygofab export` can now also specify an output _pattern_.
 
 ### Changed
-- Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
 - Default binaries location changed from `/usr/local/bin` to `$HOME/.local/bin` for Linux, to avoid using `sudo`.
+- Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
 - Default install location changed from `C:\Program Files\YGOFabrica` to `%LOCALAPPDATA%\YGOFabrica` for Windows, to avoid the need of running the installer as admin.
 - Global configurations location changed from `%USERPROFILE%\ygofab` to `%APPDATA%\YGOFabrica` for Windows.
+- Global configurations location changed from `~/ygofab` to `~/.config/ygofab` for Linux.
 - More detailed output in `ygofab config`.
 - `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
 - Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
 - `--clean` flag in `ygofab make` renamed to `--overwrite` or `-ow`.
 - Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
 - Correct OT codes and categories for EDOPro.
+- For Linux, releases no longer come with luajit and vips. It is recommended that each user installs them via their own package manager.
 
 ### Fixed
 - Ritual Spells no longer have a blue frame.
@@ -39,7 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - `--clean`, `--no-pics`, `--no-script` and `--no-exp` flags from `ygofab sync`.
-- `luafilesystem` dependency.
 - `fonts` command in `make.lua`. Fonts are now copied when `luajit make.lua install` is used.
 
 ## [1.0.2] - Artefato Astral // 2020-06-23
