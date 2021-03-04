@@ -15,13 +15,13 @@ return {
     luajit_version = '2.1.0-beta3',
     vips_version = '8.10.5',
     dependencies = {
+      'luafilesystem',
       'lua-path',
       'utf8',
       'i18n 0.9.2-1'
     }
   },
   dependencies = {
-    'luafilesystem',
     'lsqlite3complete',
     'lua-toml 2.0-1',
     'lua-zlib',
