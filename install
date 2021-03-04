@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-locale=$(locale | grep LANGUAGE | cut -d= -f2 | cut -d_ -f1)
+locale=$(locale | grep LANG= | cut -d= -f2 | cut -d_ -f1)
 
 luajit_version="2.1.0-beta3"
 vips_version="8.10.5"

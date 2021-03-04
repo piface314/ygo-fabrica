@@ -21,6 +21,7 @@ return {
     }
   },
   dependencies = {
+    'luafilesystem',
     'lsqlite3complete',
     'lua-toml 2.0-1',
     'lua-zlib',
