@@ -253,9 +253,8 @@ end
 function cmd_build.release()
   local target = Spec.build.target:gsub('%%{version}', Spec.version)
   local build_fp = path.join('build', target)
-  local fun = require 'lib.fun'
-  fun.each(print, path)
-  Logs.assert(path.mkdir(build_fp), i18n('mkdir_error', {build_fp}))
+  Logs.assert(exec 'mkdir build', i18n('mkdir_error', {build_fp}))
+  Logs.assert(exec('mkdir "%s"', build_fp), i18n('mkdir_error', {build_fp}))
   for _, fp in ipairs(cmd_build.file_list) do
     Logs.assert(cp(fp, build_fp, path.isfile(fp)), i18n('cp_error', {fp}))
   end
