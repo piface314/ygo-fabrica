@@ -6,9 +6,6 @@ local Logs = {}
 
 local err_cb = {}
 
--- TODO: provide a function that fits strings into a tabular form,
--- wrapping long strings and keeping columns organized.
-
 --- Registers a callback `cb` to be run after an error occurs
 --- @param cb function
 function Logs.add_post_error_cb(cb)
