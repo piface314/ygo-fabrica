@@ -232,6 +232,14 @@ return {
           opt7 = {
             label = '--color-* <color>',
             desc = [[Changes the color used for card names in `proxy` mode, according to the card type (*). <color> must be a color string in hex format. E.g., `--color-effect "#ffffff"` specifies white for Effect Monsters card name.]]
+          },
+          opt8 = {
+            label = '--locale <locale>',
+            desc = [[Defines the language used in card text. If not set, interface locale is used.]]
+          },
+          opt9 = {
+            label = '--holo (true|false)',
+            desc = [[Defines if the hologram should be placed in `proxy` mode. If not specified or if `true`, the hologram will be placed. If set to `false`, then the hologram is not placed.]]
           }
         }
       },

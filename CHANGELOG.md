@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.0] - Barian Babélico // 2021-03-20
+## [2.0.0] - Barian Babélico // 2021-03-22
 ### Added
 - Internationalization in program interface, `ygofab make` and `ygofab compose`.
 - A new font is needed to support internationalization.

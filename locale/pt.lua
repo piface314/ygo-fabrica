@@ -237,6 +237,14 @@ return {
           opt7 = {
             label = '--color-* <cor>',
             desc = [[Muda a cor usada para os nomes das cartas no modo `proxy`, de acordo com o tipo da carta (*). <cor> deve ser uma string em formato hexadecimal. Ex.: `--color-effect "#ffffff"` define a cor do nome dos Monstros de Efeito como branco.]]
+          },
+          opt8 = {
+            label = '--locale <locale>',
+            desc = [[Define qual idioma será usado no texto das cartas. Se não for definido, o idioma da interface será usado.]]
+          },
+          opt9 = {
+            label = '--holo (true|false)',
+            desc = [[Define se o holograma deve ser colocado no modo `proxy`. Se não for especificado ou se for `true`, o holograma é colocado. Se for definido para `false`, o holograma não é colocado.]]
           }
         }
       },

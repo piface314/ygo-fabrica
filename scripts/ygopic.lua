@@ -9,19 +9,19 @@ local fun = require 'lib.fun'
 
 local function assert_help(assertion, msg, verbose)
   if assertion then return end
-  local args = fun.iter(1, 4):map(function(i) return 'ygopic.usage.arguments.arg' .. i end)
+  local args = fun.range(1, 4):map(function(i) return 'ygopic.usage.arguments.arg' .. i end)
     :map(function(k) return {'  ' .. i18n(k .. '.id'), i18n(k .. '.desc')} end)
     :totable()
   local usage = {
     i18n 'ygopic.usage.header', '\n  ', i18n 'ygopic.usage.cmd', '\n\n',
     i18n 'ygopic.usage.help', '\n\n', i18n 'ygopic.usage.arguments.header',
-    '\n', unpack(Logs.tabular({20, 50}, args))
+    '\n', unpack(Logs.tabular({25, 50}, args))
   }
   if verbose then
-    local opts = fun.range(1, 7):map(function(i) return 'ygopic.usage.options.opt' .. i end)
+    local opts = fun.range(1, 9):map(function(i) return 'ygopic.usage.options.opt' .. i end)
       :map(function(k) return {'  ' .. i18n(k .. '.label'), i18n(k .. '.desc')} end)
       :totable()
-    opts = Logs.tabular({20, 50}, opts, {in_newline = true})
+    opts = Logs.tabular({25, 50}, opts, {in_newline = true})
     usage = fun.chain(usage, {'\n\n', i18n 'ygopic.usage.options.header', '\n'}, opts):totable()
   end
   Logs.error(msg, '\n', unpack(usage))
