@@ -1,93 +1,56 @@
+require 'lib.table'
 local Interpreter = require 'lib.interpreter'
 local Logs = require 'lib.logs'
 local Version = require 'lib.version'
+local Locale = require 'locale'
+local Config = require 'scripts.config'
+local i18n = require 'i18n'
+local fun = require 'lib.fun'
 
-
-local function assert_help(assertion, msg)
-  Logs.assert(assertion, 1, msg,
-"Usage:\
-\
-  $ ygopic <mode> <art-folder> <card-database> <output-folder> [options]\
-\
-Arguments:\
-\
-  mode          \tEither `anime` or `proxy`\
-  art-folder    \tPath to a folder containing artwork for the cards\
-  card-database \tPath to a .cdb describing each card\
-  output-folder \tPath to a folder that will contain output images\
-\
-Available options:\
-\
-  --size WxH       \tW and H determines width and height of the output\
-                   \timages. If only W or H is specified, aspect ratio\
-                   \tis preserved. Example: `--size 800x` will output\
-                   \timages in 800px in width, keeping aspect ratio.\
-                   \tDefaults to original size\
-\
-  --ext <ext>      \tSpecifies which extension is used for output,\
-                   \teither `png`, `jpg` or `jpeg`. Defaults to `jpg`\
-\
-  --artsize <mode> \tSpecifies how artwork is fitted into the artbox,\
-                   \teither `cover`, `contain` or `fill`.\
-                   \tDefaults to `cover`\
-\
-  --year <year>    \tSpecifies an year to be used in `proxy` mode in\
-                   \tthe copyright line. Defaults to `1996`\
-\
-  --author <author>\tSpecifies an author to be used in `proxy` mode in\
-                   \tthe copyright line. Defaults to `KAZUKI TAKAHASHI`\
-\
-  --field          \tEnables the generation of field background images\
-\
-  --color-* <color>\tChanges the color used for card names in `proxy`\
-                   \tmode, according to the card type (*). <color>\
-                   \tmust be a color string in hex format.\
-                   \tE.g., `--color-effect \"#ffffff\"` specifies white\
-                   \tfor Effect Monsters card name."
-  )
+local function assert_help(assertion, msg, verbose)
+  if assertion then return end
+  local args = fun.range(1, 4):map(function(i) return 'ygopic.usage.arguments.arg' .. i end)
+    :map(function(k) return {'  ' .. i18n(k .. '.id'), i18n(k .. '.desc')} end)
+    :totable()
+  local usage = {
+    i18n 'ygopic.usage.header', '\n  ', i18n 'ygopic.usage.cmd', '\n\n',
+    i18n 'ygopic.usage.help', '\n\n', i18n 'ygopic.usage.arguments.header',
+    '\n', unpack(Logs.tabular({25, 50}, args))
+  }
+  if verbose then
+    local opts = fun.range(1, 9):map(function(i) return 'ygopic.usage.options.opt' .. i end)
+      :map(function(k) return {'  ' .. i18n(k .. '.label'), i18n(k .. '.desc')} end)
+      :totable()
+    opts = Logs.tabular({25, 50}, opts, {in_newline = true})
+    usage = fun.chain(usage, {'\n\n', i18n 'ygopic.usage.options.header', '\n'}, opts):totable()
+  end
+  Logs.error(msg, '\n', unpack(usage))
 end
 
 local function run(flags, mode, imgfolder, cdbfp, outfolder)
-  if flags['--version'] or flags['-v'] then
-    return Logs.info(Version.formatted())
-  end
-  local Composer = require 'scripts.composer.composer'
-  assert_help(mode, "Please specify <mode>")
-  assert_help(imgfolder, "Please specify <art-folder>")
-  assert_help(cdbfp, "Please specify <card-database>")
-  assert_help(outfolder, "Please specify <output-folder>")
-  local options = {
-    year = flags["--year"],
-    author = flags["--author"],
-    ext = flags["--ext"],
-    size = flags["--size"],
-    artsize = flags["--artsize"],
-    field = flags["--field"],
-    ["color-normal"] = flags["--color-normal"],
-    ["color-effect"] = flags["--color-effect"],
-    ["color-fusion"] = flags["--color-fusion"],
-    ["color-ritual"] = flags["--color-ritual"],
-    ["color-synchro"] = flags["--color-synchro"],
-    ["color-token"] = flags["--color-token"],
-    ["color-xyz"] = flags["--color-xyz"],
-    ["color-link"] = flags["--color-link"],
-    ["color-spell"] = flags["--color-spell"],
-    ["color-trap"] = flags["--color-trap"]
-  }
-  for k, o in pairs(options) do
-    options[k] = o[1]
-  end
-  Composer.compose(mode or "", imgfolder, cdbfp, outfolder, options)
+  if flags['--version'] or flags['-v'] then return Logs.info(Version.formatted()) end
+  local Composer = require 'scripts.composer'
+  local help = flags['--help']
+  assert_help(mode, i18n 'ygopic.missing_mode', help)
+  assert_help(imgfolder, i18n 'ygopic.missing_imgfolder', help)
+  assert_help(cdbfp, i18n 'ygopic.missing_cdbfp', help)
+  assert_help(outfolder, i18n 'ygopic.missing_outfolder', help)
+  local options = {}
+  for k, v in pairs(flags) do options[k:match('^%-%-(.*)$')] = v[1] or true end
+  local holo = flags['--holo'] and flags['--holo'][1]
+  options.holo = (holo == 'false' or holo == '0') and 0 or 1
+  Composer.compose(mode, imgfolder, cdbfp, outfolder, options)
 end
 
-
 local interpreter = Interpreter.new()
-interpreter:add_command("", run, "--size", 1, "--ext", 1, "--artsize", 1,
-  "--year", 1, "--author", 1, "--field", 0, "--color-normal", 1, "--color-effect", 1,
-  "--color-fusion", 1, "--color-ritual", 1, "--color-synchro", 1, "--color-token", 1,
-  "--color-xyz", 1, "--color-link", 1, "--color-spell", 1, "--color-trap", 1,
-  "--version", 0, "-v", 0)
+interpreter:add_command('', run, '--size', 1, '--ext', 1, '--artsize', 1, '--year',
+  1, '--author', 1, '--field', 0, '--color-normal', 1, '--color-effect', 1,
+  '--color-fusion', 1, '--color-ritual', 1, '--color-synchro', 1, '--color-token', 1,
+  '--color-xyz', 1, '--color-link', 1, '--color-spell', 1, '--color-trap', 1,
+  '--holo', 1, '--locale', 1, '--version', 0, '-v', 0, '--verbose', 0, '--help', 0)
 
-local errmsg = interpreter:exec(...)
-assert_help(not errmsg, errmsg)
+Locale.set(Config.get('locale'))
+local errmsg, data = interpreter:exec(...)
+if not errmsg then return end
+assert_help(false, i18n('interpreter.' .. errmsg, {data}))
 

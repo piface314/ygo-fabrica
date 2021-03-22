@@ -1,7 +1,4 @@
-# Use this to define local configurations for your project.
-# Any configuration defined here will override its global counterpart.
-# Global configs are located in `ygo-fabrica/config.toml`,
-#  check that file to see possible settings.
+
 
 [expansion.$EXPANSION]
 default = true

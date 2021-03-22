@@ -7,3 +7,4 @@ build/*
 fonts/*
 *.tar.gz
 *.zip
+.vscode/*

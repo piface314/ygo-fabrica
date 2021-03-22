@@ -1,65 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set target=%LOCALAPPDATA%\YGOFabrica
+rem === Set locale ===
 
-rem ==========================================
-rem Copy luajit and vips
-rem ==========================================
-
-if not exist "%target%" mkdir "%target%"
-xcopy luajit "%target%\luajit" /s/h/e/k/c/y/i
-xcopy vips "%target%\vips" /s/h/e/k/c/y/i
-
-rem ==========================================
-rem Set environment variables
-rem ==========================================
-
-set contains=0
-
-goto :code
-:pathvar_iter
-  set list=%1
-  set list=%list:"=%
-  for /f "tokens=1* delims=;" %%a IN ("%list%") do (
-    if not "%%a" == "" call :check "%%a"
-    if not "%%b" == "" call :pathvar_iter "%%b"
-  )
-  exit /b
-
-:check
-  set token=%1
-  set token=%token:"=%
-  if "%token%" == "%target%" ( set "contains=1" )
-  exit /b
-
-:code
-for /f "usebackq tokens=2,*" %%A in (`reg query HKCU\Environment /v PATH`) do (
-  set user_path=%%B
+for /F "delims==" %%A in ('systeminfo.exe ^|  findstr ";"') do  (
+    for /F "usebackq tokens=2-3 delims=:;" %%B in (`echo %%A`) do (
+        for /F "usebackq tokens=1 delims=-" %%C in (`echo %%B`) do (
+            for /F "usebackq tokens=1 delims= " %%D in (`echo %%C`) do (
+                set locale=%%D
+            )
+        )
+    set | findstr /I locale
+    goto :GOTLOCALE
+    )
 )
+:GOTLOCALE
 
-call :pathvar_iter "%user_path%"
-
-if !contains! neq 0 ( goto :dont_set_env )
-
-set "backup_fp=user-path-backup.txt"
-echo %user_path% > %backup_fp%
+rem === Install program files ===
+luajit\luajit make.lua install --locale !locale!
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-echo Previous value of user variable PATH has been written to %backup_fp%
-set "user_path=%target%;%user_path%"
-setx PATH "%user_path%"
+luajit\luajit make.lua config "%1" --locale !locale!
 if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-
-:dont_set_env
-
-rem ==========================================
-rem Install program files
-rem ==========================================
-
-luajit\luajit make.lua install "%target%"
-if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-luajit\luajit make.lua config "%1"
-if %ERRORLEVEL% neq 0 ( exit /b %ERRORLEVEL% )
-if exist fonts ( luajit\luajit make.lua fonts )
-echo Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use^^! :D
 pause

@@ -1,49 +1,26 @@
 #!/usr/bin/env bash
-install_luajit() {
-  if command -v luajit >/dev/null 2>&1; then
-    echo "LuaJIT already installed"
-    return 0
-  fi
-  echo "Installing LuaJIT"
-  cd ./luajit && make && sudo make install \
-    || ( echo "Failed installing LuaJIT." ; cd .. ; exit 1 ) 
-  cd ..
-}
+locale=$(locale | grep LANG= | cut -d= -f2 | cut -d_ -f1)
 
-install_vips() {
-  if command -v luajit >/dev/null 2>&1; then
-    echo "libvips already installed"
-    return 0
-  fi
-  echo "Installing libvips"
-  cd ./vips && ./configure && make && sudo make install \
-    || ( echo "Failed installing libvips." ; cd .. ; exit 1 )
-  cd ..
-}
+luajit_version="2.1.0-beta3"
+vips_version="8.10.5"
 
-install_ygofab() {
-  sudo luajit make.lua install || exit 1
-}
+if [ $locale = "en" ]; then
+  missing="was not found! Please install it via your package manager or manually. Recommended version:"
+  info="Check https://github.com/piface314/ygo-fabrica/wiki/Install for more info if necessary."
+elif [ $locale = "pt" ]; then
+  missing="não foi encontrado! Por favor, instale-o através do seu gerenciador de pacote ou manualmente. Versão recomendada:"
+  info="Vá em https://github.com/piface314/ygo-fabrica/wiki/Instalar para mais informações se necessário."
+fi
 
-configure_ygofab() {
-  luajit make.lua config "$1" || exit 1
-}
-
-install_fonts() {
-  if [[ -d ./fonts ]]; then
-    luajit make.lua fonts || exit 1
-  fi
-}
-
-if [[ $UID != 0 ]]; then
-  echo "Please install with sudo."
+if ! command -v luajit >/dev/null 2>&1; then
+  echo luajit $missing $luajit_version.
+  echo $info
+  exit 1
+fi
+if ! command -v vips --version >/dev/null 2>&1; then
+  echo vips $missing $vips_version.
+  echo $info
   exit 1
 fi
 
-install_luajit \
-  && install_vips \
-  && install_ygofab \
-  && configure_ygofab "$1" \
-  && install_fonts \
-  && echo "Go to https://github.com/piface314/ygo-fabrica/wiki to learn how to use! :D"
-
+luajit make.lua install --locale $locale && luajit make.lua config --locale $locale "$1"

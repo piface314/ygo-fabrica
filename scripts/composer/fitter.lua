@@ -1,5 +1,3 @@
-
-
 local Fitter = {}
 
 local CC_THRESHOLD = 0.1
@@ -21,6 +19,14 @@ local function feather_edges(img, sigma, axis)
     :bandjoin(alpha)
 end
 
+--- Fits `img` inside the specified `layout`, using `base` as background.
+--- If `img` doesn't fit the layout, it will be downscaled to be fully
+--- contained in it. In that case, to fill otherwise empty space,
+--- a blurred copy of `img` is placed behind it.
+--- @param base Image
+--- @param img Image
+--- @param layout table
+--- @return Image
 function Fitter.contain(base, img, layout)
   local x, y, w, h, sigma = layout.x, layout.y, layout.w, layout.h, layout.blur or 2
   local wi, hi = img:width(), img:height()
@@ -48,6 +54,13 @@ function Fitter.contain(base, img, layout)
   return base:insert(img, x, y)
 end
 
+--- Fits `img` inside the specified `layout`, using `base` as background.
+--- If `img` doesn't fit the layout, it will be upscaled to cover that
+--- layout. The exceeding parts of `img` are cropped.
+--- @param base Image
+--- @param img Image
+--- @param layout table
+--- @return Image
 function Fitter.cover(base, img, layout)
   local x, y, w, h = layout.x, layout.y, layout.w, layout.h
   local wi, hi = img:width(), img:height()
@@ -64,6 +77,9 @@ function Fitter.cover(base, img, layout)
   return base:insert(img, x, y)
 end
 
+--- Fits `img` inside the specified `layout`, using `base` as background.
+--- If `img` doesn't fit the layout, it will be stretched to fill the
+--- entire layout, losing aspect ratio.
 function Fitter.fill(base, img, layout)
   local x, y, w, h = layout.x, layout.y, layout.w, layout.h
   local wi, hi = img:width(), img:height()

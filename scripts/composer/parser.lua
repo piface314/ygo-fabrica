@@ -1,14 +1,22 @@
-local GameConst = require 'scripts.game-const'
+local Codes = require 'lib.codes'
 
-
+--- Groups helper functions to parse card data
 local Parser = {}
 
-local types = GameConst.code.type
+local types = Codes.const.type
 
+--- Checks if numbers `a` and `b` have at least one common bit set.
+--- @param a number
+--- @param b number
+--- @return boolean
 function Parser.bcheck(a, b)
   return bit.band(a, b) ~= 0
 end
 
+--- Returns the commmon most significant bit between `a` and `b`
+--- @param a number
+--- @param b number
+--- @return number
 function Parser.match_msb(a, b)
   local n = bit.band(a, b)
   if n == 0 then return 0 end
@@ -20,74 +28,67 @@ function Parser.match_msb(a, b)
   return msb
 end
 
+--- Returns the commmon least significant bit between `a` and `b`
+--- @param a number
+--- @param b number
+--- @return number
 function Parser.match_lsb(a, b)
   local n = bit.band(a, b)
   return bit.band(n, -n)
 end
 
+--- Returns a list with each set bit in `n`
+--- @param n number
+--- @return number[]
 function Parser.bits(n)
-  return coroutine.wrap(function()
-    local b = 1
-    while n > 0 do
-      if Parser.bcheck(n, 1) then
-        coroutine.yield(b)
-      end
-      n = bit.rshift(n, 1)
-      b = bit.lshift(b, 1)
+  local bits = {}
+  local b = 1
+  while n > 0 do
+    if Parser.bcheck(n, 1) then
+      table.insert(bits, b)
     end
-  end)
+    n = bit.rshift(n, 1)
+    b = bit.lshift(b, 1)
+  end
+  return bits
 end
 
-function Parser.get_scales(data)
-  local sc = data.level
+--- Returns the left and right Pendulum Scales of a card
+--- @param card CardData
+--- @return number
+--- @return number
+function Parser.get_scales(card)
+  local sc = card.level
   local lsc = bit.rshift(bit.band(sc, 0xFF000000), 24)
   local rsc = bit.rshift(bit.band(sc, 0x00FF0000), 16)
   return lsc, rsc
 end
 
-function Parser.get_levelrank(data)
-  local lvlrank = bit.band(data.level, 0x0000FFFF)
-  return lvlrank > 0 and lvlrank <= 12 and lvlrank or nil
-end
+--- Returns card Level/Rank/Link Rating
+--- @param card CardData
+--- @return number
+function Parser.get_level(card) return bit.band(card.level, 0x0000FFFF) end
 
-function Parser.get_link_rating(data)
-  return bit.band(data.level, 0x0000FFFF)
-end
+--- Returns card Link Arrows
+--- @param card CardData
+--- @return number
+function Parser.get_link_arrows(card) return bit.band(card.def, Codes.const.link.ALL) end
 
-function Parser.get_link_arrows(data)
-  return bit.band(data.def, GameConst.code.link.ALL)
-end
-
-local effect_pattern = "^.*%[%s*[pP]endulum%s+[eE]ffect%s*%]%s*(.-)%s*[-_][-_][-_]+%s*"
-  ..  "%[%s*%a+%s+%a+%s*%]%s*(.-)%s*$"
-local na_pattern = "^%s*[-_]%s*[nN]%s*/%s*[aA]%s*[-_]%s*$"
-function Parser.get_effects(data)
-  if Parser.bcheck(data.type, types.PENDULUM) then
-    local pe, me = data.desc:match(effect_pattern)
-    if not pe then return data.desc end
-    if pe:match(na_pattern) then pe = "" end
-    if me:match(na_pattern) then me = "" end
+local PEND_DESC_PAT = '^%s*%[.-%]%s*(.-)%s*[-_][-_][-_]+%s*%[.-%]%s*(.-)%s*$'
+--- Returns card effect, taking into account that `desc` field in the
+--- database can contain Pendulum Effect/Monster Effect/Flavor Text.
+--- @param card CardData
+--- @return string effect_or_flavor
+--- @return string pendulum_effect
+function Parser.get_effects(card)
+  local desc = card.desc
+  if Parser.bcheck(card.type, types.PENDULUM) then
+    local pe, me = desc:match(PEND_DESC_PAT)
+    if not pe then return desc end
     return me, pe
   else
-    return data.desc
+    return desc
   end
-end
-
-function Parser.get_race(data)
-  local race = Parser.match_lsb(data.race, GameConst.code.race.ALL)
-  return GameConst.name.race[race]
-end
-
-local sumtypes = types.FUSION + types.LINK + types.RITUAL + types.SYNCHRO + types.XYZ
-function Parser.get_sumtype(data)
-  local sumtype = Parser.match_lsb(data.type, sumtypes)
-  return GameConst.name.type[sumtype]
-end
-
-local abilities = types.FLIP + types.GEMINI + types.SPIRIT + types.TOON + types.UNION
-function Parser.get_ability(data)
-  local ability = Parser.match_lsb(data.type, abilities)
-  return GameConst.name.type[ability]
 end
 
 return Parser

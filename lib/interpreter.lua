@@ -1,22 +1,18 @@
-
-
---- @class Interpreter
 --- Parses and runs commands, as given in `arg`, allowing flags
 --- to be configured
+--- @class Interpreter
+--- @field commands table
 local Interpreter = {}
 Interpreter.__index = Interpreter
 
-Interpreter.flag_prefixes = { '%-%-', '%-' }
+Interpreter.flag_prefixes = {'%-%-', '%-'}
 
-local insert = table.insert
 local unpack = unpack or table.unpack
 
 --- Creates a new instance of `Interpreter`
 --- @return Interpreter interpreter
 function Interpreter.new()
-  return setmetatable({
-    commands = { [''] = {} }
-  }, Interpreter)
+  return setmetatable({commands = {[''] = {}}}, Interpreter)
 end
 
 --- Sets a new list of prefixes that denote a flag
@@ -30,7 +26,7 @@ end
 --- @return boolean is_flag
 function Interpreter.check_flag(token)
   for _, prefix in ipairs(Interpreter.flag_prefixes) do
-    if token:match("^" .. prefix) then
+    if token:match('^' .. prefix) then
       return true
     end
   end
@@ -42,7 +38,7 @@ end
 --- @return table node
 function Interpreter:create_node(command)
   local node = self.commands['']
-  for token in command:gmatch("%a[%w-]*") do
+  for token in command:gmatch('%a[%w-]*') do
     if not node[token] then
       node[token] = {}
     end
@@ -58,9 +54,10 @@ end
 --- many arguments that flag needs
 --- @param command string
 --- @param fn function
+--- @vararg string|number
 function Interpreter:add_command(command, fn, ...)
   local node = self:create_node(command)
-  local flags, node_flags = { ... }, {}
+  local flags, node_flags = {...}, {}
   local i = 1
   while flags[i] and flags[i + 1] do
     node_flags[flags[i]] = flags[i + 1]
@@ -71,9 +68,10 @@ function Interpreter:add_command(command, fn, ...)
 end
 
 --- Executes a configured command, given a list of tokens
+--- @vararg string
 --- @return string|nil errmsg
 function Interpreter:exec(...)
-  local tokens, i = { ... }, 1
+  local tokens, i = {...}, 1
   local cmd = ''
   local node = self.commands[cmd]
   local token = tokens[i]
@@ -84,14 +82,14 @@ function Interpreter:exec(...)
     elseif node['@'] then
       break
     else
-      return ("invalid command %q"):format(cmd)
+      return 'invalid_command', cmd
     end
     i = i + 1
     token = tokens[i]
   end
   local command = node['@']
   if not command then
-    return ("invalid command %q"):format(cmd)
+    return 'invalid_command', cmd
   end
   local args, flags = {}, {}
   local current_flag, rem_f_args = nil, 0
@@ -99,28 +97,28 @@ function Interpreter:exec(...)
     if self.check_flag(token) then
       local flag_v = command.flags[token]
       if not flag_v then
-        return ("invalid flag %q"):format(token)
+        return 'invalid_flag', token
       end
       if rem_f_args > 0 then
-        return ("not enough arguments for %q flag"):format(current_flag)
+        return 'missing_flag_args', current_flag
       end
       rem_f_args = flag_v
       current_flag = token
       flags[current_flag] = {}
     elseif current_flag then
-      insert(flags[current_flag], token)
+      table.insert(flags[current_flag], token)
       rem_f_args = rem_f_args - 1
       if rem_f_args == 0 then
         current_flag = nil
       end
     else
-      insert(args, token)
+      table.insert(args, token)
     end
     i = i + 1
     token = tokens[i]
   end
   if rem_f_args > 0 then
-    return ("not enough arguments for %q flag"):format(current_flag)
+    return 'missing_flag_args', current_flag
   end
   command.fn(flags, unpack(args))
 end

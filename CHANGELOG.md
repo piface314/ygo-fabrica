@@ -6,6 +6,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - Barian Babélico // 2021-03-22
+### Added
+- Internationalization in program interface, `ygofab make` and `ygofab compose`.
+- A new font is needed to support internationalization.
+- `locale` general configuration.
+- `locale` configuration in `picset` and `expansion`.
+- `--locale` flag in `make.lua` (installer).
+- Currently, only `en` and `pt` are the supported languages, but you can add custom locales. 
+- Support for multiple monster abilities (Spirit, Union, Flip, etc.) in `proxy` mode.
+- Support for custom counters in `ygofab sync` and `ygofab make`.
+- `--verbose` flag to `ygofab compose`, `ygofab export` and `ygofab sync`.
+- Warning when user seems to be outside a project folder.
+- Support for custom data when reading card database with `ygofab compose`/`ygopic` or writing them with `ygofab make`. Currently supported columns are `holo`, `setnumber`, `year`, `author`, placed in a table called `custom`.
+- `--holo`, `--locale`, `--verbose` and `--help` flags to `ygopic`.
+- `-o` flag in `ygofab export` can now also specify an output _pattern_.
+
+### Changed
+- Default binaries location changed from `/usr/local/bin` to `$HOME/.local/bin` for Linux, to avoid using `sudo`.
+- Default install location changed from `/usr/local/ygofab` to `$HOME/.local/ygofab` for Linux, to avoid using `sudo`.
+- Default install location changed from `C:\Program Files\YGOFabrica` to `%LOCALAPPDATA%\YGOFabrica` for Windows, to avoid the need of running the installer as admin.
+- Global configurations location changed from `%USERPROFILE%\ygofab` to `%APPDATA%\YGOFabrica` for Windows.
+- Global configurations location changed from `~/ygofab` to `~/.config/ygofab` for Linux.
+- More detailed output in `ygofab config`.
+- `ygofab sync` now exports project in a `.zip` file, instead of copying individual files - except for `strings.conf`.
+- Now each expansion has its own `strings.conf`. E.g. expansion `blue-eyes` is associated with two files: `expansions/blue-eyes.cdb` and `expansions/blue-eyes-strings.conf`.
+- `--clean` flag in `ygofab make` renamed to `--overwrite` or `-ow`.
+- Attribute and monster Type (race) are no longer mandatory in `ygofab compose`/`ygopic`.
+- Correct OT codes and categories for EDOPro.
+- For Linux, releases no longer come with luajit and vips. It is recommended that each user installs them via their own package manager.
+
+### Fixed
+- Ritual Spells no longer have a blue frame.
+- Warnings for `ygofab compose` correctly display id of a broken card.
+- `&`, `<`, `>` are correctly escaped and rendered in card pics.
+- Fixed a bug in which if a macro was applied with less arguments than a previous macro, the argument from the previous one would be used in the next. Now they correctly use only their respective arguments.
+
+### Removed
+- `--clean`, `--no-pics`, `--no-script` and `--no-exp` flags from `ygofab sync`.
+- `fonts` command in `make.lua`. Fonts are now copied when `luajit make.lua install` is used.
+
 ## [1.0.2] - Artefato Astral // 2020-06-23
 ### Fixed
 - `ygopic` no longer broken.
@@ -29,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--clean` flag in `ygofab make` no longer drops tables.
 - `--version`/`-v` flag wasn't present
 
-## [1.0.0] - Artefato Astral // 2019-02-12
+## [1.0.0] - Artefato Astral // 2020-02-12
 ### Added
 - Creation of YGOPro extension pack folder structure.
 - Global and local configurations, e.g. game folders.
@@ -40,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generation of `.cdb` out of textual card description.
 
 [Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
+[2.0.0]: https://github.com/piface314/ygo-fabrica/compare/v1.0.2...v2.0.0
 [1.0.2]: https://github.com/piface314/ygo-fabrica/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/piface314/ygo-fabrica/releases/tag/v1.0.0
