@@ -1,5 +1,6 @@
 local ZipWriter = require 'ZipWriter'
 local path = require 'lib.path'
+local i18n = require 'i18n'
 
 ---@class Zip
 ---@field file any
@@ -65,7 +66,7 @@ function Zip:add(src_fp, dst_fp)
     end
     return true
   else
-    return false
+    return false, i18n('zip.missing', {src_fp})
   end
 end
 

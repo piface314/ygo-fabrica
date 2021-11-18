@@ -10,6 +10,7 @@ return {
       missing_flag_args = 'argumentos insuficientes para opção %q'
     },
     logs = {err = 'ERRO', ok = 'OK'},
+    zip = {missing = '%q: nenhum arquivo nesse caminho'},
     codes = {
       attribute = {
         EARTH = 'TERRA',
@@ -166,6 +167,7 @@ return {
     },
     sync = {
       status = 'Sincronizando %q e %q para %q...',
+      path_empty = 'Caminho do gamedir está vazio',
       writing_string = 'Escrevendo strings.conf...',
       done = 'Pronto!'
     },

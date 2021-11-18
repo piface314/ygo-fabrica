@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Typos in localization.
+- No longer errors out when trying to zip inexistent files. A warning is shown instead.
+- Correctly identifies commands and return codes during build and installation.
 
 ## [2.0.0] - Barian Babélico // 2021-03-22
 ### Added

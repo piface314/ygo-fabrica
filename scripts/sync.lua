@@ -22,6 +22,9 @@ return function(flags)
   local eid, exp = Config.groups.from_flag.get_one('expansion', fe)
   for gid, gamedir in pairs(gamedirs) do
     Logs.info(i18n('sync.status', {pid, eid, gid}))
+    if gamedir.path == '' then
+      Logs.warning(i18n 'sync.path_empty')
+    end
     local out = path.join(gamedir.path, 'expansions', '@e.zip')
     Export.export(out, {[eid] = exp}, {[pid] = picset}, verbose)
     if not no_string then

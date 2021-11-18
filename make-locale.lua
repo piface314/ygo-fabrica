@@ -8,9 +8,10 @@ return {
     },
     missing_command = 'please specify `build`, `install` or `config`',
     mkdir_error = 'failed to create folder %q',
-    cp_erroR = 'failed to copy %q',
+    cp_error = 'failed to copy %q',
     build = {
       ok = 'YGOFabrica has been succesfully built!',
+      dep_error = 'failed to build dependencies',
       luajit_error = 'failed to include LuaJIT files in release',
       vips_error = 'failed to include vips files in release',
       i18n_error = 'failed to adjust i18n module',
@@ -19,8 +20,7 @@ return {
     },
     install = {
       ok = 'YGOFabrica has been succesfully installed!',
-      sudo = 'Using sudo to install vips',
-      vips_error = 'failed to install vips',
+      bin_error = 'failed to write executable files',
       path_backup_error = 'failed to backup user variable PATH',
       path_backup = 'Previous value of user variable PATH has been written to %s',
       path_error = 'failed to add new value into user variable PATH',
@@ -28,6 +28,7 @@ return {
     },
     config = {
       ok = 'YGOFabrica has been succesfully configured!',
+      error = 'failed to write global configuration file',
       comment = {
         header = 'Global configurations for YGOFabrica',
         gamedir = 'Define one or more `gamedir`s (game directories)',
@@ -47,6 +48,7 @@ return {
     cp_error = 'falha ao copiar %q',
     build = {
       ok = 'YGOFabrica foi compilada com sucesso!',
+      dep_error = 'falha ao compilar dependências',
       luajit_error = 'falha ao incluir LuaJIT no lançamento',
       vips_error = 'falha ao incluir vips no lançamento',
       i18n_error = 'falha ao ajustar o módulo i18n',
@@ -55,8 +57,7 @@ return {
     },
     install = {
       ok = 'YGOFabrica foi instalada com sucesso!',
-      sudo = 'Usando sudo para instalar vips',
-      vips_error = 'falha ao instalar vips',
+      bin_error = 'falha ao criar arquivos executáveis',
       path_backup_error = 'falha ao fazer backup da variável de ambiente PATH',
       path_backup = 'Valor prévio da variável de ambiente PATH foi escrito em %s',
       path_error = 'falha ao inserir novo valor na variável PATH',
@@ -64,6 +65,7 @@ return {
     },
     config = {
       ok = 'YGOFabrica foi configurada com sucesso!',
+      error = 'falha ao escrever arquivo de configurações globais',
       comment = {
         header = 'Configurações globais para a YGOFabrica',
         gamedir = 'Defina um ou mais `gamedir`s (pastas do jogo)',

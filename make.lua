@@ -10,7 +10,7 @@ local WIN = SEP == '\\'
 package.path = package.path:gsub('/', SEP):gsub('T', Spec.rocks_tree)
 package.cpath = package.cpath:gsub('/', SEP):gsub('T', Spec.rocks_tree)
 
-local exec, cp, check_cmd
+local cp, check_cmd
 
 local cmd_build = {}
 local cmd_install = {}
@@ -24,8 +24,6 @@ cmd_build.file_list = {
 cmd_install.file_list = {
   'lib', 'locale', 'modules', 'res', 'scripts', 'CHANGELOG.md', 'LICENSE', 'README.md'
 }
-
-local function chmod(fp) return WIN or exec('chmod +x "%s"', fp) end
 
 local function read(fp)
   local f, e = io.open(fp, 'r')
@@ -43,6 +41,13 @@ local function write(fp, content)
   return true
 end
 
+local function exec(command, ...)
+  local code1, _, code2 = os.execute(command:format(...))
+  return code1 == 0 or code2 == 0
+end
+
+local function chmod(fp) return WIN or exec('chmod +x "%s"', fp) end
+
 if WIN then
   package.cpath = package.cpath:gsub('%.ext', '.dll')
   table.insert(cmd_build.file_list, 'install.cmd')
@@ -59,10 +64,6 @@ luajit "%YGOFAB_ROOT%/scripts/$script.lua" %*
 endlocal
 @echo on
 ]]
-  function exec(command, ...)
-    local code1, _, code2 = os.execute(command:format(...))
-    return (code1 or code2) == 0
-  end
   function cp(src, dst, file)
     if file then
       return exec('xcopy "%s" "%s" /q/y', src, dst)
@@ -137,7 +138,6 @@ export LUA_PATH="${YGOFAB_ROOT}/?.lua;${YGOFAB_ROOT}/?/init.lua;${YGOFAB_ROOT}/m
 export LUA_CPATH="${YGOFAB_ROOT}/modules/lib/lua/5.1/?.so"
 luajit "${YGOFAB_ROOT}/scripts/$script.lua" $@
 ]]
-  function exec(command, ...) return os.execute(command:format(...)) == 0 end
   function cp(src, dst) return exec('cp -ar "%s" "%s"', src, dst) end
   function check_cmd(command) return exec('command -v "%s" >/dev/null 2>&1', command) end
   function cmd_build.luajit() end

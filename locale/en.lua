@@ -10,6 +10,7 @@ return {
       missing_flag_args = 'not enough arguments for %q flag'
     },
     logs = {err = 'ERROR', ok = 'OK'},
+    zip = {missing = '%q: no such file'},
     codes = {
       attribute = {
         EARTH = 'EARTH',
@@ -164,6 +165,7 @@ return {
     },
     sync = {
       status = 'Syncing %q and %q to %q...',
+      path_empty = 'Path to gamedir is empty',
       writing_string = 'Writing strings.conf...',
       done = 'Done!'
     },

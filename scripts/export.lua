@@ -57,12 +57,14 @@ end
 
 local function get_strings_file(eid)
   local fp = path.join('expansions', eid .. '-strings.conf')
-  return {{fp, fp}}
+  return path.exists(fp) and {{fp, fp}} or {}
 end
 
 function Export.export(outpattern, expansions, picsets, verbose)
-  local has_any = next(expansions) and next(picsets)
-  local scripts = has_any and scan_scripts()
+  if not next(expansions) or not next(picsets) then
+    return false
+  end
+  local scripts = scan_scripts()
   for eid, _ in pairs(expansions) do
     local exp_file = get_expansion_file(eid)
     local str_file = get_strings_file(eid)
@@ -86,7 +88,7 @@ function Export.export(outpattern, expansions, picsets, verbose)
       zipfile:close()
     end
   end
-  return has_any
+  return true
 end
 
 function Export.run(flags)
