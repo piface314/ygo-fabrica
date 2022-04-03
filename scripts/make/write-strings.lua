@@ -67,9 +67,9 @@ end
 --- @param strings table
 --- @return table
 local function get_string_lines(strings)
-  return fun.iter(strings):map(function(_, entries)
-    return fun.iter(entries):map(function(_, e) return tonumber(e.code), e.name end):tomap()
-  end):filter(function(g) return next(g) ~= nil end):totable()
+  return fun.iter(strings):map(function(key, entries)
+    return key, fun.iter(entries):map(function(_, e) return tonumber(e.code), e.name end):tomap()
+  end):filter(function(_, g) return next(g) ~= nil end):tomap()
 end
 
 --- Merges the strings found in a source `strings.conf` file into a destination
