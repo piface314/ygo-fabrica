@@ -148,7 +148,8 @@ return {
         custom_error = 'error while writing custom table to .cdb: ',
         clean_error = 'error while cleaning .cdb: ',
         strings = 'Writing strings.conf...',
-        strings_fail = 'failed writing strings.conf'
+        strings_fail = 'failed writing strings.conf',
+        no_data = 'no data to write to .cdb',
       }
     },
     new = {

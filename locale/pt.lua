@@ -150,7 +150,8 @@ return {
         custom_error = 'erro ao escrever tabela custom no .cdb: ',
         clean_error = 'erro ao limpar .cdb: ',
         strings = 'Escrevendo strings.conf...',
-        strings_fail = 'falha ao escrever strings.conf'
+        strings_fail = 'falha ao escrever strings.conf',
+        no_data = 'não há dados para escrever o .cdb',
       }
     },
     new = {

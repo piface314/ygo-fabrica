@@ -126,6 +126,10 @@ end
 --- @param overwrite boolean if `true`, old .cdb is overwritten
 local function write_cdb(cdbfp, entries, overwrite)
   local cdb = open_cdb(cdbfp)
+  if next(entries) ~= nil then
+    Logs.warning(i18n 'make.writer.no_data')
+    return
+  end
   local sql = fun.iter(tables):map(function(t, cols)
     local tuples = fun.iter(entries):map(function(e) return get_tuple(cols, e) end)
     return get_replace_sql(t, cols, tuples:totable())
