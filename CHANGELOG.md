@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - Barian Babélico // 2022-04-07
+### Fixed
+- `ygofab make` now properly warns when no data can be written to a .cdb, instead of showing a syntax error.
+- `ygofab make` now properly writes strings.conf data.
+
 ## [2.0.1] - Barian Babélico // 2021-11-18
 ### Fixed
 - Typos in localization.
@@ -86,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generation of `.cdb` out of textual card description.
 
 [Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
+[2.0.2]: https://github.com/piface314/ygo-fabrica/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/piface314/ygo-fabrica/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/piface314/ygo-fabrica/compare/v1.0.2...v2.0.0
 [1.0.2]: https://github.com/piface314/ygo-fabrica/compare/v1.0.1...v1.0.2

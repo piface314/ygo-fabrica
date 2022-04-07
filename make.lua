@@ -97,7 +97,7 @@ endlocal
     local version = Spec.build.vips_version
     local vips_file = 'vips-dev-w64-web-' .. version .. '.zip'
     local vips = 'vips-dev-' .. version:match('^(.+%..+)%..+$')
-    local ok = exec('certutil -urlcache -split -f "https://github.com/libvips/libvips/releases/download/v%s/%s"', version, vips_file)
+    local ok = exec('certutil -urlcache -split -f "https://github.com/libvips/build-win64-mxe/releases/download/v%s/%s"', version, vips_file)
       and exec('"C:\\Program Files\\7-Zip\\7z" x %s', vips_file)
       and exec('del /f/q "%s"', vips_file)
       and cp(vips .. '\\bin', 'vips')
@@ -117,7 +117,7 @@ endlocal
   end
   function cmd_install.pathenv(base)
     local pipe = io.popen('reg query HKCU\\Environment /v PATH')
-    pipe:read('*l'); pipe:read('*l')
+    _ = pipe:read('*l'); _ = pipe:read('*l')
     local pathvar = pipe:read('*l'):match('%s*[%w_]+%s*[%w_]+%s*(.*)') or ''
     pipe:close()
     for fp in pathvar:gmatch '(.-);' do
@@ -177,10 +177,10 @@ function cmd_build.run(flags)
     cmd_build.adjust_i18n()
     cmd_build.dependencies(Spec.dependencies)
     cmd_build.adjust_toml()
-    cmd_build.spec()
   else
     assert(require_missing(flags['--locale']))
   end
+  cmd_build.spec()
   if both or rel then
     cmd_build.luajit()
     cmd_build.vips()

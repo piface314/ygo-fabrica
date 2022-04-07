@@ -126,7 +126,7 @@ end
 --- @param overwrite boolean if `true`, old .cdb is overwritten
 local function write_cdb(cdbfp, entries, overwrite)
   local cdb = open_cdb(cdbfp)
-  if next(entries) ~= nil then
+  if next(entries) == nil then
     Logs.warning(i18n 'make.writer.no_data')
     return
   end

@@ -1,7 +1,7 @@
 local WIN = package.config:sub(1, 1) == '\\'
 
 return {
-  version = '2.0.1',
+  version = '2.0.2',
   version_name = 'barian-babelico',
   install_path = WIN and os.getenv('LOCALAPPDATA') .. '\\YGOFabrica'
                       or os.getenv('HOME')         .. '/.local/ygofab',
