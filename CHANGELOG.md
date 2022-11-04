@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `ygofab make` now supports "metamacros", which are references to other fields of the card, e.g. `${@name}` becomes the card name.
+
+### Changed
+- `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
 
 ## [2.0.2] - Barian Babélico // 2022-04-07
 ### Fixed

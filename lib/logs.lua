@@ -145,7 +145,7 @@ end
 --- If a column limit is set to `0`, that column will have flexible width.
 --- @param limit number[]
 --- @param text string[][]
---- @param opts table
+--- @param opts table|nil
 --- @return string[]
 function Logs.tabular(limit, text, opts)
   local width, s, opts = {}, {}, opts or {}
