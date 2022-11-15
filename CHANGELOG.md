@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
+- Text formatting improved, also with non breaking spaces added after bullet points.
 
 ## [2.0.2] - Barian Babélico // 2022-04-07
 ### Fixed
