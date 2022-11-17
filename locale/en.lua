@@ -170,6 +170,18 @@ return {
       writing_string = 'Writing strings.conf...',
       done = 'Done!'
     },
+    unmake = {
+      status = 'Making %q .toml file...',
+      done = 'Done!',
+      no_cdbfp = "missing card dataase file path",
+      no_tomlfp = "missing toml file path",
+      file_error = "failed to open %q for writing",
+      toml_error = "failed to create file",
+      data_fetcher = {
+        closed_db = "nil or closed card database",
+        read_db_fail = "failed to read card database"
+      }
+    },
     ygofab = {
       usage = {
         header = 'Usage:',

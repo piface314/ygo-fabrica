@@ -71,6 +71,10 @@ local function cmd_sync(flags)
   require 'scripts.sync'(flags)
 end
 
+local function cmd_unmake(flags, cdbfp, tomlfp)
+  require 'scripts.unmake'(flags, cdbfp, tomlfp)
+end
+
 local interpreter = Interpreter.new()
 interpreter:add_command('compose', cmd_compose, '-p', 1, '-Pall', 0, '-e', 1,
   '-Eall', 0, '--verbose', 0)
@@ -81,6 +85,7 @@ interpreter:add_command('make', cmd_make, '--overwrite', 0, '-ow', 0, '--all', 0
 interpreter:add_command('new', cmd_new)
 interpreter:add_command('sync', cmd_sync, '-g', 1, '-Gall', 0, '-p', 1, '-e', 1,
   '--no-string', 0, '--verbose', 0)
+interpreter:add_command('unmake', cmd_unmake)
 interpreter:add_command('', cmd_version, '--version', 0, '-v', 0)
 
 Locale.set(Config.get('locale') or i18n.getFallbackLocale())

@@ -172,6 +172,18 @@ return {
       writing_string = 'Escrevendo strings.conf...',
       done = 'Pronto!'
     },
+    unmake = {
+      status = "Criando arquivo .toml para %q...",
+      done = "Pronto!",
+      no_cdbfp = "caminho do arquivo .cdb não especificado",
+      no_tomlfp = "caminho do arquivo .toml não especificado",
+      file_error = "falha ao abrir %q para escrita",
+      toml_error = "falha ao criar arquivo",
+      data_fetcher = {
+        closed_db = 'database das cartas inexistente ou fechada',
+        read_db_fail = 'falha ao ler a database das cartas'
+      }
+    },
     ygofab = {
       usage = {
         header = 'Uso:',
