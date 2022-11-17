@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `ygofab make` now supports "metamacros", which are references to other fields of the card, e.g. `${@name}` becomes the card name.
+- New command `ygofab unmake` turns an existing `.cdb` into a `.toml` file.
 
 ### Changed
 - `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
