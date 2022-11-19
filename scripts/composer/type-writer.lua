@@ -94,15 +94,11 @@ local function fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs)
   repeat
     relax[r]()
     scale = w / opt.width
-    if scale <= 0.5 then return nil end
+    if scale <= 0.75 then return nil end
     opt.font = ('%s %s'):format(ft, fs)
     r, t = 3 - r, vips.Image.text(text, opt)
   until t:height() <= h
   return t:resize(scale, {vscale = 1})
-end
-
-local function gap_size(t, h)
-  return t and h - t:height() or nil
 end
 
 local align = {left = 'low', center = 'centre', right = 'high'}
@@ -125,17 +121,10 @@ function TypeWriter.printf(text, base, args, color)
   local x, y, w, h, ft, fs = args.x, args.y, args.w, args.h, args.ft, args.fs
   local ff, a, j, i = args.ff, align[args.a] or 'low', args.j, args.i or 16
   local opt = {width = w, fontfile = ff, dpi = DPI, justify = j, align = a}
-  local t = {
-    fit_in_ratio(text, opt, h, ft, fs),
-    fit_relaxing_width(text, opt, h, w, i, ft, fs),
-    fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs[#fs])
-  }
-  local g = fun.range(1, 3):map(function(k) return k, gap_size(t[k], h) end):tomap()
-  local kmin = nil
-  for k = 1, 3 do
-    if g[k] and (not kmin or g[k] < g[kmin]) then kmin = k end
-  end
-  return t[kmin] and paint_insert(t[kmin], base, color, x, y) or base
+  local t = fit_in_ratio(text, opt, h, ft, fs)
+    or fit_relaxing_width(text, opt, h, w, i, ft, fs)
+    or fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs[#fs])
+  return t and paint_insert(t, base, color, x, y) or base
 end
 
 --- Prints `text` in a single line to a background image (`base`).

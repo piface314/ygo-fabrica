@@ -83,14 +83,14 @@ return {
     a = 'left'
   },
   flavor_text = {
-    x = 53, y = 794, w = 588, h = 126, j = true,
+    x = 53, y = 795, w = 588, h = 126, j = true,
     fs = {5, 4},
     ft = Fonts.get_family('flavor_text'),
     ff = Fonts.get_file('flavor_text'),
     a = 'left'
   },
   monster_effect = {
-    x = 53, y = 795, w = 588, h = 125, j = true,
+    x = 53, y = 795, w = 588, h = 126, j = true,
     fs = {5, 4.5, 4, 3.8, 3.6},
     ft = Fonts.get_family('effect'),
     ff = Fonts.get_file('effect'),
