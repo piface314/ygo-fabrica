@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
 - Text formatting improved, also with non breaking spaces added after bullet points.
 
+### Fixed
+- `ygofab compose` now correctly ignores leading and trailing whitespace.
+
 ## [2.0.2] - Barian Babélico // 2022-04-07
 ### Fixed
 - `ygofab make` now properly warns when no data can be written to a .cdb, instead of showing a syntax error.
