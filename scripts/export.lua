@@ -34,7 +34,7 @@ end
 
 local function scan_scripts()
   Logs.info(i18n 'export.scan_scripts')
-  return scan_dir('script', 'c%d+%.lua', 'script')
+  return scan_dir('script', '%.lua$', 'script')
 end
 
 local function scan_pics(id, picset)

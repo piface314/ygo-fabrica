@@ -16,7 +16,9 @@ local ESC_CHAR = '[' .. table.concat(fun.iter(ESC_REPL):totable()) .. ']'
 ---with Pango markup. (Pango is the text rendering lib used by vips)
 ---@param text string
 ---@return string
-local function escape(text) return (text:gsub(ESC_CHAR, ESC_REPL)) end
+local function escape(text)
+  return text:gsub(ESC_CHAR, ESC_REPL):match("^%s*(.-)%s*$")
+end
 
 local VALID_EXT = {jpg = true, png = true, jpeg = true}
 ---Checks if a file extension is a valid image extension.

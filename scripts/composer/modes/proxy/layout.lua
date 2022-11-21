@@ -2,185 +2,225 @@ local Fonts = require 'res.composer.fonts'
 
 return {
   art = {
-    regular = {x = 83, y = 185, w = 528, h = 528},
+    regular = {x = 98, y = 217, w = 617, h = 617},
     pendulum = {
       m = {
-        o = {x = 45, y = 182, w = 603, h = 448},
-        t = {x = 45, y = 182, w = 603, h = 569}
+        o = {x = 52, y = 213, w = 708, h = 526},
+        t = {x = 52, y = 213, w = 708, h = 667}
       },
       s = {
-        o = {x = 45, y = 182, w = 603, h = 484},
-        t = {x = 45, y = 182, w = 603, h = 569}
+        o = {x = 52, y = 213, w = 708, h = 568},
+        t = {x = 52, y = 213, w = 708, h = 667}
       }
     }
   },
   attribute = {
-    x = 614, y = 49, w = 68,
-    f = Fonts.get_family('monster_desc', 3),
+    x = 720, y = 57, w = 80,
+    f = Fonts.get_family('monster_desc', 3.5),
     ff = Fonts.get_file('monster_desc'),
     a = 'center'
   },
+  att_icon = { cx = 720, cy = 90, w = 80, h = 80 },
+  st_icon = { x = 672, y = 151, w = 43, h = 43 },
+  level_stars = { x = 675, y = 142, w = 53, h = 53, sp = 1 },
+  rank_stars = { x = 82, y = 142, w = 53, h = 53, sp = 1, dx = -25 },
   name = {
-    x = 54, y = 54, w = 512,
-    f = Fonts.get_family('card_name', 20),
+    x = 63, y = 63, w = 600,
+    f = Fonts.get_family('card_name', 24),
     ff = Fonts.get_file('card_name'),
     a = 'left'
   },
   spelltrap_label = {
-    x = 623, y = 131, w = 400,
-    f = Fonts.get_family('monster_desc', 8.5),
+    x = 730, y = 152, w = 469,
+    f = Fonts.get_family('monster_desc', 10),
     ff = Fonts.get_file('monster_desc'),
     a = 'right'
   },
   lscale = {
     m = {
-      x = 70, y = 695, w = 42,
-      f = Fonts.get_family('values', 12),
+      x = 82, y = 814, w = 49,
+      f = Fonts.get_family('values', 14),
       ff = Fonts.get_file('values'),
       a = 'center'
     },
     s = {
-      x = 70, y = 715, w = 42,
-      f = Fonts.get_family('values', 12),
+      x = 82, y = 837, w = 49,
+      f = Fonts.get_family('values', 14),
       ff = Fonts.get_file('values'),
       a = 'center'
     }
   },
   rscale = {
     m = {
-      x = 623, y = 695, w = 42,
-      f = Fonts.get_family('values', 12),
+      x = 730, y = 814, w = 49,
+      f = Fonts.get_family('values', 14),
       ff = Fonts.get_file('values'),
       a = 'center'
     },
     s = {
-      x = 623, y = 715, w = 42,
-      f = Fonts.get_family('values', 12),
+      x = 730, y = 837, w = 49,
+      f = Fonts.get_family('values', 14),
       ff = Fonts.get_file('values'),
       a = 'center'
     }
   },
   pendulum_effect = {
     m = {
-      x = 109, y = 644, w = 475, h = 102, j = true,
-      fs = {5, 4, 3.5},
+      x = 128, y = 754, w = 554, h = 119, j = true,
+      fs = {6, 5, 4, 3.5},
       ft = Fonts.get_family('effect'),
       ff = Fonts.get_file('effect'),
       a = 'left'
     },
     s = {
-      x = 109, y = 680, w = 475, h = 68, j = true,
-      fs = {5},
+      x = 128, y = 796, w = 554, h = 80, j = true,
+      fs = {6, 5},
       ft = Fonts.get_family('effect'),
       ff = Fonts.get_file('effect'),
       a = 'left'
     }
   },
   monster_desc = {
-    x = 54, y = 766, w = 585,
-    f = Fonts.get_family('monster_desc', 6.5),
+    x = 63, y = 897, w = 685,
+    f = Fonts.get_family('monster_desc', 7),
     ff = Fonts.get_file('monster_desc'),
     a = 'left'
   },
   flavor_text = {
-    x = 53, y = 794, w = 588, h = 126, j = true,
-    fs = {5, 4},
+    x = 62, y = 930, w = 689, h = 148, j = true,
+    fs = {6, 5.5, 5, 4},
     ft = Fonts.get_family('flavor_text'),
     ff = Fonts.get_file('flavor_text'),
     a = 'left'
   },
   monster_effect = {
-    x = 53, y = 795, w = 588, h = 125, j = true,
-    fs = {5, 4.5, 4, 3.8, 3.6},
+    x = 62, y = 930, w = 689, h = 148, j = true,
+    fs = {6, 5.1, 4.4, 4, 3.5},
     ft = Fonts.get_family('effect'),
     ff = Fonts.get_file('effect'),
     a = 'left'
   },
   spelltrap_effect = {
-    x = 53, y = 766, w = 585, h = 180, j = true,
-    fs = {5, 4.5, 4},
+    x = 62, y = 897, w = 689, h = 211, j = true,
+    fs = {6, 5.5, 5, 4.5, 4},
     ft = Fonts.get_family('effect'),
     ff = Fonts.get_file('effect'),
     a = 'left'
   },
+  atk_label = {
+    x = 442, y = 1085,
+    f = Fonts.get_family('values', 8.5),
+    ff = Fonts.get_file('values'),
+    a = 'left'
+  },
   atk = {
-    x = 500, y = 927,
-    f = Fonts.get_family('values', 7.25),
+    x = 586, y = 1085,
+    f = Fonts.get_family('values', 8.5),
     ff = Fonts.get_file('values'),
     a = 'right'
   },
   atk_q = {
-    x = 500, y = 927, w = 13, h = 19,
-    f = Fonts.get_family('values', 12),
+    x = 586, y = 1085, w = 15, h = 24,
+    f = Fonts.get_family('values', 14),
     ff = Fonts.get_file('values'),
     a = 'right'
   },
+  def_label = {
+    x = 610, y = 1085,
+    f = Fonts.get_family('values', 8.5),
+    ff = Fonts.get_file('values'),
+    a = 'left'
+  },
   def = {
-    x = 640, y = 927,
-    f = Fonts.get_family('values', 7.25),
+    x = 750, y = 1085,
+    f = Fonts.get_family('values', 8.5),
     ff = Fonts.get_file('values'),
     a = 'right'
   },
   def_q = {
-    x = 640, y = 927, w = 13, h = 19,
-    f = Fonts.get_family('values', 12),
+    x = 750, y = 1085, w = 13, h = 14,
+    f = Fonts.get_family('values', 14),
     ff = Fonts.get_file('values'),
     a = 'right'
   },
-  link_rating = {
-    x = 639, y = 927,
-    f = Fonts.get_family('link_rating', 6.5),
+  link_label = {
+    x = 720, y = 1085,
+    f = Fonts.get_family('link_rating', 7.5),
     ff = Fonts.get_file('link_rating'),
     a = 'right'
   },
+  link_rating = {
+    x = 749, y = 1085,
+    f = Fonts.get_family('link_rating', 7.5),
+    ff = Fonts.get_file('link_rating'),
+    a = 'right'
+  },
+  link_arrows = {
+    n = {
+      [64] = {x = 65, y = 186}, [128] = {x = 327, y = 170}, [256] = {x = 674, y = 186},
+      [8]  = {x = 51, y = 447},                             [32]  = {x = 715, y = 447},
+      [1]  = {x = 65, y = 793}, [2]   = {x = 327, y = 834}, [4]   = {x = 674, y = 793}
+    },
+    s = {
+      [64] = {x = 43, y = 203}, [128] = {x = 327, y = 195}, [256] = {x = 697, y = 203},
+      [8]  = {x = 36, y = 415},                             [32]  = {x = 729, y = 415},
+      [1]  = {x = 42, y = 711}, [2]   = {x = 327, y = 744}, [4]   = {x = 696, y = 711}
+    },
+    m = {
+      [64] = {x = 43, y = 203}, [128] = {x = 327, y = 195}, [256] = {x = 697, y = 203},
+      [8]  = {x = 36, y = 394},                             [32]  = {x = 729, y = 394},
+      [1]  = {x = 42, y = 669}, [2]   = {x = 327, y = 702}, [4]   = {x = 696, y = 669}
+    }
+  },
   setnumber = {
     regular = {
-      x = 621, y = 731, w = 180,
-      f = Fonts.get_family('signature', 4.5),
+      x = 727, y = 856, w = 211,
+      f = Fonts.get_family('signature', 5.3),
       ff = Fonts.get_file('signature'),
       a = 'right'
     },
     link = {
-      x = 570, y = 731, w = 180,
-      f = Fonts.get_family('signature', 4.5),
+      x = 668, y = 856, w = 211,
+      f = Fonts.get_family('signature', 5.3),
       ff = Fonts.get_file('signature'),
       a = 'right'
     },
     pendulum = {
-      x = 54, y = 930, w = 180,
-      f = Fonts.get_family('signature', 4.5),
+      x = 63, y = 1089, w = 211,
+      f = Fonts.get_family('signature', 5.3),
       ff = Fonts.get_file('signature'),
       a = 'left'
     }
   },
   edition = {
     low = {
-      x = 145, y = 967, w = 230,
-      f = Fonts.get_family('edition', 5),
+      x = 170, y = 1132, w = 269,
+      f = Fonts.get_family('edition', 6),
       ff = Fonts.get_file('edition')
     },
     high = {
-      x = 75, y = 730, w = 230,
-      f = Fonts.get_family('edition', 4.8),
+      x = 88, y = 855, w = 269,
+      f = Fonts.get_family('edition', 5.8),
       ff = Fonts.get_file('edition')
     }
   },
   forbidden = {
-    x = 32, y = 969, w = 350,
-    f = Fonts.get_family('signature', 4.5),
+    x = 37, y = 1135, w = 410,
+    f = Fonts.get_family('signature', 5.3),
     ff = Fonts.get_file('signature'),
     a = 'left'
   },
   serial_code = {
-    x = 32, y = 968, w = 120,
-    f = Fonts.get_family('signature', 4.5),
+    x = 37, y = 1133, w = 141,
+    f = Fonts.get_family('signature', 5.3),
     ff = Fonts.get_file('signature'),
     a = 'left'
   },
   copyright = {
-    x = 631, y = 968, w = 260,
-    f = Fonts.get_family('signature', 4.25),
+    x = 738, y = 1133, w = 305,
+    f = Fonts.get_family('signature', 5),
     ff = Fonts.get_file('signature'),
     a = 'right'
-  }
+  },
+  holo = { x = 746, y = 1118, w = 45, h = 45 }
 }

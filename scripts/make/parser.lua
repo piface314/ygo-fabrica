@@ -13,7 +13,7 @@ local function resolve(macro, argv)
   return s
 end
 
-local function parse(macros, str)
+local function parse(macros, str, meta)
   local unresolved = {}
   local function parse(str, cursor, up_sep)
     local function char() return str:sub(cursor, cursor) end
@@ -25,7 +25,13 @@ local function parse(macros, str)
       if macro then
         if char() == '}' then
           local m = macros[macro]
-          if m then
+          local meta_name = macro:match '^@(.*)$'
+          if meta_name and meta and meta[meta_name] then
+            Logs.assert(not unresolved[macro], i18n('make.parser.cyclic_macro', {macro}))
+            unresolved[macro] = true
+            out = out .. parse(meta[meta_name])
+            unresolved[macro] = nil
+          elseif m then
             Logs.assert(not unresolved[macro], i18n('make.parser.cyclic_macro', {macro}))
             unresolved[macro] = true
             out = out .. parse(resolve(m, argv))
@@ -34,7 +40,7 @@ local function parse(macros, str)
             out = out .. ('${%s%s%s}'):format(macro, sep or '', table.concat(argv, sep))
           end
           macro = nil
-        elseif char():match('[%w_-]') then
+        elseif char():match('[@%w_-]') then
           macro = macro .. char()
         elseif char():match('[${]') then
           out = out .. '${' .. macro
@@ -67,12 +73,12 @@ local function parse(macros, str)
   return parse(str)
 end
 
-local function scan(macros, v)
+local function scan(macros, v, meta)
   local t = type(v)
   if t == 'table' then
-    return fun.iter(next, v):map(function(k, v) return k, scan(macros, v) end):tomap()
+    return fun.iter(next, v):map(function(k, i) return k, scan(macros, i, meta or v) end):tomap()
   elseif t == 'string' then
-    return parse(macros, v)
+    return parse(macros, v, meta)
   else
     return v
   end
@@ -80,7 +86,8 @@ end
 
 function Parser.parse(data, key)
   local macros, v = data.macro or {}, data[key] or {}
-  return scan(macros, v)
+  return fun.iter(next, v)
+    :map(function(k, i) return k, scan(macros, i) end):tomap()
 end
 
 return Parser

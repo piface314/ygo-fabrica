@@ -105,12 +105,12 @@ return Decoder('proxy', Shapes.BASE, 'frame', {
   end,
   level = function(card)
     local lvl = Parser.get_level(card)
-    local layer = lvl > 0 and lvl <= 12 and Layer(Shapes.OVERLAY, 'l', lvl) or nil
+    local layer = lvl > 0 and lvl <= 12 and Layer(Shapes.LEVEL, lvl) or nil
     return 'def', layer
   end,
   rank = function(card)
     local r = Parser.get_level(card)
-    local layer = r > 0 and r <= 13 and Layer(Shapes.OVERLAY, 'r', r) or nil
+    local layer = r > 0 and r <= 13 and Layer(Shapes.RANK, r) or nil
     return 'def', layer
   end,
   def = function(card) return 'atk', Layer(Shapes.DEF, card.def) end,
@@ -173,11 +173,13 @@ return Decoder('proxy', Shapes.BASE, 'frame', {
     local color = is_darkbg and WHITE or BLACK
     local year = card.year or opts.year
     local author = card.author or opts.author
-    local edition = Layer(Shapes.EDITION, pos, color)
+    local ed_opt = card.edition or opts.edition
+    local edition = Layer(Shapes.EDITION, ed_opt, pos, color)
     local bevel = Layer(Shapes.OVERLAY, 'bevel')
     local copyright = Layer(Shapes.COPYRIGHT, color, year, author)
-    local holo = card.holo ~= 0 and opts.holo ~= 0
-      and Layer(Shapes.OVERLAY, 'holo') or nil
+    local holo_opt = card.holo or opts.holo or 1
+    local holo = holo_opt >= 1 and holo_opt <= 2
+      and Layer(Shapes.HOLO, holo_opt) or nil
     return nil, edition, bevel, copyright, holo
   end
 })

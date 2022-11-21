@@ -130,6 +130,7 @@ local Codes = {
 }
 
 local normalize = function(s) return s:gsub('[-_]', ''):lower() end
+local normalize_h = function(s) return s:gsub('_', '-'):lower() end
 
 local rev_index = fun.iter(Codes.const):map(function(k, group)
   return k, fun.iter(group):map(function(k, v) return v, k end):tomap()
@@ -169,6 +170,20 @@ function Codes.combine(group_key, keys)
   return fun.iter(keys:gmatch '[%a-_]+'):map(normalize):reduce(0, function(c, key)
     return bit.bor(c, group[key] or 0)
   end)
+end
+
+function Codes.uncombine(group_key, code)
+  local group = rev_index[group_key]
+  if not group then return end
+  local keys = {}
+  local b = 1
+  while b <= code do
+    if bit.band(code, b) ~= 0 then
+      keys[#keys + 1] = normalize_h(group[b])
+    end
+    b = bit.lshift(b, 1)
+  end
+  return table.concat(keys, " ")
 end
 
 return Codes

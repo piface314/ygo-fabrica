@@ -105,8 +105,12 @@ function encode.level(card)
   return bit.bor(bit.lshift(lsc, 24), bit.lshift(rsc, 16), level)
 end
 
+local holo = {none = 0, gold = 1, silver = 2}
 function encode.holo(card)
-  if card.holo ~= nil then return card.holo and 1 or 0 end
+  if card.holo ~= nil then
+    local key = card.holo:match '^%s*(.-)%s*$':lower()
+    return holo[key] or 0
+  end
 end
 
 function encode.setnumber(card)

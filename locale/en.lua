@@ -52,15 +52,15 @@ return {
         SPELL = {
           attribute = 'SPELL',
           label = {
-            normal = '<t=2><r=2>[</> Spell Card <r=2>]</></>',
-            other = '<t=2><r=2>[</> Spell Card    <r=2>]</></>'
+            normal = '<t=2><r=4>[</> Spell Card <r=4>]</></>',
+            other = '<t=2><r=4>[</> Spell Card    <r=4>]</></>'
           }
         },
         TRAP = {
           attribute = 'TRAP',
           label = {
-            normal = '<t=2><r=2>[</> Trap Card <r=2>]</></>',
-            other = '<t=2><r=2>[</> Trap Card    <r=2>]</></>'
+            normal = '<t=2><r=4>[</> Trap Card <r=4>]</></>',
+            other = '<t=2><r=4>[</> Trap Card    <r=4>]</></>'
           }
         },
         NORMAL = 'Normal',
@@ -110,10 +110,9 @@ return {
         anime = {no_card_type = 'missing card type'},
         proxy = {
           no_card_type = 'missing card type',
-          copyright = '<t=2><s=5>©</>%{year}</> %{author}',
+          copyright = '<t=2><s=6>©</>%{year}</> %{author}',
           default_author = 'KAZUKI TAKAHASHI',
-          typedesc = '<t=2><r=2>[</>%s<r=2>]</></>',
-          edition = '1<r=7.2 s=3>st</> Edition',
+          edition = '1<r=8 s=3.5>st</> Edition',
           forbidden = '<t=3>This card cannot be in a Deck.</>'
         }
       }
@@ -169,6 +168,18 @@ return {
       path_empty = 'Path to gamedir is empty',
       writing_string = 'Writing strings.conf...',
       done = 'Done!'
+    },
+    unmake = {
+      status = 'Making %q .toml file...',
+      done = 'Done!',
+      no_cdbfp = "missing card dataase file path",
+      no_tomlfp = "missing toml file path",
+      file_error = "failed to open %q for writing",
+      toml_error = "failed to create file",
+      data_fetcher = {
+        closed_db = "nil or closed card database",
+        read_db_fail = "failed to read card database"
+      }
     },
     ygofab = {
       usage = {

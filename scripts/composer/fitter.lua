@@ -83,7 +83,14 @@ end
 function Fitter.fill(base, img, layout)
   local x, y, w, h = layout.x, layout.y, layout.w, layout.h
   local wi, hi = img:width(), img:height()
-  return base:insert(img:resize(w / wi, { vscale = h / hi }), x, y)
+  if w and h then
+    img = img:resize(w / wi, { vscale = h / hi })
+    wi, hi = img:width(), img:height()
+  end
+  local cx, cy = layout.cx, layout.cy
+  if cx then x = cx - wi / 2 end
+  if cy then y = cy - hi / 2 end
+  return base:insert(img, x, y)
 end
 
 return Fitter
