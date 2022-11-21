@@ -52,15 +52,15 @@ return {
         SPELL = {
           attribute = 'MAGIA',
           label = {
-            normal = '<t=2><r=2>[</> Card de Magia <r=2>]</></>',
-            other = '<t=2><r=2>[</> Card de Magia    <r=2>]</></>'
+            normal = '<t=2><r=4>[</> Card de Magia <r=4>]</></>',
+            other = '<t=2><r=4>[</> Card de Magia    <r=4>]</></>'
           }
         },
         TRAP = {
           attribute = 'ARMADILHA',
           label = {
-            normal = '<t=2><r=2>[</> Card de Armadilha <r=2>]</></>',
-            other = '<t=2><r=2>[</> Card de Armadilha    <r=2>]</></>'
+            normal = '<t=2><r=4>[</> Card de Armadilha <r=4>]</></>',
+            other = '<t=2><r=4>[</> Card de Armadilha    <r=4>]</></>'
           }
         },
         NORMAL = 'Normal',
@@ -110,10 +110,9 @@ return {
         anime = {no_card_type = 'falta o tipo da carta'},
         proxy = {
           no_card_type = 'falta o tipo da carta',
-          copyright = '<t=2><s=5>©</>%{year}</> %{author}',
+          copyright = '<t=2><s=6>©</>%{year}</> %{author}',
           default_author = 'KAZUKI TAKAHASHI',
-          typedesc = '<t=2><r=2>[</>%s<r=2>]</></>',
-          edition = '1<r=7.2 s=3.6>a</> Edição',
+          edition = '1<r=8 s=4>a</> Edição',
           forbidden = '<t=3>Este card não pode ser colocado no Deck.</>'
         }
       }

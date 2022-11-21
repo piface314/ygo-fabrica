@@ -16,6 +16,7 @@ return function(flags)
       Logs.info(i18n('compose.status', {picset, eid}))
       local cdbfp = path.join('expansions', eid .. '.cdb')
       local options = table.deepcopy(pscfg)
+      options.verbose = flags['--verbose']
       options.holo = options.holo == false and 0 or 1
       options.locale = options.locale or exp.locale
       Composer.compose(pscfg.mode, imgfolder, cdbfp, outfolder, options)

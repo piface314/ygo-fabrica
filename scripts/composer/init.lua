@@ -25,7 +25,7 @@ local function get_mode(mode)
 end
 
 local function show_layers(card, layers)
-  local label = card.id
+  local label = tostring(card.id)
   local sl = fun.iter(layers):map(tostring):totable()
   local s = table.concat(sl, '\n'  .. (' '):rep(#label + 2) .. ', ')
   return ('%s: [ %s ]'):format(label, s)

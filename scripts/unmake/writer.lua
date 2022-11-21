@@ -16,7 +16,6 @@ local key_order = {
 
 local function fmt_hex(v) return ("0x%x"):format(v) end
 local function fmt_str(v) return ("%q"):format(v) end
-local function fmt_bool(v) return tostring(v) end
 local function fmt_dec(v) return type(v) == "number" and tostring(v) or fmt_str(v) end
 local function fmt_long_str(v) return ("'''\n%s\n'''"):format(v) end
 local function fmt_decs(v)
@@ -34,7 +33,7 @@ local format = {
   ["link-rating"] = fmt_dec, ["link-arrows"] = fmt_str, ["pendulum-scale"] = fmt_decs,
   atk = fmt_dec, def = fmt_dec, strings = fmt_strs, ["pendulum-effect"] = fmt_long_str,
   effect = fmt_long_str, ["flavor-text"] = fmt_long_str,
-  year = fmt_dec, author = fmt_str, holo = fmt_bool
+  year = fmt_dec, author = fmt_str, holo = fmt_str
 }
 
 local function sort_cards(cards)

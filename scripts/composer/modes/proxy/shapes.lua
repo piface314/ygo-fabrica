@@ -22,6 +22,14 @@ local function ov(prefix, code, suffix)
   return cache[file]
 end
 
+local function pos_ov(layout, prefix, code, suffix, _base)
+  local file = ('%s%s%s.png'):format(prefix, code or '', suffix or '')
+  if not cache[file] then
+    cache[file] = vips.Image.new_from_file(path.join(ov_fp, file))
+  end
+  return Fitter.fill(_base or base, cache[file], layout)
+end
+
 local abs, inf = math.abs, math.huge
 local function best_layout(ref, layouts)
   local bestdr, best = inf, nil
@@ -48,7 +56,7 @@ return {
     return TypeWriter.print(name, base, Layout.name, color)
   end),
   ATTRIBUTE = Shape('attribute', function(att, st)
-    local icon = ov('att', st and 'st' or '', att)
+    local icon = pos_ov(Layout.att_icon, 'att', st and 'st' or '', att)
     local label = st and Codes.i18n('type', att, 'attribute')
       or Codes.i18n('attribute', att)
     label = '<t=-1>' .. label .. '</>'
@@ -56,7 +64,7 @@ return {
   end),
   ST_LABEL = Shape('spelltrap-label', function(st, st_type)
     if st_type > 0 then
-      local icon = ov('st', st_type)
+      local icon = pos_ov(Layout.st_icon, 'st', st_type)
       local label = Codes.i18n('type', st, 'label.other')
       return TypeWriter.print(label, icon, Layout.spelltrap_label)
     else
@@ -72,10 +80,11 @@ return {
     return fit(box, art, Layout.art.regular)
   end),
   LINK_ARROWS = Shape('link-arrows', function(arrows, ps)
-    local suffix = ps and 'p' .. ps or ''
-    return fun.iter(arrows):map(function(a) return ov('lka', a, suffix) end)
-      :reduce(ov('lka-base', suffix), function(img, a)
-        return img:composite(a, 'over')
+    local suffix = ps or ''
+    local layout = Layout.link_arrows[ps or 'n']
+    return fun.iter(arrows)
+      :reduce(ov('lka', suffix), function(img, a)
+        return pos_ov(layout[a], 'lka', a, nil, img)
       end)
   end),
   SETNUMBER = Shape('setnumber', function(set, mtype, color)
@@ -102,7 +111,7 @@ return {
     return TypeWriter.printf(effect, base, Layout.pendulum_effect[ps])
   end),
   MONSTER_DESC = Shape('monster-desc', function(desc)
-    desc = '<t=2><r=2>[</>' .. table.concat(desc, '/') .. '<r=2>]</></>'
+    desc = '<t=2><r=3>[</>' .. table.concat(desc, '/') .. '<r=3>]</></>'
     return TypeWriter.print(desc, base, Layout.monster_desc)
   end),
   FLAVOR_TEXT = Shape('flavor-text', function(text)
@@ -114,23 +123,39 @@ return {
   ST_EFFECT = Shape('spelltrap-effect', function(effect)
     return TypeWriter.printf(effect, base, Layout.spelltrap_effect)
   end),
+  LEVEL = Shape('level', function (level)
+    return fun.range(0, level-1):reduce(base, function (img, i)
+      local layout = table.copy(Layout.level_stars)
+      layout.x = layout.x - (layout.w + layout.sp) * i
+      return pos_ov(layout, 'level', nil, nil, img)
+    end)
+  end),
+  RANK = Shape('rank', function (rank)
+    local dx = rank > 12 and Layout.rank_stars.dx or 0
+    return fun.range(0, rank-1):reduce(base, function (img, i)
+      local layout = table.copy(Layout.rank_stars)
+      layout.x = layout.x + dx + (layout.w + layout.sp) * i
+      return pos_ov(layout, 'rank', nil, nil, img)
+    end)
+  end),
   ATK = Shape('atk', function(atk)
-    local label = ov('atk')
+    local label = TypeWriter.print("ATK/", base, Layout.atk_label)
     return atk < 0
       and TypeWriter.print('?', label, Layout.atk_q)
       or  TypeWriter.print(atk, label, Layout.atk)
   end),
   DEF = Shape('def', function(def)
-    local label = ov('def')
+    local label = TypeWriter.print("DEF/", base, Layout.def_label)
     return def < 0
       and TypeWriter.print('?', label, Layout.def_q)
       or  TypeWriter.print(def, label, Layout.def)
   end),
   LINK_RATING = Shape('link-rating', function(lkr)
-    return TypeWriter.print(lkr, ov('link'), Layout.link_rating)
+    local label = TypeWriter.print("LINK-", base, Layout.link_label)
+    return TypeWriter.print(lkr, label, Layout.link_rating)
   end),
-  EDITION = Shape('edition', function(pos, color)
-    local edition = i18n 'compose.modes.proxy.edition'
+  EDITION = Shape('edition', function(ed, pos, color)
+    local edition = ed or i18n 'compose.modes.proxy.edition'
     return TypeWriter.print(edition, base, Layout.edition[pos], color)
   end),
   SERIAL_CODE = Shape('serial-code', function(id, color)
@@ -148,5 +173,8 @@ return {
     }
     local text = i18n('compose.modes.proxy.copyright', vals)
     return TypeWriter.print(text, base, Layout.copyright, color)
+  end),
+  HOLO = Shape('holo', function (holo)
+    return pos_ov(Layout.holo, 'holo', holo)
   end)
 }

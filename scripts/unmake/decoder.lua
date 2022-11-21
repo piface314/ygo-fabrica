@@ -123,8 +123,9 @@ function decode.setcode(card)
   return card.setcode and card.setcode > 0 and card.setcode or nil
 end
 
+local holo = {'none', 'gold', 'silver'}
 function decode.holo(card)
-  if card.holo ~= nil then return card.holo == 1 end
+  if card.holo ~= nil then return holo[card.holo + 1] or holo[1] end
 end
 
 function decode.setnumber(card)
