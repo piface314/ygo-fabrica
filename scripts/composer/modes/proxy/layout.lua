@@ -82,27 +82,27 @@ return {
   },
   monster_desc = {
     x = 63, y = 897, w = 685,
-    f = Fonts.get_family('monster_desc', 8),
+    f = Fonts.get_family('monster_desc', 7),
     ff = Fonts.get_file('monster_desc'),
     a = 'left'
   },
   flavor_text = {
-    x = 62, y = 934, w = 687, h = 145, j = true,
-    fs = {6, 5, 4},
+    x = 62, y = 930, w = 689, h = 148, j = true,
+    fs = {6, 5.5, 5, 4},
     ft = Fonts.get_family('flavor_text'),
     ff = Fonts.get_file('flavor_text'),
     a = 'left'
   },
   monster_effect = {
-    x = 62, y = 934, w = 687, h = 145, j = true,
-    fs = {6, 5, 4.5, 4, 3.8, 3.6},
+    x = 62, y = 930, w = 689, h = 148, j = true,
+    fs = {6, 5.1, 4.4, 4, 3.5},
     ft = Fonts.get_family('effect'),
     ff = Fonts.get_file('effect'),
     a = 'left'
   },
   spelltrap_effect = {
-    x = 62, y = 897, w = 687, h = 211, j = true,
-    fs = {6, 5, 4.5, 4},
+    x = 62, y = 897, w = 689, h = 211, j = true,
+    fs = {6, 5.5, 5, 4.5, 4},
     ft = Fonts.get_family('effect'),
     ff = Fonts.get_file('effect'),
     a = 'left'

@@ -121,8 +121,7 @@ function TypeWriter.printf(text, base, args, color)
   local x, y, w, h, ft, fs = args.x, args.y, args.w, args.h, args.ft, args.fs
   local ff, a, j, i = args.ff, align[args.a] or 'low', args.j, args.i or 16
   local opt = {width = w, fontfile = ff, dpi = DPI, justify = j, align = a}
-  local t = fit_in_ratio(text, opt, h, ft, fs)
-    or fit_relaxing_width(text, opt, h, w, i, ft, fs)
+  local t = fit_relaxing_width(text, opt, h, w, i, ft, fs)
     or fit_relaxing_width_and_font(text, opt, h, w, i, ft, fs[#fs])
   return t and paint_insert(t, base, color, x, y) or base
 end
