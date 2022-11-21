@@ -83,8 +83,9 @@ return {
     local suffix = ps or ''
     local layout = Layout.link_arrows[ps or 'n']
     return fun.iter(arrows)
+      :map(function (a) return pos_ov(layout[a], 'lka', a) end)
       :reduce(ov('lka', suffix), function(img, a)
-        return pos_ov(layout[a], 'lka', a, nil, img)
+        return img:composite(a, 'over')
       end)
   end),
   SETNUMBER = Shape('setnumber', function(set, mtype, color)
