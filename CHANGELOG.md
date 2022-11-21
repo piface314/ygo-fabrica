@@ -8,10 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `ygofab make` now supports "metamacros", which are references to other fields of the card, e.g. `${@name}` becomes the card name.
 - New command `ygofab unmake` turns an existing `.cdb` into a `.toml` file.
+- Hologram sticker now can be either `none`, `gold` or `silver`. Still defaults to `gold`.
 
 ### Changed
 - `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
 - Text formatting improved, also with non breaking spaces added after bullet points.
+- Improved proxy resolution from 694x1012 to 813x1185.
+- Reduced proxy assets size from ~14MB to ~12MB.
 
 ### Fixed
 - `ygofab compose` now correctly ignores leading and trailing whitespace.
