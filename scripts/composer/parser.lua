@@ -1,4 +1,5 @@
 local Codes = require 'lib.codes'
+require 'lib.string'
 
 --- Groups helper functions to parse card data
 local Parser = {}
@@ -74,7 +75,7 @@ function Parser.get_level(card) return bit.band(card.level, 0x0000FFFF) end
 --- @return number
 function Parser.get_link_arrows(card) return bit.band(card.def, Codes.const.link.ALL) end
 
-local PEND_DESC_PAT = '^%s*%[.-%]%s*(.-)%s*[-_][-_][-_]+%s*%[.-%]%s*(.-)%s*$'
+local PEND_DESC_PAT = '^.-%[.-%]%s*(.-)%s*[-_][-_][-_]+%s*%[.-%]%s*(.-)%s*$'
 --- Returns card effect, taking into account that `desc` field in the
 --- database can contain Pendulum Effect/Monster Effect/Flavor Text.
 --- @param card CardData
@@ -84,10 +85,10 @@ function Parser.get_effects(card)
   local desc = card.desc
   if Parser.bcheck(card.type, types.PENDULUM) then
     local pe, me = desc:match(PEND_DESC_PAT)
-    if not pe then return desc end
-    return me, pe
+    if not pe then return desc:trim() end
+    return me:trim(), pe:trim()
   else
-    return desc
+    return desc:trim()
   end
 end
 
