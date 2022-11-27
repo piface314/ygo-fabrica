@@ -170,7 +170,7 @@ return {
       done = 'Done!'
     },
     unmake = {
-      status = 'Making %q .toml file...',
+      status = 'Unmaking %q into %q...',
       done = 'Done!',
       no_cdbfp = "missing card dataase file path",
       no_tomlfp = "missing toml file path",

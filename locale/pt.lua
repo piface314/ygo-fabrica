@@ -172,7 +172,7 @@ return {
       done = 'Pronto!'
     },
     unmake = {
-      status = "Criando arquivo .toml para %q...",
+      status = "Desfazendo %q para %q...",
       done = "Pronto!",
       no_cdbfp = "caminho do arquivo .cdb não especificado",
       no_tomlfp = "caminho do arquivo .toml não especificado",
