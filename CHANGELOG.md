@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Text formatting improved, also with non breaking spaces added after bullet points.
 - Improved proxy resolution from 694x1012 to 813x1185.
 - Reduced proxy assets size from ~14MB to ~12MB.
+- Shortened log status bar.
 
 ### Fixed
 - `ygofab compose` now correctly ignores leading and trailing whitespace.
