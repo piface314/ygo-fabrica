@@ -66,7 +66,12 @@ function Logs.ok_s(...)
   return table.concat(s)
 end
 
-local BAR_WIDTH = 32
+local BAR_WIDTH = 25
+local function prep_bar_label(label)
+  label = label or ''
+  local lim = 75 - BAR_WIDTH
+  return #label > lim and "..." .. label:sub(-lim+3, -1) or label
+end
 local CHAR, SPACE = '#', ' '
 local FMT_WD = #(cl.FG_GREEN .. cl.BOLD .. cl.RESET)
 --- Creates a progress bar with `n` steps. This bar can be printed and updated.
@@ -83,7 +88,7 @@ function Logs.bar(n)
     local qt_fill = math.ceil(rate * BAR_WIDTH)
     local fill, miss = CHAR:rep(qt_fill), SPACE:rep(BAR_WIDTH - qt_fill)
     local s = bar_string:format(rate * 100, cl.FG_GREEN .. cl.BOLD, fill, miss,
-      cl.RESET, progress, n, label or '')
+      cl.RESET, progress, n, prep_bar_label(label))
     prelabel = prelabel and prelabel .. '\n' or ''
     io.write('\r', SPACE:rep(prev_s), '\r', prelabel, s)
     io.flush()
