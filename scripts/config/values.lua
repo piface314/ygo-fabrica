@@ -4,6 +4,7 @@ local fun = require 'lib.fun'
 local Schema = require 'scripts.config.schema'
 local Logs = require 'lib.logs'
 local i18n = require 'i18n'
+require 'lib.table'
 
 local Config = {
   groups = {from_flag = {}},

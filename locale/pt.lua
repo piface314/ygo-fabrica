@@ -194,7 +194,8 @@ return {
           cmd3 = {id = 'export', desc = [[Exporta um projeto para um arquivo .zip.]]},
           cmd4 = {id = 'make', desc = [[Converte cartas descritas em .toml para um .cdb.]]},
           cmd5 = {id = 'new', desc = [[Cria um novo projeto, dado um nome.]]},
-          cmd6 = {id = 'sync', desc = [[Copia os arquivos do projeto para o jogo.]]}
+          cmd6 = {id = 'sync', desc = [[Copia os arquivos do projeto para o jogo.]]},
+          cmd7 = {id = 'unmake', desc = [[Converte um .cdb em descrições de carta em .toml.]]}
         },
         more = 'Para mais informações, vá em https://github.com/piface314/ygo-fabrica/wiki'
       },

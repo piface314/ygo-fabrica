@@ -192,7 +192,8 @@ return {
           cmd3 = {id = 'export', desc = [[Exports your project to a .zip file.]]},
           cmd4 = {id = 'make', desc = [[Converts card description in .toml into a .cdb.]]},
           cmd5 = {id = 'new', desc = [[Creates a new project, given a name.]]},
-          cmd6 = {id = 'sync', desc = [[Copies your project files to the game.]]}
+          cmd6 = {id = 'sync', desc = [[Copies your project files to the game.]]},
+          cmd7 = {id = 'unmake', desc = [[Converts a .cdb into .toml card descriptions.]]}
         },
         more = 'For more information, go to https://github.com/piface314/ygo-fabrica/wiki'
       },
