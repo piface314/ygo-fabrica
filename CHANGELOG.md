@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.0] - Cronomalia Cromática // 2023-01-15
 ### Added
 - `ygofab make` now supports "metamacros", which are references to other fields of the card, e.g. `${@name}` becomes the card name.
 - New command `ygofab unmake` turns an existing `.cdb` into a `.toml` file.
@@ -12,9 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ygofab export` and `ygofab sync` now include any `.lua` files inside `script` folder.
-- Text formatting improved, also with non breaking spaces added after bullet points.
+- Text formatting improved in card pics, also with non breaking spaces added after bullet points.
 - Improved proxy resolution from 694x1012 to 813x1185.
 - Reduced proxy assets size from ~14MB to ~12MB.
+- Shortened log status bar.
 
 ### Fixed
 - `ygofab compose` now correctly ignores leading and trailing whitespace.
@@ -103,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Export pack to `.zip`, ready for sharing.
 - Generation of `.cdb` out of textual card description.
 
-[Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/piface314/ygo-fabrica/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/piface314/ygo-fabrica/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/piface314/ygo-fabrica/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/piface314/ygo-fabrica/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/piface314/ygo-fabrica/compare/v1.0.2...v2.0.0

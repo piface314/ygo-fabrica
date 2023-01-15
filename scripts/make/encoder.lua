@@ -108,6 +108,9 @@ end
 local holo = {none = 0, gold = 1, silver = 2}
 function encode.holo(card)
   if card.holo ~= nil then
+    if type(card.holo) == "boolean" then
+      card.holo = card.holo and "gold" or "none"
+    end
     local key = card.holo:match '^%s*(.-)%s*$':lower()
     return holo[key] or 0
   end

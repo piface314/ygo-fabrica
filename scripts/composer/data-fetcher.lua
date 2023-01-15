@@ -3,6 +3,7 @@ local sqlite = require 'lsqlite3complete'
 local Logs = require 'lib.logs'
 local i18n = require 'i18n'
 local fun = require 'lib.fun'
+require 'lib.string'
 
 ---Reads data from a card database (.cdb file)
 local DataFetcher = {}
@@ -17,7 +18,7 @@ local ESC_CHAR = '[' .. table.concat(fun.iter(ESC_REPL):totable()) .. ']'
 ---@param text string
 ---@return string
 local function escape(text)
-  return text:gsub(ESC_CHAR, ESC_REPL):match("^%s*(.-)%s*$")
+  return text:gsub(ESC_CHAR, ESC_REPL):trim()
 end
 
 local VALID_EXT = {jpg = true, png = true, jpeg = true}

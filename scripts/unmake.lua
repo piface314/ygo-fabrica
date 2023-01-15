@@ -8,7 +8,7 @@ local i18n = require 'i18n'
 return function(flags, cdbfp, tomlfp)
   Logs.assert(cdbfp, i18n 'unmake.no_cdbfp')
   Logs.assert(tomlfp, i18n 'unmake.no_tomlfp')
-  Logs.info(i18n('unmake.status', {tomlfp}))
+  Logs.info(i18n('unmake.status', {cdbfp, tomlfp}))
   local data = DataFetcher.get(cdbfp)
   local cards = Decoder.decode(data)
   Writer.write(tomlfp, cards)
